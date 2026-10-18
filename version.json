@@ -1,4 +1,4 @@
 {
- "version": "1.0.11",
- "notes": "Mascotas: secciones y filtro para las que solo salen en mazmorras o en tienda, cofres y otros"
+ "version": "1.0.12",
+ "notes": "Mascotas: los nombres que no caben se desplazan al pasar el ratón"
 }

@@ -200,6 +200,12 @@
   .peticon.sm { width: 30px; height: 30px; }
   .pet .pn { display: flex; gap: 6px; align-items: baseline; min-width: 0; }
   .pet .pn b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* Nombre que no cabe: al pasar el ratón se desplaza para leerlo entero (y vuelve). */
+  .marquee { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .marquee > span { display: inline-block; }
+  .marquee.scroll { text-overflow: clip; }
+  .marquee.scroll > span { animation: marquee var(--dur, 3s) ease-in-out infinite alternate; }
+  @keyframes marquee { 0%, 15% { transform: translateX(0); } 85%, 100% { transform: translateX(var(--shift)); } }
   .pet .lv { flex: none; font-size: 11px; color: var(--gold); font-weight: 600; }
   .pbar { position: relative; height: 14px; border-radius: 4px; background: #11151b; overflow: hidden;
     font-size: 10px; line-height: 14px; text-align: center; color: var(--text); font-variant-numeric: tabular-nums; }
@@ -1215,10 +1221,10 @@ function renderPets() {
   // Agrupadas por familia (en este orden); dentro, la última con novedades primero.
   const card = p => {
     if (!p.owned) return `<div class="pet locked" data-pet="${p.id}" title="Aún no la tienes · clic: dónde aparece">${petImg(p)}` +
-      `<span class="pn"><b>${esc(p.name)}</b></span><div class="pbar"><span>No obtenida</span></div></div>`;
+      `<span class="pn"><b class="marquee"><span>${esc(p.name)}</span></b></span><div class="pbar"><span>No obtenida</span></div></div>`;
     const pct = p.needed ? Math.min(100, p.souls * 100 / p.needed) : 0;
     return `<div class="pet${p.active ? " active" : ""}" data-pet="${p.id}" title="${p.active ? "Activa · " : ""}clic: dónde aparece">${petImg(p)}` +
-      `<span class="pn"><b>${esc(p.name)}</b><span class="lv">Nv ${p.level ?? "?"}</span></span>` +
+      `<span class="pn"><b class="marquee"><span>${esc(p.name)}</span></b><span class="lv">Nv ${p.level ?? "?"}</span></span>` +
       `<div class="pbar${p.level && !p.needed ? " max" : ""}"><i style="width:${pct.toFixed(1)}%"></i>` +
       `<span>${p.needed ? `${p.souls}/${p.needed}` : p.level ? "Máx." : `${p.souls} almas`}</span></div></div>`;
   };
@@ -1252,13 +1258,24 @@ function renderPets() {
   const current = new Map(pets.pets.map(p => [p.id, p]));
   $("petHistory").innerHTML = [...byPet.values()].map(({ last: h, souls, count, levelUp, isNew }) =>
     `<div class="phist${levelUp || isNew ? " level" : ""}">${petImg(h, "sm")}` +
-    `<span><b>${esc(h.name)} ${petCount(current.get(h.id) || h)}</b><small>${count ? `${count} ${count === 1 ? "vez" : "veces"} · ` : ""}` +
+    `<span><b class="marquee"><span>${esc(h.name)} ${petCount(current.get(h.id) || h)}</span></b><small>${count ? `${count} ${count === 1 ? "vez" : "veces"} · ` : ""}` +
     `${isNew ? "¡nueva! · " : levelUp ? "subió de nivel · " : ""}última ${hhmm(h.at)} · ${ago(h.at)}</small></span>` +
     `<span class="gain">${souls ? `+${souls}` : isNew ? "¡Nueva!" : `Nv ${h.level}`}</span></div>`).join("")
     || empty("Aún no has obtenido almas de mascota.");
 }
 $("petSearch").addEventListener("input", renderPets);
 $("petFilter").addEventListener("change", renderPets);
+// Desplazamiento de los nombres cortados (solo si de verdad no caben).
+document.addEventListener("mouseover", e => {
+  const host = e.target.closest(".pet, .phist"); if (!host) return;
+  const m = host.querySelector(".marquee"); if (!m || m.classList.contains("scroll")) return;
+  const hidden = m.firstElementChild.scrollWidth - m.clientWidth;
+  if (hidden <= 2) return;
+  m.style.setProperty("--shift", `-${hidden + 4}px`);
+  m.style.setProperty("--dur", `${Math.max(1.5, hidden / 35)}s`);
+  m.classList.add("scroll");
+  host.addEventListener("mouseleave", () => m.classList.remove("scroll"), { once: true });
+});
 // Clic en una mascota: mapa de dónde aparece.
 $("petList").addEventListener("click", e => {
   const c = e.target.closest("[data-pet]");
