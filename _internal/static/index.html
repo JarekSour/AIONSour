@@ -240,6 +240,9 @@
   .taskadd input, .taskadd select { font: inherit; font-size: 12px; color: var(--text); background: var(--panel2);
     border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px; min-width: 0; }
   .trow.auto { cursor: default; }
+  /* Automáticas: sin casilla; solo un ✓ verde cuando el juego dice que están hechas. */
+  .trow.auto .box { border: 0; background: none; color: var(--ok); font-size: 13px; font-weight: 700; }
+  .trow.auto.done .box { background: none; }
   .trow.auto .tc { color: var(--accent); }
   .trow.auto.done .tc { color: var(--ok); }
   .autotag { font-size: 10px; color: var(--accent); border: 1px solid rgba(79,156,249,.5); border-radius: 4px; padding: 0 4px; }

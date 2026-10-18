@@ -1,4 +1,4 @@
 {
- "version": "1.0.3",
- "notes": "Prueba del actualizador"
+ "version": "1.0.4",
+ "notes": "Las tareas automáticas ya no muestran casilla, solo el check cuando están listas"
 }
