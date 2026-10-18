@@ -259,6 +259,23 @@
   .odbar span { position: relative; }
   @media (max-width: 900px) { body:not(.mini) .tasksview { grid-template-columns: 1fr; } }
 
+  /* Mapa de dónde aparece una mascota */
+  .petmap { position: fixed; inset: 0; z-index: 80; background: rgba(0,0,0,.55); display: grid; place-items: center; }
+  .petmap[hidden] { display: none; }
+  .petmapbox { width: min(900px, 94vw); height: min(720px, 90vh); display: grid; grid-template-rows: auto 1fr auto;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,.6); }
+  .petmapbox header { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  .petmapbox header .peticon { width: 28px; height: 28px; }
+  .petmapbox header b { font-size: 15px; }
+  .pmtabs { display: flex; gap: 4px; flex-wrap: wrap; }
+  .pmtabs button { padding: 3px 9px; font-size: 12px; }
+  .pmtabs button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  #petMapClose { border: 0; background: none; font-size: 18px; color: var(--muted); padding: 0 4px; }
+  #petMapCanvas { width: 100%; height: 100%; display: block; background: #0b0e12; cursor: grab; min-height: 0; }
+  .petmapinfo { padding: 7px 12px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); }
+  .petmapinfo b { color: var(--text); font-weight: 500; }
+
   .menu { position: relative; }
   .floatBtn.on { border-color: var(--gold); color: var(--gold); }
 
@@ -460,8 +477,7 @@
       <input id="petSearch" type="search" placeholder="Buscar…"></h3>
     <div id="petList"></div>
     <div class="histkey" id="petNote"></div>
-    <div class="histkey">Clic en una mascota para ver dónde aparece y qué monstruos la sueltan, en
-      <b>aion2pets.org</b> (guía hecha por fans).</div>
+    <div class="histkey">Clic en una mascota para ver en el mapa dónde aparecen los monstruos que la sueltan.</div>
   </div>
   <div class="card">
     <h3>Últimas obtenidas <span class="grow"></span><button id="petClear" title="Borra el historial de almas">Borrar</button></h3>
@@ -487,6 +503,15 @@
     <div class="histkey">Reinicio diario a las 07:00 UTC y semanal el miércoles a las 07:00 UTC (servidores Global).</div>
   </div>
 </main>
+
+<div class="petmap" id="petMap" hidden>
+  <div class="petmapbox">
+    <header><span id="petMapIcon"></span><b id="petMapName"></b><span class="grow"></span>
+      <span class="pmtabs" id="petMapTabs"></span><button id="petMapClose" title="Cerrar">×</button></header>
+    <canvas id="petMapCanvas"></canvas>
+    <div class="petmapinfo" id="petMapInfo"></div>
+  </div>
+</div>
 
 <div class="dpsmini" id="dpsMini"></div>
 
@@ -589,7 +614,7 @@ function tile(m, z, x, y) {
     return img;
   }
   img = new Image();
-  img.onload = () => { tileFails.delete(key); requestDraw(); };
+  img.onload = () => { tileFails.delete(key); requestDraw(); if (petMap.open) drawPetMap(); };
   img.onerror = () => {
     const n = (tileFails.get(key) || 0) + 1;
     tileFails.set(key, n);
@@ -1072,6 +1097,97 @@ $("taskAdd").addEventListener("submit", e => {
 });
 setInterval(renderTasks, 30000);            // cuenta atrás de los reinicios
 
+// ---------------- Mapa de una mascota ----------------
+// Clic en una mascota: el mapa de cada zona donde aparecen los monstruos que la sueltan,
+// con un punto por aparición (datos de pet_spawns.json, en píxeles del atlas del mapa).
+const petMap = { open: false, data: null, mapId: null, view: null };
+const PET_FAMILY_RGB = { "Intelecto": "240,140,140", "Salvaje": "224,123,95", "Naturaleza": "143,207,111",
+  "Transformación": "210,140,255", "Especial": "255,158,158" };
+async function openPetMap(id) {
+  const data = await (await fetch(`/api/pets/where?id=${id}`)).json();
+  if (!maps) maps = await (await fetch("/maps/maps.json")).json();
+  petMap.data = data; petMap.open = true;
+  $("petMap").hidden = false;
+  $("petMapIcon").innerHTML = petImg(data);
+  $("petMapName").textContent = data.name;
+  const ids = Object.keys(data.maps).sort((a, b) => data.maps[b].length - data.maps[a].length);
+  $("petMapTabs").innerHTML = ids.map(m => `<button data-map="${m}">${esc(maps.maps.find(x => x.id === m)?.name || `Mapa ${m}`)}` +
+    ` <small>${data.maps[m].length}</small></button>`).join("");
+  const where = data.elsewhere.length ? ` · También en: ${data.elsewhere.map(esc).join(", ")}` : "";
+  $("petMapInfo").innerHTML = (data.monsters.length ? `Monstruos que la sueltan: <b>${data.monsters.map(esc).join(", ")}</b>` :
+    "Sin monstruos conocidos que la suelten (cofres, misiones o tienda).") + where;
+  showPetMapTab(ids[0] || null);
+}
+function showPetMapTab(id) {
+  petMap.mapId = id; petMap.view = null;
+  for (const b of $("petMapTabs").children) b.classList.toggle("on", b.dataset.map === id);
+  drawPetMap();
+}
+function drawPetMap() {
+  if (!petMap.open) return;
+  const cv = $("petMapCanvas"), g = cv.getContext("2d"), dpr = devicePixelRatio || 1;
+  const w = cv.clientWidth, h = cv.clientHeight;
+  if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.fillStyle = "#0b0e12"; g.fillRect(0, 0, w, h);
+  const m = maps?.maps.find(x => x.id === petMap.mapId), pts = petMap.data?.maps[petMap.mapId];
+  if (!m || !pts) {
+    g.fillStyle = "#8b95a3"; g.font = "13px system-ui"; g.textAlign = "center";
+    g.fillText(petMap.data?.elsewhere.length ? "Solo aparece en mazmorras (ver abajo)." : "No hay posiciones conocidas.", w / 2, h / 2);
+    g.textAlign = "start"; return;
+  }
+  if (!petMap.view) {                          // encuadre: todos los puntos con margen
+    const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+    const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+    const scale = Math.min(2, Math.max(0.12, Math.min(w / (x1 - x0 + 160), h / (y1 - y0 + 160))));
+    petMap.view = { cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, scale };
+  }
+  const { cx, cy, scale: sc } = petMap.view, A = maps.atlasSize;
+  const sx = px => (px - cx) * sc + w / 2, sy = py => (py - cy) * sc + h / 2;
+  const z = m.zooms.filter(z => (A >> z) * sc <= maps.tileSize * 1.5).sort((a, b) => a - b)[0] ?? Math.max(...m.zooms);
+  const n = 1 << z, span = A / n;
+  const i0 = Math.max(0, Math.floor((cx - w / 2 / sc) / span)), i1 = Math.min(n - 1, Math.floor((cx + w / 2 / sc) / span));
+  const j0 = Math.max(0, Math.floor((cy - h / 2 / sc) / span)), j1 = Math.min(n - 1, Math.floor((cy + h / 2 / sc) / span));
+  g.imageSmoothingQuality = "high";
+  for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) {
+    const img = tile(m, z, i, j);
+    if (img.complete && img.naturalWidth) g.drawImage(img, sx(i * span), sy(j * span), span * sc + 0.6, span * sc + 0.6);
+  }
+  const rgb = PET_FAMILY_RGB[petMap.data.family] || "255,209,102", r = Math.max(3, Math.min(6, 4 * sc));
+  g.lineWidth = 1.5; g.strokeStyle = "rgba(10,12,16,.9)"; g.fillStyle = `rgb(${rgb})`;
+  for (const [x, y] of pts) {
+    const X = sx(x), Y = sy(y);
+    if (X < -8 || Y < -8 || X > w + 8 || Y > h + 8) continue;
+    g.beginPath(); g.arc(X, Y, r, 0, Math.PI * 2); g.fill(); g.stroke();
+  }
+}
+$("petMapTabs").addEventListener("click", e => { const b = e.target.closest("button[data-map]"); if (b) showPetMapTab(b.dataset.map); });
+$("petMapClose").onclick = () => { petMap.open = false; $("petMap").hidden = true; };
+$("petMap").addEventListener("click", e => { if (e.target.id === "petMap") $("petMapClose").onclick(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && petMap.open) $("petMapClose").onclick(); });
+// Rueda: zoom hacia el cursor; arrastrar: mover.
+$("petMapCanvas").addEventListener("wheel", e => {
+  if (!petMap.view) return;
+  e.preventDefault();
+  const r = e.currentTarget.getBoundingClientRect(), v = petMap.view;
+  const mx = e.clientX - r.left - r.width / 2, my = e.clientY - r.top - r.height / 2;
+  const k = Math.exp(-e.deltaY * 0.0015), ns = Math.min(4, Math.max(0.12, v.scale * k));
+  v.cx += mx / v.scale - mx / ns; v.cy += my / v.scale - my / ns; v.scale = ns;
+  drawPetMap();
+}, { passive: false });
+{
+  let drag = null;
+  $("petMapCanvas").addEventListener("pointerdown", e => { if (petMap.view) { drag = { x: e.clientX, y: e.clientY }; e.currentTarget.setPointerCapture(e.pointerId); } });
+  $("petMapCanvas").addEventListener("pointermove", e => {
+    if (!drag) return;
+    petMap.view.cx -= (e.clientX - drag.x) / petMap.view.scale; petMap.view.cy -= (e.clientY - drag.y) / petMap.view.scale;
+    drag = { x: e.clientX, y: e.clientY }; drawPetMap();
+  });
+  const end = () => { drag = null; };
+  $("petMapCanvas").addEventListener("pointerup", end); $("petMapCanvas").addEventListener("pointercancel", end);
+}
+window.addEventListener("resize", drawPetMap);
+
 // ---------------- Mascotas ----------------
 let pets = null;
 const PET_FAMILIES = ["Intelecto", "Salvaje", "Naturaleza", "Transformación", "Especial"];
@@ -1128,10 +1244,10 @@ function renderPets() {
 }
 $("petSearch").addEventListener("input", renderPets);
 $("petFilter").addEventListener("change", renderPets);
-// Clic en una mascota: su página en aion2pets.org (mapa de zonas y monstruos que la sueltan).
+// Clic en una mascota: mapa de dónde aparece.
 $("petList").addEventListener("click", e => {
   const c = e.target.closest("[data-pet]");
-  if (c) post("/api/pets/open", { id: +c.dataset.pet }).then(r => { if (r.error) showErr(r.error); });
+  if (c) openPetMap(+c.dataset.pet).catch(err => showErr(String(err)));
 });
 $("petClear").onclick = () => { if (confirm("¿Borrar el historial de almas de mascota?")) post("/api/pets/clear"); };
 setInterval(renderPets, 30000);             // «hace X min»
