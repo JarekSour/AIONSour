@@ -1,4 +1,4 @@
 {
- "version": "1.0.4",
- "notes": "Las tareas automáticas ya no muestran casilla, solo el check cuando están listas"
+ "version": "1.0.5",
+ "notes": "Mascotas: se muestran todas, también las que aún no tienes (con filtro)"
 }

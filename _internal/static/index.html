@@ -189,6 +189,11 @@
   .pet { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 2px 8px; align-items: center; padding: 6px 8px;
     border-radius: 6px; background: var(--panel2); }
   .pet.active { box-shadow: inset 3px 0 0 var(--ok); }
+  .pet.locked { opacity: .45; }
+  .pet.locked .peticon { filter: grayscale(1); }
+  .pet.locked .pbar span { color: var(--muted); }
+  .petsview h3 select { font: inherit; font-size: 12px; text-transform: none; letter-spacing: 0; color: var(--text);
+    background: var(--panel2); border: 1px solid var(--border); border-radius: 6px; padding: 3px 6px; }
   .peticon { grid-row: span 2; width: 42px; height: 42px; border-radius: 50%; background: #3b414b; object-fit: cover; }
   .peticon.sm { width: 30px; height: 30px; }
   .pet .pn { display: flex; gap: 6px; align-items: baseline; min-width: 0; }
@@ -448,6 +453,8 @@
 <main id="viewPets" class="petsview" hidden>
   <div class="card">
     <h3>Mis mascotas <span class="muted" id="petCount"></span><span class="grow"></span>
+      <select id="petFilter" title="Qué mascotas mostrar"><option value="all">Todas</option>
+        <option value="owned">Obtenidas</option><option value="missing">Sin obtener</option></select>
       <input id="petSearch" type="search" placeholder="Buscar…"></h3>
     <div id="petList"></div>
     <div class="histkey" id="petNote"></div>
@@ -1071,10 +1078,15 @@ const petCount = p => `(${p.level ?? "?"}) ${p.needed ? `${p.souls}/${p.needed}`
 function renderPets() {
   if (!pets || $("viewPets").hidden) return;
   const q = $("petSearch").value.trim().toLowerCase();
-  const list = pets.pets.filter(p => !q || p.name.toLowerCase().includes(q) || (p.family || "").toLowerCase().includes(q));
-  $("petCount").textContent = pets.pets.length ? `· ${pets.pets.length}` : "";
+  const show = $("petFilter").value;
+  const list = pets.pets.filter(p => (show === "all" || (show === "owned") === p.owned) &&
+    (!q || p.name.toLowerCase().includes(q) || (p.family || "").toLowerCase().includes(q)));
+  const owned = pets.pets.filter(p => p.owned).length;
+  $("petCount").textContent = pets.pets.length ? `· ${owned} / ${pets.pets.length}` : "";
   // Agrupadas por familia (en este orden); dentro, la última con novedades primero.
   const card = p => {
+    if (!p.owned) return `<div class="pet locked" title="Aún no la tienes">${petImg(p)}` +
+      `<span class="pn"><b>${esc(p.name)}</b></span><div class="pbar"><span>No obtenida</span></div></div>`;
     const pct = p.needed ? Math.min(100, p.souls * 100 / p.needed) : 0;
     return `<div class="pet${p.active ? " active" : ""}"${p.active ? ' title="Activa"' : ""}>${petImg(p)}` +
       `<span class="pn"><b>${esc(p.name)}</b><span class="lv">Nv ${p.level ?? "?"}</span></span>` +
@@ -1111,6 +1123,7 @@ function renderPets() {
     || empty("Aún no has obtenido almas de mascota.");
 }
 $("petSearch").addEventListener("input", renderPets);
+$("petFilter").addEventListener("change", renderPets);
 $("petClear").onclick = () => { if (confirm("¿Borrar el historial de almas de mascota?")) post("/api/pets/clear"); };
 setInterval(renderPets, 30000);             // «hace X min»
 
