@@ -1,4 +1,4 @@
 {
- "version": "1.0.9",
- "notes": "Mapa de mascotas: botón de cerrar en la esquina"
+ "version": "1.0.10",
+ "notes": "Mascotas: al llegar a las almas necesarias suben de nivel y las que sobran pasan al siguiente"
 }
