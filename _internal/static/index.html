@@ -479,7 +479,8 @@
   <div class="card">
     <h3>Mis mascotas <span class="muted" id="petCount"></span><span class="grow"></span>
       <select id="petFilter" title="Qué mascotas mostrar"><option value="all">Todas</option>
-        <option value="owned">Obtenidas</option><option value="missing">Sin obtener</option></select>
+        <option value="owned">Obtenidas</option><option value="missing">Sin obtener</option>
+        <option value="dungeon">Solo en mazmorras</option><option value="other">Tienda, cofres y otros</option></select>
       <input id="petSearch" type="search" placeholder="Buscar…"></h3>
     <div id="petList"></div>
     <div class="histkey" id="petNote"></div>
@@ -1197,6 +1198,7 @@ window.addEventListener("resize", drawPetMap);
 // ---------------- Mascotas ----------------
 let pets = null;
 const PET_FAMILIES = ["Intelecto", "Salvaje", "Naturaleza", "Transformación", "Especial"];
+const PET_DUNGEON = "Solo en mazmorras", PET_OTHER = "Tienda, cofres y otros";
 const petImg = (p, cls = "") => p.icon
   ? `<img class="peticon ${cls}" src="/icons/${p.icon}.webp" alt="" loading="lazy">` : `<i class="peticon ${cls}"></i>`;
 // «Espíritu de piedra (2) 1/75»; nivel máximo: «(3) Máx.»; nivel aún desconocido: «(?) 4».
@@ -1205,7 +1207,8 @@ function renderPets() {
   if (!pets || $("viewPets").hidden) return;
   const q = $("petSearch").value.trim().toLowerCase();
   const show = $("petFilter").value;
-  const list = pets.pets.filter(p => (show === "all" || (show === "owned") === p.owned) &&
+  const list = pets.pets.filter(p => (show === "all" || (show === "dungeon" || show === "other"
+      ? p.source === show : (show === "owned") === p.owned)) &&
     (!q || p.name.toLowerCase().includes(q) || (p.family || "").toLowerCase().includes(q)));
   const owned = pets.pets.filter(p => p.owned).length;
   $("petCount").textContent = pets.pets.length ? `· ${owned} / ${pets.pets.length}` : "";
@@ -1219,11 +1222,17 @@ function renderPets() {
       `<div class="pbar${p.level && !p.needed ? " max" : ""}"><i style="width:${pct.toFixed(1)}%"></i>` +
       `<span>${p.needed ? `${p.souls}/${p.needed}` : p.level ? "Máx." : `${p.souls} almas`}</span></div></div>`;
   };
+  // Por familia las que salen en el mapa; aparte las que solo salen en mazmorras y las que
+  // ningún monstruo suelta (tienda, cofres, misiones), para tenerlas a mano.
   const families = new Map(PET_FAMILIES.map(f => [f, []]));
   for (const p of list) {
-    const f = p.family || "Otras";
+    const f = p.source === "dungeon" ? PET_DUNGEON : p.source === "other" ? PET_OTHER : p.family || "Otras";
     if (!families.has(f)) families.set(f, []);
     families.get(f).push(p);
+  }
+  for (const k of [PET_DUNGEON, PET_OTHER]) {          // siempre al final
+    const ps = families.get(k);
+    if (ps) { families.delete(k); families.set(k, ps); }
   }
   $("petList").innerHTML = [...families].filter(([, ps]) => ps.length).map(([f, ps]) =>
     `<div class="petfam">${esc(f)} <span>· ${ps.length}</span></div><div class="petgrid">${ps.map(card).join("")}</div>`).join("")
