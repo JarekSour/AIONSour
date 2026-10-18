@@ -972,7 +972,8 @@ function renderUpdate(u) {
   bar.hidden = MINI || !v || (updateLater === v && !busy && u.state !== "error");
   if (bar.hidden) return;
   const notes = u.available.notes ? `<small>${esc(u.available.notes)}</small>` : "";
-  $("updateMsg").innerHTML = u.state === "downloading" ? `Descargando la versión ${esc(v)}… ${u.progress}%`
+  $("updateMsg").innerHTML = u.state === "downloading"
+    ? `Descargando la versión ${esc(v)}… ${u.progress ? `${u.progress}%` : `${u.mb || 0} MB`}`
     : u.state === "installing" ? `Instalando la versión ${esc(v)}: la app se cerrará y volverá a abrirse.`
     : u.state === "error" ? `No se pudo actualizar: ${esc(u.error || "error desconocido")}`
     : `<b>Nueva versión ${esc(v)} disponible</b> (tienes la ${esc(u.current)})${notes}`;
