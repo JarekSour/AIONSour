@@ -1,0 +1,1341 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIONSour</title>
+<style>
+  :root {
+    --bg: #0f1216; --panel: #171b21; --panel2: #1e232b; --border: #2a313b;
+    --text: #e3e7ed; --muted: #8b95a3; --accent: #4f9cf9; --danger: #f2555a; --ok: #3ccf8e;
+    --gold: #ffd166; --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  /* Barras de desplazamiento finas, del color de los bordes; se iluminan al pasar el ratón. */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #353d49; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #4a5462; }
+  ::-webkit-scrollbar-thumb:active { background: var(--accent); }
+  ::-webkit-scrollbar-button { display: none; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
+    font: 13px/1.4 system-ui, "Segoe UI", sans-serif; }
+  body { display: grid; grid-template-rows: auto 1fr; height: 100vh; }
+
+  header { display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    padding: 10px 14px; background: var(--panel); border-bottom: 1px solid var(--border); }
+  header h1 { font-size: 15px; margin: 0 10px 0 0; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); }
+  .dot.on { background: var(--ok); box-shadow: 0 0 8px var(--ok); animation: pulse 1.2s infinite; }
+  @keyframes pulse { 50% { opacity: .4; } }
+  select, button { font: inherit; color: var(--text); background: var(--panel2);
+    border: 1px solid var(--border); border-radius: 6px; padding: 6px 9px; }
+  select { max-width: 320px; }
+  button { cursor: pointer; font-weight: 500; }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+  .spacer { flex: 1; }
+  label.chk { display: flex; gap: 5px; align-items: center; color: var(--muted); }
+  #err { color: var(--danger); width: 100%; display: none; }
+  h1 .ver { margin-left: 6px; font-size: 11px; font-weight: 400; color: var(--muted); }
+  #updateBar { width: 100%; display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px;
+    background: rgba(79,156,249,.12); border: 1px solid rgba(79,156,249,.45); }
+  #updateBar[hidden] { display: none; }
+  #updateBar .upmsg small { color: var(--muted); margin-left: 6px; }
+  #updateNow { border-color: var(--accent); color: #fff; background: var(--accent); }
+  body.mini #updateBar { display: none; }
+
+  main { display: grid; grid-template-columns: 1fr 340px; gap: 12px; padding: 12px 14px 14px; min-height: 0; }
+  .side { display: grid; grid-template-rows: auto 1fr; gap: 12px; min-height: 0; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px;
+    display: flex; flex-direction: column; min-height: 0; }
+  .card h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .card h3 .grow { flex: 1; }
+  .card h3 button { text-transform: none; letter-spacing: 0; padding: 2px 8px; font-size: 11px; }
+  .list { display: flex; flex-direction: column; gap: 6px; overflow: auto; flex: 1; }
+  .cube { display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: center;
+    padding: 8px 10px; border-radius: 6px; background: var(--panel2); cursor: pointer; }
+  .cube:hover { outline: 1px solid var(--accent); }
+  .cube.live { border: 1px solid var(--gold); box-shadow: 0 0 10px rgba(255,209,102,.25); }
+  .cube.gone { opacity: .55; }
+  .cube.mine { border: 1px solid var(--ok); }
+  .cube.other { border: 1px solid var(--danger); }
+  .cube.gone.mine, .cube.gone.other { opacity: .85; }
+  .cube.sel { opacity: 1; box-shadow: inset 3px 0 0 var(--accent), 0 0 0 1px var(--accent); }
+  .cube.mine .icon { color: var(--ok); } .cube.other .icon { color: var(--danger); }
+  .histkey { color: var(--muted); font-size: 11px; margin-top: 8px; }
+  .histkey b { font-weight: 600; }
+  .cube .icon { font-size: 18px; color: var(--gold); text-align: center; }
+  .cube b { display: block; white-space: nowrap; }
+  .cube small { color: var(--muted); font-family: var(--mono); font-size: 11px; }
+  .empty { color: var(--muted); text-align: center; padding: 24px 10px; }
+  .stats { color: var(--muted); font-size: 11px; font-family: var(--mono); margin-top: 10px; }
+  .stats.warn { color: var(--gold); }
+  @keyframes flash { 0%, 100% { background: var(--panel); } 50% { background: #4a3d12; } }
+  .card.flash { animation: flash .6s 10; }        /* cubo encontrado: parpadea 6 s */
+
+  .mapcard { position: relative; padding: 0; overflow: hidden; background: #0b0e12; }
+  #map { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+  #map.drag { cursor: grabbing; }
+  .maptools { position: absolute; top: 10px; left: 10px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .maptools button, .maptools select { background: rgba(23,27,33,.9); padding: 4px 8px; font-size: 12px; }
+  .maptools label { background: rgba(23,27,33,.9); border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px; font-size: 12px; }
+  .mapmsg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: var(--muted); text-align: center; padding: 20px; pointer-events: none; }
+  .legend { position: absolute; bottom: 8px; left: 10px; font-size: 11px; color: var(--muted);
+    background: rgba(23,27,33,.85); border-radius: 6px; padding: 3px 8px; }
+  main[hidden] { display: none; }
+  .tabs { display: flex; gap: 2px; background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 2px; }
+  .tabs button { border: 0; background: none; padding: 5px 12px; border-radius: 6px; color: var(--muted); }
+  .tabs button.on { background: var(--accent); color: #fff; }
+  .tabs .live { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--danger);
+    margin-left: 6px; vertical-align: middle; animation: pulse 1.2s infinite; }
+  body.mini .tabs { display: none; }
+
+  .dpsview { grid-template-columns: 1fr 340px; }
+  .dpsfight { overflow: auto; }
+  .dpshead { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+  .dpshead > div { flex: 1; min-width: 0; }
+  .dpstarget { font-size: 17px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dpsmeta { color: var(--muted); font-size: 12px; }
+  .dpsmeta .on { color: var(--danger); font-weight: 600; }
+  .dpstotals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+  .dpstotals div { background: var(--panel2); border-radius: 6px; padding: 8px 10px; }
+  .dpstotals b { display: block; font-size: 18px; font-variant-numeric: tabular-nums; }
+  .dpstotals span { font-size: 11px; color: var(--muted); }
+  .phead, .prow, .shead, .srow { display: grid; gap: 8px; align-items: center; padding: 6px 10px; }
+  .phead, .prow { grid-template-columns: 22px minmax(0, 1fr) 40px 96px 78px 52px; }
+  .shead, .srow { grid-template-columns: minmax(0, 1fr) 92px 52px 62px 52px; }
+  .srow .sk { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .srow .sk span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .srow .sk img, .srow .sk i { flex: none; width: 20px; height: 20px; border-radius: 4px; background: #11151b; }
+  .srow { font-size: 11.5px; padding-top: 3px; padding-bottom: 3px; margin-bottom: 3px; }
+  .phead, .shead { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; padding-top: 0; padding-bottom: 2px; }
+  .prow, .srow { position: relative; overflow: hidden; border-radius: 6px; background: var(--panel2); margin-bottom: 4px;
+    font-variant-numeric: tabular-nums; }
+  .prow { cursor: pointer; }
+  .prow > *, .srow > * { position: relative; z-index: 1; }
+  .prow .fill, .srow .fill { position: absolute; inset: 0 auto 0 0; z-index: 0; background: rgba(79,156,249,.16); }
+  .prow.self { outline: 1px solid var(--ok); }
+  .prow.sel { box-shadow: inset 3px 0 0 var(--accent); }
+  .prow .who { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .prow .who > span { min-width: 0; }
+  .prow .who b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .clsicon { flex: none; box-sizing: border-box; width: 30px; height: 30px; padding: 4px; object-fit: contain;
+    border-radius: 50%; background: #3b414b; }
+  .clsicon.none { display: inline-block; }
+  .mrow .n { display: flex; align-items: center; gap: 6px; }
+  .deaths { color: var(--danger); font-weight: 600; font-size: .92em; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 3px; }
+  .skull { width: 1.05em; height: 1.05em; vertical-align: -2px; }
+  .phead .skull { color: var(--muted); }
+  .mrow .clsicon { width: 16px; height: 16px; padding: 2px; }
+  .prow .who small, .srow small { color: var(--muted); font-size: 11px; }
+  .num { text-align: right; }
+  .rank { color: var(--muted); text-align: center; }
+  .dpssec { margin: 14px 0 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .fight { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; padding: 8px 10px; border-radius: 6px;
+    background: var(--panel2); cursor: pointer; }
+  .fight:hover { outline: 1px solid var(--accent); }
+  .fight.sel { outline: 1px solid var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+  .fight b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .fight small { color: var(--muted); font-family: var(--mono); font-size: 11px; }
+  .fight .num b { font-variant-numeric: tabular-nums; }
+  @media (max-width: 900px) { body:not(.mini) .dpsview { grid-template-columns: 1fr; } .dpstotals { grid-template-columns: 1fr 1fr; } }
+
+
+  /* Jefes de campo y eventos */
+  .timersview { grid-template-columns: 1fr 1fr; }
+  .timersview .card { overflow: auto; }
+  .tsec { margin: 12px 0 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--muted); display: flex; gap: 8px; align-items: center; }
+  .tsec:first-child { margin-top: 0; }
+  .tsec .here { color: var(--ok); text-transform: none; letter-spacing: 0; font-weight: 500; }
+  .brow, .erow { display: grid; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 6px;
+    background: var(--panel2); margin-bottom: 4px; }
+  .brow { grid-template-columns: 26px minmax(0, 1fr) auto; }
+  .erow { grid-template-columns: 18px 10px minmax(0, 1fr) auto; }
+  .brow .bn, .erow .en { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .brow .bs, .erow .es { font-size: 12px; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .brow.vivo .bs { color: var(--ok); font-weight: 600; }
+  .brow.ya .bs { color: #8fd9b6; }
+  .brow.vivo { box-shadow: inset 3px 0 0 var(--ok); }
+  .erow.live { box-shadow: inset 3px 0 0 var(--danger); } .erow.live .es { color: var(--danger); font-weight: 600; }
+  .star { border: 0; background: none; padding: 0; font-size: 17px; color: var(--muted); line-height: 1; }
+  .star.on { color: var(--gold); }
+  .erow .dot2 { width: 10px; height: 10px; border-radius: 50%; }
+  .timerscfg { width: 300px; text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text); font-size: 13px; }
+  .timerscfg .row, .cubecfg .row { display: grid; grid-template-columns: 110px 1fr 46px; align-items: center; gap: 8px; }
+  .timerscfg select { min-width: 0; }
+  .timerscfg .h { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .timerscfg input[type=number] { width: 60px; font: inherit; color: var(--text); background: var(--panel2);
+    border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px; }
+  .timerscfg button { align-self: flex-start; padding: 5px 10px; font-size: 12px; }
+  @media (max-width: 900px) { body:not(.mini) .timersview { grid-template-columns: 1fr; } }
+
+  /* Mascotas */
+  .petsview { grid-template-columns: 1.3fr 1fr; }
+  .petsview .card { overflow: auto; }
+  .petsview h3 input { font: inherit; font-size: 12px; text-transform: none; letter-spacing: 0; width: 140px;
+    color: var(--text); background: var(--panel2); border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px; }
+  .petsview h3 .muted { color: var(--muted); font-weight: 400; text-transform: none; letter-spacing: 0; }
+  .petgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 6px; }
+  .petfam { margin: 12px 0 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--muted); display: flex; gap: 6px; }
+  .petfam:first-child { margin-top: 0; }
+  .petfam span { font-weight: 400; }
+  .pet { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 2px 8px; align-items: center; padding: 6px 8px;
+    border-radius: 6px; background: var(--panel2); }
+  .pet.active { box-shadow: inset 3px 0 0 var(--ok); }
+  .peticon { grid-row: span 2; width: 42px; height: 42px; border-radius: 50%; background: #3b414b; object-fit: cover; }
+  .peticon.sm { width: 30px; height: 30px; }
+  .pet .pn { display: flex; gap: 6px; align-items: baseline; min-width: 0; }
+  .pet .pn b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pet .lv { flex: none; font-size: 11px; color: var(--gold); font-weight: 600; }
+  .pbar { position: relative; height: 14px; border-radius: 4px; background: #11151b; overflow: hidden;
+    font-size: 10px; line-height: 14px; text-align: center; color: var(--text); font-variant-numeric: tabular-nums; }
+  .pbar i { position: absolute; inset: 0 auto 0 0; background: rgba(60,207,142,.45); }
+  .pbar span { position: relative; }
+  .pbar.max i { background: rgba(255,209,102,.45); width: 100%; }
+  .phist { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 8px; align-items: center;
+    padding: 5px 8px; border-radius: 6px; background: var(--panel2); margin-bottom: 4px; }
+  .phist b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; font-variant-numeric: tabular-nums; }
+  .phist small { color: var(--muted); font-size: 11px; }
+  .phist .gain { color: var(--ok); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .phist.level .gain, .phist.new .gain { color: var(--gold); }
+  @media (max-width: 900px) { body:not(.mini) .petsview { grid-template-columns: 1fr; } }
+
+  /* Tareas */
+  .tasksview { grid-template-columns: 1fr 340px; }
+  .tasksview .card { overflow: auto; }
+  .tasksview h3 .muted { color: var(--muted); font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 12px; }
+  .taskchars { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; align-items: start; }
+  .tchar { background: var(--panel2); border-radius: 8px; padding: 8px 10px; }
+  .tchar.current { box-shadow: inset 0 0 0 1px var(--ok); }
+  .tchar header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .tchar header b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tchar header .pend { font-size: 11px; color: var(--gold); white-space: nowrap; }
+  .tchar header .pend.ok { color: var(--ok); }
+  .tchar header .x { border: 0; background: none; color: var(--muted); padding: 0 2px; font-size: 14px; }
+  .tchar .clsicon { width: 26px; height: 26px; padding: 3px; }
+  .tsub { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 6px 0 3px; }
+  .trow { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; gap: 7px; align-items: center; padding: 3px 4px;
+    border-radius: 5px; cursor: pointer; user-select: none; }
+  .trow:hover { background: rgba(255,255,255,.04); }
+  .trow .box { width: 14px; height: 14px; border-radius: 3px; border: 1px solid #4a5462; display: grid; place-items: center;
+    font-size: 11px; line-height: 1; color: #0f1216; }
+  .trow.done .box { background: var(--ok); border-color: var(--ok); }
+  .trow.done .tn { color: var(--muted); text-decoration: line-through; }
+  .trow .tn { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .trow .tc { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .tdef { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto auto; gap: 6px; align-items: center;
+    padding: 4px 6px; border-radius: 6px; background: var(--panel2); margin-bottom: 4px; }
+  .tdef span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tdef small { color: var(--muted); font-size: 11px; white-space: nowrap; }
+  .tdef button { border: 0; background: none; color: var(--muted); padding: 0 3px; }
+  .tdef button:hover { color: var(--text); }
+  .taskadd { display: grid; grid-template-columns: minmax(0, 1fr) auto 52px auto; gap: 6px; margin-top: 8px; }
+  .taskadd input, .taskadd select { font: inherit; font-size: 12px; color: var(--text); background: var(--panel2);
+    border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px; min-width: 0; }
+  .trow.auto { cursor: default; }
+  .trow.auto .tc { color: var(--accent); }
+  .trow.auto.done .tc { color: var(--ok); }
+  .autotag { font-size: 10px; color: var(--accent); border: 1px solid rgba(79,156,249,.5); border-radius: 4px; padding: 0 4px; }
+  .odbar { position: relative; height: 16px; border-radius: 4px; background: #11151b; overflow: hidden; margin: 0 0 4px;
+    font-size: 10.5px; line-height: 16px; text-align: center; font-variant-numeric: tabular-nums; }
+  .odbar i { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, rgba(79,156,249,.55), rgba(79,156,249,.25)); }
+  .odbar span { position: relative; }
+  @media (max-width: 900px) { body:not(.mini) .tasksview { grid-template-columns: 1fr; } }
+
+  .menu { position: relative; }
+  .floatBtn.on { border-color: var(--gold); color: var(--gold); }
+
+  /* Medidor flotante (?mini=dps): solo jugadores, DPS y porcentaje */
+  .dpsmini { display: none; }
+  body.mini-dps main { display: none !important; }
+  body.mini-dps .dpsmini { display: block; overflow: auto; padding: 3px; min-height: 0; }
+  /* Sin hueco para el asa: queda pequeña y tenue sobre la esquina, visible al pasar el ratón. */
+  body.mini-dps .grip { width: 11px; height: 11px; opacity: .35; }
+  .mrow { position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1fr) 30px 48px 46px;
+    gap: 6px; align-items: center; padding: 1px 6px; margin-bottom: 2px; border-radius: 4px;
+    background: var(--panel2); font-size: 10.5px; line-height: 1.3; font-variant-numeric: tabular-nums; }
+  .mrow > * { position: relative; z-index: 1; }
+  .mrow .fill { position: absolute; inset: 0 auto 0 0; z-index: 0; background: rgba(79,156,249,.18); }
+  .mrow.self { outline: 1px solid var(--ok); }
+  .mrow .n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mrow.head { background: none; color: var(--muted); font-size: 10px; text-transform: uppercase; padding-top: 0; padding-bottom: 0; }
+  .dpsmini .empty { padding: 16px 8px; font-size: 12px; }
+  .panel { position: absolute; right: 0; top: calc(100% + 6px); z-index: 10; width: 300px; background: var(--panel);
+    border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; box-shadow: 0 8px 24px rgba(0,0,0,.45);
+    display: flex; flex-direction: column; gap: 10px; }
+  .panel[hidden] { display: none; }
+  .panel h4 { margin: 0; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .panel .row { display: grid; grid-template-columns: 70px 1fr 50px; align-items: center; gap: 8px; }
+  .panel .row span:last-child { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+  .panel label.chk { color: var(--text); }
+  .panel small { color: var(--muted); line-height: 1.35; }
+
+  /* Vista minimapa (?mini=1): la carga la ventana flotante de minimapa.py */
+  .minibar { display: none; }
+  body.mini header, body.mini .side, body.mini .legend, body.mini #mapSel,
+  body.mini #btnFocus, body.mini .maptools label { display: none; }
+  body.mini main { grid-template-columns: 1fr; padding: 0; gap: 0; }
+  body.mini .mapcard { border: 0; border-radius: 0; }
+  body.mini .maptools { top: auto; left: auto; bottom: 6px; right: 24px; }
+  .grip { display: none; }
+  body.mini .grip { display: block; position: fixed; z-index: 20; right: 0; bottom: 0; width: 18px; height: 18px;
+    cursor: nwse-resize; touch-action: none; opacity: .8;
+    background: linear-gradient(135deg, transparent 0 45%, #c9d3e0 45% 52%, transparent 52% 66%,
+                #c9d3e0 66% 73%, transparent 73% 87%, #c9d3e0 87% 94%, transparent 94%); }
+  body.mini .grip:hover { opacity: 1; }
+  body.mini .mapmsg { font-size: 12px; }
+  body.mini .minibar { display: flex; align-items: center; gap: 6px; padding: 0 4px 0 10px; height: 28px; font-size: 12px;
+    background: var(--panel); border-bottom: 1px solid var(--border); user-select: none; }
+  .minibar .t { cursor: move; }
+  .minibar .t { flex: 1; align-self: stretch; display: flex; align-items: center; min-width: 0;
+    overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .minibar .t.live { color: var(--gold); font-weight: 600; }
+  .minibar .t .dur { color: #2ec4c4; margin: 0 4px; }        /* calipso: duración del combate */
+  .minibar button { padding: 0 8px; font-size: 15px; line-height: 20px; }
+  .minibar button[hidden] { display: none; }
+  .floatpanel { display: none; }
+  .cubecfg { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text); font-size: 13px; width: 260px; }
+  .cubecfg .h { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .cubecfg button { align-self: flex-start; padding: 5px 10px; font-size: 12px; }
+  body.mini .floatpanel:not([hidden]) { display: flex; position: fixed; top: 32px; right: 4px; left: auto;
+    width: 300px; z-index: 30; }
+  .floatpanel .row { grid-template-columns: 66px 1fr 54px; }
+  .floatpanel .fErr:empty { display: none; }
+  .floatpanel button { align-self: flex-start; padding: 5px 10px; font-size: 12px; }
+  body.mini.flash .minibar { animation: flash .6s 10; }
+
+  @media (max-width: 900px) {   /* página en pantalla estrecha; el minimapa siempre llena su ventana */
+    body:not(.mini) { height: auto; }
+    body:not(.mini) main { grid-template-columns: 1fr; }
+    body:not(.mini) .mapcard { height: 60vh; }
+  }
+</style>
+</head>
+<body>
+<div class="minibar">
+  <!-- Solo el título arrastra la ventana: pywebview también lo haría desde los hijos (el ×). -->
+  <span class="t pywebview-drag-region" id="miniTitle">Minimapa</span>
+  <button id="miniReset" title="Reiniciar el medidor (el combate actual pasa al historial)" hidden>⟲</button>
+  <button id="miniCfg" title="Configuración de esta ventana" hidden>⚙</button>
+  <button id="miniClose" title="Cerrar esta ventana">×</button>
+</div>
+<div class="panel floatpanel" id="floatPanel" hidden></div>
+<div class="grip" id="miniGrip" title="Arrastra para cambiar el tamaño"></div>
+<header>
+  <h1><span class="dot" id="dot"></span>AIONSour<small class="ver" id="appVersion"></small></h1>
+  <nav class="tabs" id="tabs">
+    <button data-view="cubes" class="on">◆ Cubos</button>
+    <button data-view="dps">⚔ Daño<span class="live" id="dpsLive" hidden></span></button>
+    <button data-view="timers">♛ Jefes y eventos</button>
+    <button data-view="pets">🐾 Mascotas</button>
+    <button data-view="tasks">✓ Tareas</button>
+  </nav>
+  <select id="iface" title="Adaptador de red por el que juegas (la captura empieza sola)"></select>
+  <span class="spacer"></span>
+  <button class="floatBtn" data-kind="mini" title="Abre o cierra el minimapa flotante (se configura en su ⚙)">🗺 Minimapa</button>
+  <button class="floatBtn" data-kind="dps" title="Abre o cierra el medidor de daño flotante (se configura en su ⚙)">⚔ Medidor</button>
+  <div id="err"></div>
+  <div id="updateBar" hidden>
+    <span class="upmsg" id="updateMsg"></span>
+    <span class="spacer"></span>
+    <button id="updateNow">Actualizar</button>
+    <button id="updateLater">Más tarde</button>
+  </div>
+</header>
+
+<main id="viewCubes">
+  <div class="card mapcard">
+    <canvas id="map"></canvas>
+    <div class="mapmsg" id="mapMsg"></div>
+    <div class="maptools">
+      <select id="mapSel" title="Mapa"></select>
+      <button id="btnFocus" title="Centrar el mapa en el cubo activo">◆ Ir al cubo</button>
+      <button id="zoomIn" title="Acercar">+</button>
+      <button id="zoomOut" title="Alejar">−</button>
+      <label class="chk"><input type="checkbox" id="showSpots" checked>Puntos posibles</label>
+    </div>
+    <div class="legend"><span style="color:var(--gold)">◆</span> cubo activo · <span style="color:#c9d3e0">•</span> punto posible de cubo</div>
+  </div>
+  <div class="side">
+    <div class="card" id="activeCard">
+      <h3>Cubo encontrado <span class="grow"></span>
+        <span class="menu"><button id="cubeCfgBtn" title="Configuración de los avisos de cubos">⚙</button>
+          <span class="panel cubecfg" id="cubeCfg" hidden>
+            <span class="h">Avisos de cubos</span>
+            <label class="chk"><input type="checkbox" id="sound" checked>Sonido al encontrar un cubo</label>
+            <span class="row"><span>Volumen</span><input type="range" class="volRange" min="0" max="100" step="5"><span class="volV"></span></span>
+            <button id="btnTest" title="Probar el aviso">Probar aviso</button>
+            <small>Si el minimapa flotante está abierto, el aviso suena en él.</small>
+          </span></span></h3>
+      <div class="list" id="active"></div>
+      <div class="stats" id="stats"></div>
+    </div>
+    <div class="card">
+      <h3>Historial <span class="grow"></span><button id="btnReset" title="Borra el cubo activo y todo el historial">Borrar historial</button></h3>
+      <div class="list" id="history"></div>
+      <div class="histkey"><b style="color:var(--ok)">Verde</b>: lo abriste tú · <b style="color:var(--danger)">Rojo</b>: lo abrió otro jugador</div>
+    </div>
+  </div>
+</main>
+
+<main id="viewDps" class="dpsview" hidden>
+  <div class="card dpsfight">
+    <div class="dpshead">
+      <div><div class="dpstarget" id="dpsTarget">Sin combates todavía</div><div class="dpsmeta" id="dpsMeta"></div></div>
+      <button id="dpsBack" hidden>⟵ Combate actual</button>
+      <button id="dpsReset" title="Termina el combate y deja vacíos este medidor y el flotante hasta tu próximo golpe">⟲ Reiniciar</button>
+      <span class="menu"><button id="dpsCfgBtn" title="Cuándo termina un combate">⚙</button>
+        <span class="panel timerscfg" id="dpsCfg" hidden>
+          <span class="h">Fin del combate</span>
+          <span class="row"><span>Sin golpes durante</span><input type="number" id="dpsIdle" min="1" max="300"><span>s</span></span>
+          <label class="chk"><input type="checkbox" id="dpsBossHold">Contra un jefe, terminar cuando muere o desaparece (no por inactividad)</label>
+          <span class="row"><span>Prueba con muñeco</span><input type="number" id="dpsDummy" min="0" max="1800"><span>s</span></span>
+          <small>Muñeco de entrenamiento: el combate termina al cumplir ese tiempo (0 = sin límite) o antes si dejas de golpear.</small>
+        </span></span>
+    </div>
+    <div class="dpstotals" id="dpsTotals"></div>
+    <div class="phead"><span>#</span><span>Jugador</span><span class="num" title="Muertes"><svg class="skull" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 1.2C4.4 1.2 1.8 3.7 1.8 7c0 1.9.9 3.4 2.3 4.3v1.9c0 .7.5 1.2 1.2 1.2h.6v-1.6h1v1.6h2.2v-1.6h1v1.6h.6c.7 0 1.2-.5 1.2-1.2v-1.9c1.4-.9 2.3-2.4 2.3-4.3 0-3.3-2.6-5.8-6.2-5.8zM5.4 9.6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5.2 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM8 11.2l-.9-1.3h1.8z"/></svg></span><span class="num">Daño</span><span class="num">DPS</span><span class="num">%</span></div>
+    <div id="dpsPlayers"></div>
+    <div class="dpssec" id="dpsSkillsTitle">Habilidades</div>
+    <div class="shead"><span>Habilidad</span><span class="num">Daño</span><span class="num">Golpes</span><span class="num">Crít.</span><span class="num">%</span></div>
+    <div id="dpsSkills"></div>
+  </div>
+  <div class="card">
+    <h3>Combates <span class="grow"></span><button id="dpsClear" title="Borra el historial de combates">Borrar</button></h3>
+    <div class="list" id="dpsHistory"></div>
+    <div class="histkey" id="dpsNote"></div>
+  </div>
+</main>
+
+<main id="viewTimers" class="timersview" hidden>
+  <div class="card">
+    <h3>Jefes de campo <span class="grow"></span>
+      <span class="menu"><button id="timersCfgBtn" title="Avisos, zona horaria y volumen">⚙</button>
+        <span class="panel timerscfg" id="timersCfg" hidden>
+          <span class="h">Jefes y eventos</span>
+          <span class="row"><span>Zona horaria del servidor</span><select id="tzSel"></select><span></span></span>
+          <span class="row"><span>Aviso de jefes ★</span><input type="number" id="bossLead" min="1" max="60"><span>min antes</span></span>
+          <span class="row"><span>Aviso de eventos</span><input type="number" id="eventLead" min="1" max="60"><span>min antes</span></span>
+          <span class="row"><span>Volumen</span><input type="range" class="volRange" min="0" max="100" step="5"><span class="volV"></span></span>
+          <span class="row"><span>Pantalla</span><select id="popupMon"></select><span></span></span>
+          <span class="row"><span>Posición del aviso</span><select id="popupPos">
+            <option value="tl">Arriba a la izquierda</option><option value="tc">Arriba al centro</option>
+            <option value="tr">Arriba a la derecha</option><option value="c">Centro de la pantalla</option>
+            <option value="bl">Abajo a la izquierda</option><option value="bc">Abajo al centro</option>
+            <option value="br">Abajo a la derecha</option></select><span></span></span>
+          <button id="timersTest">Probar notificación</button>
+          <small>Marca con ★ los jefes de los que quieres aviso. Los jefes aparecen al visitar su mapa (el juego envía su estado).</small>
+        </span></span></h3>
+    <div id="bossList"></div>
+  </div>
+  <div class="card">
+    <h3>Próximos eventos</h3>
+    <div id="eventList"></div>
+    <div class="histkey">Marca los eventos de los que quieres aviso: suena unos minutos antes y al empezar.</div>
+  </div>
+</main>
+
+<main id="viewPets" class="petsview" hidden>
+  <div class="card">
+    <h3>Mis mascotas <span class="muted" id="petCount"></span><span class="grow"></span>
+      <input id="petSearch" type="search" placeholder="Buscar…"></h3>
+    <div id="petList"></div>
+    <div class="histkey" id="petNote"></div>
+  </div>
+  <div class="card">
+    <h3>Últimas obtenidas <span class="grow"></span><button id="petClear" title="Borra el historial de almas">Borrar</button></h3>
+    <div id="petHistory"></div>
+  </div>
+</main>
+
+<main id="viewTasks" class="tasksview" hidden>
+  <div class="card">
+    <h3>Pendientes por personaje <span class="grow"></span><span class="muted" id="taskResets"></span></h3>
+    <div class="taskchars" id="taskChars"></div>
+    <div class="histkey">Las tareas «auto» se marcan solas con los datos del juego. En las demás, clic: +1 (o la marca hecha); clic derecho: −1. Los personajes se añaden solos al entrar al juego con ellos.</div>
+  </div>
+  <div class="card">
+    <h3>Tareas</h3>
+    <div id="taskDefs"></div>
+    <form class="taskadd" id="taskAdd">
+      <input name="name" placeholder="Nueva tarea…" maxlength="80" required>
+      <select name="cycle"><option value="daily">Diaria</option><option value="weekly">Semanal</option></select>
+      <input name="times" type="number" min="1" max="99" value="1" title="Veces">
+      <button>Añadir</button>
+    </form>
+    <div class="histkey">Reinicio diario a las 07:00 UTC y semanal el miércoles a las 07:00 UTC (servidores Global).</div>
+  </div>
+</main>
+
+<div class="dpsmini" id="dpsMini"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const MINI_PARAM = new URLSearchParams(location.search).get("mini");   // dentro de una ventana flotante
+const MINI_KIND = MINI_PARAM === null ? null : MINI_PARAM === "dps" ? "dps" : "mini";
+const MINI = !!MINI_KIND, MINI_DPS = MINI_KIND === "dps";
+if (MINI) document.body.classList.add("mini");
+if (MINI_DPS) document.body.classList.add("mini-dps");
+let state = null, running = false, audioCtx = null;
+let settings = null, floatsRunning = {};   // settings.json del servidor y ventanas flotantes abiertas
+
+const ago = t => { const s = Math.max(0, Math.round(Date.now() / 1000 - t));
+  return s < 60 ? `hace ${s} s` : s < 3600 ? `hace ${Math.floor(s / 60)} min` : new Date(t * 1000).toLocaleString(); };
+const clock = t => new Date(t * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+const empty = text => `<div class="empty">${text}</div>`;
+
+// ---------------- Listas ----------------
+function render() {
+  if (!state) return;
+  $("active").innerHTML = state.active.length ? state.active.map((c, i) => `<div class="cube live" data-src="active" data-i="${i}">` +
+    `<span class="icon">◆</span><span><b>Cubo oculto</b><small>${esc(mapName(c.world))} · visto ${ago(c.at)}</small></span>` +
+    `<small>EnvId<br>${c.envId}</small></div>`).join("")
+    : empty(running ? "Ningún cubo a la vista." : "La captura no está activa: revisa el adaptador de red de arriba.");
+  $("history").innerHTML = state.history.length ? state.history.map((h, i) => `<div class="cube ${h.goneAt || h.lost ? "gone" : "live"}` +
+    `${h.opened && h.mine === true ? " mine" : h.opened && h.mine === false ? " other" : ""}` +
+    `${cubeKey(h) === selCube ? " sel" : ""}" data-src="history" data-i="${i}">` +
+    `<span class="icon">◆</span><span><b>${clock(h.at)}</b><small>${esc(mapName(h.world))}</small></span>` +
+    `<small>${h.goneAt ? (h.opened ? openedBy(h) : h.replaced ? "reemplazado" : "fuera de rango") + " tras " + Math.round(h.goneAt - h.at) + " s"
+      : h.lost ? "fin desconocido" : "activo"}</small></div>`).join("")
+    : empty("Aún no has visto ningún cubo.");
+  const c = state.active[0];
+  if (!MINI_DPS) $("miniTitle").className = "t pywebview-drag-region" + (c ? " live" : "");
+  if (!MINI_DPS) $("miniTitle").textContent = c ? `◆ Cubo oculto · ${mapName(c.world)} · ${ago(c.at)}`
+    : `Sin cubo · ${mapName(state.world)}`;
+  const st = state.stats, err = st.decodeErrors + st.bundleErrors;
+  $("stats").className = "stats" + (st.segments && !st.frames || err > st.frames / 10 ? " warn" : "");
+  $("stats").textContent = !running ? "" : !st.segments ? "Esperando tráfico del juego (puerto 13328)…" :
+    `Tramas ${st.frames} · agrupadas ${st.bundles} · errores ${err} · huecos ${st.gaps} · mundo ${state.world ?? "?"}`;
+}
+
+function openedBy(h) {
+  return h.mine === true ? "abierto por ti" : h.mine === false ? "abierto por otro" : "abierto";
+}
+
+// Clic en un cubo de las listas: centra el mapa en él. Uno del historial queda marcado
+// en el mapa con su propio pin (otro clic lo desmarca).
+let selCube = null;
+const cubeKey = c => c ? `${c.at}:${c.envId}:${c.x}:${c.y}` : null;
+function selectedCube() {
+  return selCube && state ? state.history.find(h => cubeKey(h) === selCube) || null : null;
+}
+for (const id of ["active", "history"]) $(id).addEventListener("click", e => {
+  const row = e.target.closest(".cube"); if (!row || !state) return;
+  const c = state[row.dataset.src][+row.dataset.i];
+  if (row.dataset.src === "history") selCube = cubeKey(c) === selCube ? null : cubeKey(c);
+  else selCube = null;
+  render();
+  focusCube(c);
+  requestDraw();
+});
+
+// ---------------- Mapa ----------------
+let maps = null, mapSel = "auto";
+const view = { cx: 2048, cy: 2048, scale: 0.5 };
+const MIN_SCALE = 0.12, MAX_SCALE = 4;
+const CUBE_SCALE = 1.5;     // zoom al centrar un cubo (1 = resolución nativa de las teselas)
+const tiles = new Map();
+const canvas = $("map"), ctx = canvas.getContext("2d");
+
+const mapFor = world => maps && world != null ? maps.maps.find(m => m.id === maps.worlds[String(world)]) : null;
+const mapName = world => mapFor(world)?.name ?? (world == null ? "mapa desconocido" : `mundo ${world}`);
+function currentMap() {
+  if (!maps) return null;
+  return mapSel === "auto" ? mapFor(state?.world) : maps.maps.find(m => m.id === mapSel);
+}
+const toPx = (m, x, y) => [m.ax * x + m.bx, m.ay * y + m.by];
+
+// Centra el mapa en un cubo con zoom; cambia al mapa del cubo si se conoce.
+function focusCube(c) {
+  if (!c || !maps) return;
+  const m = mapFor(c.world);
+  if (m && m !== currentMap()) setMapSel(m.id);
+  const target = m || currentMap(); if (!target) return;
+  [view.cx, view.cy] = toPx(target, c.x, c.y);
+  view.scale = Math.max(view.scale, CUBE_SCALE);
+  requestDraw();
+}
+
+// Teselas en caché (las más recientes al final). Una que falla se vuelve a pedir
+// tras 1, 2, 4… s (máx. 30 s): antes quedaba en blanco hasta reiniciar la app.
+const tileFails = new Map();          // clave -> intentos fallidos
+function tile(m, z, x, y) {
+  const key = `${m.id}/${z}_${x}_${y}`;
+  let img = tiles.get(key);
+  if (img) {
+    tiles.delete(key); tiles.set(key, img);       // usada ahora: la última en descartarse
+    return img;
+  }
+  img = new Image();
+  img.onload = () => { tileFails.delete(key); requestDraw(); };
+  img.onerror = () => {
+    const n = (tileFails.get(key) || 0) + 1;
+    tileFails.set(key, n);
+    setTimeout(() => { if (tiles.get(key) === img) { tiles.delete(key); requestDraw(); } },
+               Math.min(30000, 1000 * 2 ** (n - 1)));
+  };
+  img.src = `/maps/${key}.webp` + (tileFails.has(key) ? `?r=${tileFails.get(key)}` : "");
+  tiles.set(key, img);
+  if (tiles.size > 600) tiles.delete(tiles.keys().next().value);
+  return img;
+}
+
+let drawPending = false;
+function requestDraw() { if (!drawPending) { drawPending = true; requestAnimationFrame(draw); } }
+
+function draw() {
+  drawPending = false;
+  const dpr = devicePixelRatio || 1, w = canvas.clientWidth, h = canvas.clientHeight;
+  if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
+    canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+  }
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.fillStyle = "#0b0e12"; ctx.fillRect(0, 0, w, h);
+  const m = currentMap();
+  if (!m) {
+    $("mapMsg").textContent = !maps ? "Cargando mapas…" : state?.world != null
+      ? `No sé qué mapa es el mundo ${state.world}. Elígelo en el selector de arriba.`
+      : "Mapa aún no detectado (se detecta al entrar a un mundo). Puedes elegirlo en el selector de arriba.";
+    return;
+  }
+  $("mapMsg").textContent = "";
+  const s = view.scale, A = maps.atlasSize;
+  const sx = px => (px - view.cx) * s + w / 2, sy = py => (py - view.cy) * s + h / 2;
+
+  // Teselas: el nivel menos detallado que no se amplíe más de 1,5x (menos descargas).
+  const z = m.zooms.filter(z => (A >> z) * s <= maps.tileSize * 1.5).sort((a, b) => a - b)[0] ?? Math.max(...m.zooms);
+  const n = 1 << z, span = A / n;
+  const i0 = Math.max(0, Math.floor((view.cx - w / 2 / s) / span)), i1 = Math.min(n - 1, Math.floor((view.cx + w / 2 / s) / span));
+  const j0 = Math.max(0, Math.floor((view.cy - h / 2 / s) / span)), j1 = Math.min(n - 1, Math.floor((view.cy + h / 2 / s) / span));
+  ctx.imageSmoothingQuality = "high";
+  for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) {
+    const img = tile(m, z, i, j);
+    if (img.complete && img.naturalWidth) ctx.drawImage(img, sx(i * span), sy(j * span), span * s + 0.6, span * s + 0.6);
+  }
+
+  // Puntos posibles de cubo.
+  if ($("showSpots").checked) {
+    const r = Math.max(1.5, Math.min(4, 3 * s));
+    ctx.fillStyle = "rgba(235,240,248,.75)"; ctx.strokeStyle = "rgba(20,24,30,.8)"; ctx.lineWidth = 1;
+    for (const [px, py] of m.cubes) {
+      const x = sx(px), y = sy(py);
+      if (x < -5 || y < -5 || x > w + 5 || y > h + 5) continue;
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); if (s > 0.5) ctx.stroke();
+    }
+  }
+
+  // Cubo del historial elegido (si es de este mapa y no es el activo).
+  const sel = selectedCube();
+  if (sel && mapFor(sel.world) === m && !(state.active || []).some(a => a.x === sel.x && a.y === sel.y)) {
+    const [px, py] = toPx(m, sel.x, sel.y);
+    const color = sel.opened && sel.mine === true ? "#3ccf8e" : sel.opened && sel.mine === false ? "#ff6b6b" : "#9aa4b2";
+    pin(sx(px), sy(py), null, color);
+  }
+
+  // Cubo activo.
+  for (const c of state?.active || []) {
+    const [px, py] = toPx(m, c.x, c.y);
+    pin(sx(px), sy(py), "Cubo oculto");
+  }
+}
+
+function pin(x, y, label, color = "#ffd166") {
+  const rgb = [1, 3, 5].map(i => parseInt(color.slice(i, i + 2), 16)).join(",");
+  ctx.fillStyle = `rgba(${rgb},.25)`; ctx.beginPath(); ctx.arc(x, y, 16, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = color; ctx.strokeStyle = "#3a2c05"; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(x, y);
+  ctx.bezierCurveTo(x - 4, y - 8, x - 11, y - 14, x - 11, y - 22);
+  ctx.arc(x, y - 22, 11, Math.PI, 0);
+  ctx.bezierCurveTo(x + 11, y - 14, x + 4, y - 8, x, y);
+  ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#3a2c05"; ctx.font = "bold 12px system-ui"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.fillText("◆", x, y - 22);
+  if (label) {
+    ctx.font = "600 12px system-ui"; const tw = ctx.measureText(label).width + 10;
+    ctx.fillStyle = "rgba(23,27,33,.9)"; ctx.fillRect(x - tw / 2, y - 52, tw, 18);
+    ctx.fillStyle = color; ctx.fillText(label, x, y - 43);
+  }
+  ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
+}
+
+function setMapSel(id) {
+  mapSel = id; $("mapSel").value = id; requestDraw();
+  if (settings && settings.map !== id) saveSettings({ map: id });   // el minimapa usa el mismo
+}
+function zoomBy(f, ox, oy) {
+  const ns = Math.min(MAX_SCALE, Math.max(MIN_SCALE, view.scale * f));
+  if (ox != null) {   // mantiene fijo el punto bajo el cursor
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    view.cx += (ox - w / 2) * (1 / view.scale - 1 / ns);
+    view.cy += (oy - h / 2) * (1 / view.scale - 1 / ns);
+  }
+  view.scale = ns; requestDraw();
+}
+
+canvas.addEventListener("wheel", e => { e.preventDefault(); zoomBy(e.deltaY < 0 ? 1.25 : 0.8, e.offsetX, e.offsetY); }, { passive: false });
+let drag = null;
+canvas.addEventListener("pointerdown", e => { drag = { x: e.clientX, y: e.clientY }; canvas.setPointerCapture(e.pointerId); canvas.classList.add("drag"); });
+canvas.addEventListener("pointermove", e => {
+  if (!drag) return;
+  view.cx -= (e.clientX - drag.x) / view.scale; view.cy -= (e.clientY - drag.y) / view.scale;
+  drag = { x: e.clientX, y: e.clientY }; requestDraw();
+});
+const endDrag = () => { drag = null; canvas.classList.remove("drag"); };
+canvas.addEventListener("pointerup", endDrag); canvas.addEventListener("pointercancel", endDrag);
+$("btnFocus").onclick = () => focusCube(state?.active[0]);
+$("zoomIn").onclick = () => zoomBy(1.25);
+$("zoomOut").onclick = () => zoomBy(0.8);
+$("showSpots").onchange = requestDraw;
+$("mapSel").onchange = e => setMapSel(e.target.value);
+new ResizeObserver(requestDraw).observe(canvas);
+
+async function loadMaps() {
+  maps = await (await fetch("/maps/maps.json")).json();
+  $("mapSel").innerHTML = `<option value="auto">Automático</option>` +
+    maps.maps.map(m => `<option value="${esc(m.id)}">${esc(m.name)}</option>`).join("");
+  if (mapSel !== "auto" && !maps.maps.some(m => m.id === mapSel)) mapSel = "auto";
+  $("mapSel").value = mapSel;
+  updateAutoLabel(); render(); focusCube(state?.active[0]); requestDraw();
+}
+function updateAutoLabel() {
+  if (!maps) return;
+  const m = mapFor(state?.world);
+  $("mapSel").options[0].text = "Automático" + (m ? ` (${m.name})` : state?.world != null ? ` (mundo ${state.world}?)` : "");
+}
+
+// ---------------- Avisos ----------------
+// Notas con el volumen de los avisos (settings.volume, 0..1).
+function tones(notes, length, wave = "triangle") {
+  const vol = settings?.volume ?? 0.35;
+  if (vol <= 0) return;
+  try {
+    audioCtx = audioCtx || new AudioContext();
+    const t = audioCtx.currentTime, peak = Math.max(0.0002, 0.7 * vol);
+    for (const [d, freq] of notes) {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.frequency.value = freq; o.type = wave;
+      g.gain.setValueAtTime(0.0001, t + d);
+      g.gain.exponentialRampToValueAtTime(peak, t + d + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + d + length);
+      o.connect(g).connect(audioCtx.destination); o.start(t + d); o.stop(t + d + length + 0.02);
+    }
+  } catch { /* el navegador puede bloquear el audio hasta que haya un clic */ }
+}
+// Cubo encontrado: arpegio ascendente de «tesoro» (do-mi-sol-do) con un destello final.
+const beep = () => tones([[0, 1046.5], [0.09, 1318.5], [0.18, 1568], [0.27, 2093], [0.36, 2637]], 0.45, "sine");
+
+function flash(el) { el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
+function alertCube() {
+  if (MINI_DPS) return;                     // el medidor flotante no avisa de cubos
+  flash(MINI ? document.body : $("activeCard"));
+  // Suena el minimapa si está abierto; si no, la página. Nunca los dos.
+  if (settings?.sound !== false && (MINI || !floatsRunning.mini)) beep();
+  document.title = "◆ ¡Cubo oculto!";
+  setTimeout(() => { document.title = "AIONSour"; }, 8000);
+}
+
+// Un aviso por cubo, aunque haya varias pestañas abiertas: la primera que lo
+// reclama en localStorage es la que suena.
+const ALERT_TTL = 3600 * 1000;
+function firstAlert(key) {
+  if (!key) return true;
+  try {
+    const now = Date.now(), seen = JSON.parse(localStorage.getItem("cubeAlerts") || "{}");
+    for (const k in seen) if (now - seen[k] > ALERT_TTL) delete seen[k];
+    if (seen[key]) return false;
+    seen[key] = now;
+    localStorage.setItem("cubeAlerts", JSON.stringify(seen));
+  } catch { /* sin almacenamiento: se avisa igualmente */ }
+  return true;
+}
+
+// ---------------- Medidor de daño ----------------
+let dps = null, viewing = null, selPlayer = null;   // viewing: índice del historial o null = actual
+const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");   // 5956 -> 5.956
+// DPS abreviado: 15211 -> 15.2k, 1234567 -> 1.2M (menos de 1000: tal cual).
+const kfmt = n => n >= 1e6 ? (n / 1e6).toFixed(1) + "M" : n >= 1000 ? (n / 1000).toFixed(1) + "k" : String(Math.round(n));
+const pct = n => n.toFixed(1) + "%";
+const hhmm = t => new Date(t * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+const secs = s => s < 60 ? `${s.toFixed(1)} s` : `${Math.floor(s / 60)} min ${Math.round(s % 60)} s`;
+
+const clsIconUrl = p => "/icons/" + p.clsIcon.split("/").map(encodeURIComponent).join("/");
+const clsIcon = p => p.clsIcon
+  ? `<img class="clsicon" src="${clsIconUrl(p)}" alt="${esc(p.cls)}" title="${esc(p.cls)}">`
+  : `<i class="clsicon none" title="Clase desconocida"></i>`;
+
+function shownFight() {
+  if (!dps) return null;
+  if (viewing !== null) return dps.history[viewing] || null;
+  // Tras ⟲ no se muestran los combates anteriores (siguen en la lista de combates).
+  const last = dps.history[0];
+  return dps.current || (last && last.end > dps.clearedAt ? last : null);
+}
+
+// Jugador cuyo desglose se muestra: el elegido, si no tú, si no el primero.
+function pickPlayer(f) {
+  return f.players.find(p => p.id === selPlayer) || f.players.find(p => p.self) || f.players[0] || null;
+}
+
+function renderDps() {
+  if (!dps) return;
+  $("dpsLive").hidden = !dps.current;
+  if (viewing !== null && !dps.history[viewing]) viewing = null;
+  const f = shownFight(), live = !!f && viewing === null && f === dps.current;
+  $("dpsBack").hidden = viewing === null;
+  $("dpsNote").textContent = `Un combate termina tras ${dps.idle} s sin golpes` +
+    (settings?.dpsBossHold ? ", o contra un jefe al morir o desaparecer" : "") +
+    ". Solo cuenta el daño de jugadores y sus invocaciones.";
+  if (!f) {
+    $("dpsTarget").textContent = "Sin combates todavía";
+    $("dpsMeta").textContent = running ? "Ataca a algo y el combate aparecerá aquí." : "La captura no está activa.";
+    $("dpsTotals").innerHTML = $("dpsPlayers").innerHTML = $("dpsSkills").innerHTML = "";
+  } else {
+    $("dpsTarget").textContent = f.target || "Combate";
+    $("dpsMeta").innerHTML = (live ? `<span class="on">● En curso</span> · desde las ${hhmm(f.start)}`
+      : `${hhmm(f.start)} – ${hhmm(f.end)}`) + (viewing === null && !live ? " · último combate" : "");
+    $("dpsTotals").innerHTML = [["Daño total", fmt(f.damage)], ["DPS del grupo", kfmt(f.dps)],
+      ["Duración", secs(f.duration)], ["Jugadores", f.players.length]]
+      .map(([l, v]) => `<div><b>${v}</b><span>${l}</span></div>`).join("");
+    const sel = pickPlayer(f), top = f.players[0]?.damage || 1;
+    $("dpsPlayers").innerHTML = f.players.map((p, i) =>
+      `<div class="prow${p.self ? " self" : ""}${p === sel ? " sel" : ""}" data-id="${p.id}">` +
+      `<span class="fill" style="width:${(p.damage / top * 100).toFixed(1)}%;${barStyle(p)}"></span><span class="rank">${i + 1}</span>` +
+      `<span class="who">${clsIcon(p)}<span><b>${esc(p.name)}</b>` +
+      `<small>${esc(p.cls || "clase desconocida")}${p.heal ? " · curación " + fmt(p.heal) : ""}</small></span></span>` +
+      `<span class="num">${deathMark(p)}</span>` +
+      `<span class="num">${fmt(p.damage)}</span><span class="num">${kfmt(p.dps)}</span><span class="num">${pct(p.share)}</span></div>`).join("")
+      || empty("Sin daño de jugadores en este combate.");
+    $("dpsSkillsTitle").textContent = !sel ? "Habilidades" : sel.self ? "Tus habilidades" : `Habilidades de ${sel.name}`;
+    const topS = sel?.skills[0]?.damage || 1;
+    $("dpsSkills").innerHTML = sel ? sel.skills.map(sk => `<div class="srow">` +
+      `<span class="fill" style="width:${(sk.damage / topS * 100).toFixed(1)}%"></span>` +
+      `<span class="sk">${sk.icon ? `<img src="/icons/${encodeURIComponent(sk.icon)}.png" alt="" loading="lazy">` : "<i></i>"}` +
+      `<span>${esc(sk.name)}</span></span><span class="num">${fmt(sk.damage)}</span><span class="num">${sk.hits}</span>` +
+      `<span class="num">${sk.hits ? Math.round(sk.crits * 100 / sk.hits) : 0} %</span><span class="num">${pct(sk.share)}</span></div>`).join("") : "";
+  }
+  if (MINI_DPS) renderDpsMini();
+  $("dpsHistory").innerHTML = dps.history.map((h, i) => `<div class="fight${i === viewing ? " sel" : ""}" data-i="${i}">` +
+    `<b>${esc(h.target || "Combate")}</b><span class="num"><b>${kfmt(h.dps)}</b> <small>DPS</small></span>` +
+    `<small>${hhmm(h.start)} · ${secs(h.duration)} · ${h.players.length} jug.</small><small class="num">${fmt(h.damage)}</small></div>`).join("")
+    || empty("Aún no hay combates terminados.");
+}
+
+// Color de las barras = color medio del icono de cada clase (sus píxeles con color, sin
+// transparencias, contornos oscuros ni grises), calculado una vez de static/icons/clases.
+// Fijo aquí: calcularlo en cada ventana dejaba la barra gris si su icono tardaba o fallaba.
+// Clase desconocida: gris.
+const UNKNOWN_RGB = "128,134,142";
+const CLASS_RGB = {
+  "Gladiador": "59,130,148", "Templario": "77,109,192", "Asesino": "77,148,68", "Arquero": "48,128,94",
+  "Hechicero": "109,61,175", "Invocador": "149,49,150", "Clérigo": "172,136,56", "Cantor": "167,113,48",
+  "Luchador": "208,183,149",
+};
+const classRgb = p => CLASS_RGB[p.cls] || UNKNOWN_RGB;
+const barStyle = p => `background:linear-gradient(90deg, rgba(${classRgb(p)},.55), rgba(${classRgb(p)},.22))`;
+// Muertes del jugador en el combate: calavera roja (SVG) con el número.
+const SKULL = '<svg class="skull" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 1.2C4.4 1.2 1.8 3.7 1.8 7c0 1.9.9 3.4 2.3 4.3v1.9c0 .7.5 1.2 1.2 1.2h.6v-1.6h1v1.6h2.2v-1.6h1v1.6h.6c.7 0 1.2-.5 1.2-1.2v-1.9c1.4-.9 2.3-2.4 2.3-4.3 0-3.3-2.6-5.8-6.2-5.8zM5.4 9.6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5.2 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM8 11.2l-.9-1.3h1.8z"/></svg>';
+const deathMark = p => p.deaths ? `<span class="deaths" title="Muertes en este combate">${SKULL}${p.deaths}</span>` : "";
+const short = (text, max) => text.length > max ? text.slice(0, max - 1).trimEnd() + "…" : text;
+
+// Medidor flotante: el combate en curso o el último, salvo que se haya limpiado con ⟲.
+function renderDpsMini() {
+  const last = dps.history[0], live = !!dps.current;
+  const f = dps.current || (last && last.end > dps.clearedAt ? last : null);
+  $("miniTitle").className = "t pywebview-drag-region" + (live ? " live" : "");
+  $("miniTitle").innerHTML = !f ? "⚔ Sin combates" :
+    `⚔ ${esc(short(f.target || "Combate", 16))} · <span class="dur">${secs(f.duration)}</span> · ${kfmt(f.dps)} DPS`;
+  const top = f?.players[0]?.damage || 1;
+  $("dpsMini").innerHTML = !f ? empty(running ? "Ataca a algo y aparecerá aquí." : "La captura está detenida.") :
+    f.players.map(p => `<div class="mrow${p.self ? " self" : ""}"><span class="fill" style="width:${(p.damage / top * 100).toFixed(1)}%;` +
+      `${barStyle(p)}"></span>` +
+      `<span class="n">${clsIcon(p)}<span>${esc(p.name)}</span></span>` +
+      `<span class="num">${deathMark(p)}</span>` +
+      `<span class="num">${kfmt(p.dps)}</span><span class="num">${pct(p.share)}</span></div>`).join("");
+}
+
+$("dpsPlayers").addEventListener("click", e => {
+  const row = e.target.closest(".prow"); if (row) { selPlayer = +row.dataset.id; renderDps(); }
+});
+$("dpsHistory").addEventListener("click", e => {
+  const row = e.target.closest(".fight"); if (row) { viewing = +row.dataset.i; renderDps(); }
+});
+$("dpsBack").onclick = () => { viewing = null; renderDps(); };
+$("dpsReset").onclick = () => { viewing = null; post("/api/dps/reset"); };
+$("dpsCfgBtn").onclick = e => { e.stopPropagation(); $("dpsCfg").hidden = !$("dpsCfg").hidden; };
+$("dpsCfg").addEventListener("click", e => e.stopPropagation());
+document.addEventListener("click", () => { $("dpsCfg").hidden = true; });
+$("dpsIdle").onchange = e => saveSettings({ dpsIdle: Math.max(1, Math.min(300, Math.round(+e.target.value) || 20)) });
+$("dpsDummy").onchange = e => saveSettings({ dpsDummy: Math.max(0, Math.min(1800, Math.round(+e.target.value) || 0)) });
+$("dpsBossHold").onchange = e => saveSettings({ dpsBossHold: e.target.checked });
+$("dpsClear").onclick = () => {
+  if (confirm("¿Borrar todos los combates guardados? No se puede deshacer.")) { viewing = null; post("/api/dps/clear"); }
+};
+
+// ---------------- Jefes de campo y eventos ----------------
+let timers = null;
+const span = s => {
+  const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60);
+  return d ? `${d} d ${h} h` : h ? `${h} h ${m} min` : m ? `${m} min ${String(s % 60).padStart(2, "0")} s` : `${s} s`;
+};
+const untilText = at => span(Math.max(0, Math.round(at - Date.now() / 1000)));
+const sinceText = t => span(Math.max(0, Math.round(Date.now() / 1000 - t)));
+const dayTime = t => {
+  const d = new Date(t * 1000), same = d.toDateString() === new Date().toDateString();
+  return (same ? "" : d.toLocaleDateString("es", { weekday: "short" }) + " ") +
+    d.toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit", hour12: false });
+};
+
+function bossStatus(b) {
+  const now = Date.now() / 1000;
+  // Dato antiguo (no estás en ese mapa): se indica cuándo se vio por última vez.
+  const old = b.seen && now - b.seen > 600 ? ` (visto hace ${sinceText(b.seen)})` : "";
+  if (b.phase === "vivo") return "Vivo" + old;
+  if (b.phase === "reaparece" && b.at > now) return `Reaparece en ${untilText(b.at)} · ${dayTime(b.at)}`;
+  if (b.phase === "fijo" && b.at > now) return `Abre en ${untilText(b.at)} · ${dayTime(b.at)}`;
+  if (b.at && b.at <= now) return `Debería haber reaparecido · ${dayTime(b.at)}`;
+  return "Sin datos (visita el mapa)";
+}
+
+function renderTimers() {
+  if (!timers || $("viewTimers").hidden) return;
+  $("bossList").innerHTML = timers.bosses.map(m => `<div class="tsec">${esc(m.name)}` +
+    `${m.current ? '<span class="here">● estás aquí</span>' : ""}</div>` +
+    m.bosses.map(b => `<div class="brow ${b.phase === "vivo" || b.phase === "ya" ? b.phase : ""}">` +
+      `<button class="star${b.star ? " on" : ""}" data-npc="${b.npc}" title="${b.star ? "Quitar aviso" : "Avisarme"}">${b.star ? "★" : "☆"}</button>` +
+      `<span class="bn">${esc(b.name)}</span><span class="bs">${bossStatus(b)}</span></div>`).join("")).join("");
+  const now = Date.now() / 1000;
+  $("eventList").innerHTML = timers.events.map(e => {
+    const live = e.liveUntil && e.liveUntil > now;
+    return `<div class="erow${live ? " live" : ""}"><input type="checkbox" data-id="${esc(e.id)}"${e.selected ? " checked" : ""} title="Avisarme">` +
+      `<span class="dot2" style="background:${esc(e.color)}"></span><span class="en">${esc(e.name)}</span>` +
+      `<span class="es">${live ? `En curso · termina ${dayTime(e.liveUntil)}` : `en ${untilText(e.at)} · ${dayTime(e.at)}`}</span></div>`;
+  }).join("") || empty("Sin eventos.");
+}
+
+$("bossList").addEventListener("click", e => {
+  const b = e.target.closest(".star"); if (!b || !settings) return;
+  const npc = +b.dataset.npc, stars = new Set(settings.bossStars);
+  stars.has(npc) ? stars.delete(npc) : stars.add(npc);
+  saveSettings({ bossStars: [...stars] });
+});
+$("eventList").addEventListener("change", e => {
+  const c = e.target.closest("input[data-id]"); if (!c || !settings) return;
+  const ev = new Set(settings.events);
+  c.checked ? ev.add(c.dataset.id) : ev.delete(c.dataset.id);
+  saveSettings({ events: [...ev] });
+});
+$("timersCfgBtn").onclick = e => {
+  e.stopPropagation(); $("timersCfg").hidden = !$("timersCfg").hidden;
+  if (!$("timersCfg").hidden) loadMonitors();
+};
+$("timersCfg").addEventListener("click", e => e.stopPropagation());
+document.addEventListener("click", () => { $("timersCfg").hidden = true; });
+$("tzSel").innerHTML = Array.from({ length: 27 }, (_, i) => i - 12)
+  .map(h => `<option value="${h * 60}">UTC${h >= 0 ? "+" : "−"}${Math.abs(h)}</option>`).join("");
+$("tzSel").onchange = e => saveSettings({ regionOffset: +e.target.value });
+// Al cambiar la posición se lanza un aviso de prueba para verla.
+$("popupPos").onchange = async e => { await saveSettings({ toast: { position: e.target.value } }); post("/api/alert/test"); };
+$("popupMon").onchange = async e => { await saveSettings({ toast: { monitor: +e.target.value } }); post("/api/alert/test"); };
+// Pantallas disponibles: se consultan al abrir ⚙ (pueden conectarse o desconectarse).
+async function loadMonitors() {
+  try {
+    const list = await (await fetch("/api/monitors")).json();
+    $("popupMon").innerHTML = list.map(m => `<option value="${m.index}">Pantalla ${m.index + 1}` +
+      `${m.primary ? " (principal)" : ""} · ${m.size[0]}×${m.size[1]}</option>`).join("");
+    if (settings) $("popupMon").value = Math.min(settings.toast.monitor, list.length - 1);
+  } catch { }
+}
+$("bossLead").onchange = e => saveSettings({ bossLead: Math.max(1, Math.min(60, +e.target.value || 5)) });
+$("eventLead").onchange = e => saveSettings({ eventLead: Math.max(1, Math.min(60, +e.target.value || 3)) });
+$("timersTest").onclick = () => post("/api/alert/test");
+if (!MINI) loadMonitors();
+setInterval(renderTimers, 1000);            // cuentas atrás
+
+// Los avisos de jefes y eventos los muestra y hace sonar avisos.py (ventana sobre el juego).
+
+// ---------------- Actualizaciones ----------------
+// La app busca versiones nuevas en GitHub al arrancar; «Más tarde» oculta el aviso hasta
+// el próximo arranque (o hasta que salga otra versión).
+let updateLater = null;
+function renderUpdate(u) {
+  $("appVersion").textContent = u.current ? `v${u.current}` : "";
+  const v = u.available?.version, bar = $("updateBar");
+  const busy = u.state === "downloading" || u.state === "installing";
+  bar.hidden = MINI || !v || (updateLater === v && !busy && u.state !== "error");
+  if (bar.hidden) return;
+  const notes = u.available.notes ? `<small>${esc(u.available.notes)}</small>` : "";
+  $("updateMsg").innerHTML = u.state === "downloading" ? `Descargando la versión ${esc(v)}… ${u.progress}%`
+    : u.state === "installing" ? `Instalando la versión ${esc(v)}: la app se cerrará y volverá a abrirse.`
+    : u.state === "error" ? `No se pudo actualizar: ${esc(u.error || "error desconocido")}`
+    : `<b>Nueva versión ${esc(v)} disponible</b> (tienes la ${esc(u.current)})${notes}`;
+  $("updateNow").hidden = $("updateLater").hidden = busy;
+  $("updateNow").textContent = u.state === "error" ? "Reintentar" : "Actualizar";
+}
+$("updateNow").onclick = () => post("/api/update/apply").then(r => { if (r.error) showErr(r.error); });
+$("updateLater").onclick = () => {
+  fetch("/api/update").then(r => r.json()).then(u => { updateLater = u.available?.version; renderUpdate(u); });
+};
+
+// ---------------- Tareas ----------------
+let tasks = null;
+const CYCLE = { daily: "Diarias", weekly: "Semanales" };
+function renderTasks() {
+  if (!tasks || $("viewTasks").hidden) return;
+  const now = Date.now() / 1000;
+  $("taskResets").textContent = `Diario en ${span(Math.max(0, Math.round(tasks.nextDaily - now)))} · ` +
+    `semanal en ${span(Math.max(0, Math.round(tasks.nextWeekly - now)))}`;
+  const defs = new Map(tasks.tasks.map(t => [t.id, t]));
+  $("taskChars").innerHTML = tasks.characters.map(c => {
+    const section = cycle => {
+      const rows = c.tasks.filter(t => defs.get(t.id)?.cycle === cycle).map(t => {
+        const d = defs.get(t.id);
+        const live = t.auto && t.text !== "entra al juego";      // con datos del juego: se marca sola
+        const tip = live ? "Se marca sola con los datos del juego" : t.auto
+          ? "Se marcará sola cuando entres al juego con este personaje" : t.done ? "Hecha" : "Pendiente";
+        return `<div class="trow${t.done ? " done" : ""}${live ? " auto" : ""}" data-char="${esc(c.name)}" ` +
+          `data-task="${t.id}" title="${tip}">` +
+          `<span class="box">${t.done ? "✓" : ""}</span><span class="tn">${esc(d.name)}</span>` +
+          `<span class="tc">${t.auto ? esc(t.text || "") : d.times > 1 ? `${t.count}/${d.times}` : ""}</span></div>`;
+      }).join("");
+      return rows ? `<div class="tsub">${CYCLE[cycle]}</div>${rows}` : "";
+    };
+    return `<div class="tchar${c.current ? " current" : ""}"><header>${clsIcon(c)}<b>${esc(c.name)}</b>` +
+      `<span class="pend${c.pending ? "" : " ok"}">${c.pending ? `${c.pending} pendiente${c.pending === 1 ? "" : "s"}` : "Todo hecho"}</span>` +
+      `<button class="x" data-remove="${esc(c.name)}" title="Quitar personaje">×</button></header>` +
+      (c.energy ? `<div class="odbar" title="Energía de Od (+ cargas extra)"><i style="width:${Math.min(100, c.energy.count * 100 / c.energy.cap).toFixed(1)}%"></i>` +
+        `<span>Energía de Od <b>${c.energy.count}</b>${c.energy.charged ? ` (+${c.energy.charged})` : ""} / ${c.energy.cap}</span></div>` : "") +
+      section("daily") + section("weekly") + `</div>`;
+  }).join("") || empty("Entra al juego con un personaje y aparecerá aquí.");
+  $("taskDefs").innerHTML = ["daily", "weekly"].map(cy => {
+    const list = tasks.tasks.filter(t => t.cycle === cy);
+    return `<div class="tsub">${CYCLE[cy]}</div>` + (list.map(t =>
+      `<div class="tdef" data-task="${t.id}"><span title="${esc(t.name)}">${esc(t.name)}</span>` +
+      `<small>${t.game ? '<span class="autotag" title="Se marca sola con los datos del juego">auto</span>' : t.times > 1 ? `×${t.times}` : ""}</small>` +
+      `<button data-act="up" title="Subir">▲</button><button data-act="down" title="Bajar">▼</button>` +
+      `<button data-act="delete" title="Borrar tarea">×</button></div>`).join("") || empty("Sin tareas."));
+  }).join("");
+}
+const taskPost = body => post("/api/tasks", body).then(r => { if (r.error) showErr(r.error); });
+$("taskChars").addEventListener("click", e => {
+  const rm = e.target.closest("[data-remove]");
+  if (rm) {
+    if (confirm(`¿Quitar a ${rm.dataset.remove} de la lista de tareas?`))
+      taskPost({ action: "removeCharacter", character: rm.dataset.remove });
+    return;
+  }
+  const row = e.target.closest(".trow"); if (!row || row.classList.contains("auto")) return;
+  const d = tasks.tasks.find(t => t.id === row.dataset.task);
+  // Tarea de una vez ya hecha: el clic la desmarca.
+  const delta = row.classList.contains("done") && d?.times === 1 ? -1 : 1;
+  taskPost({ action: "tick", character: row.dataset.char, task: row.dataset.task, delta });
+});
+$("taskChars").addEventListener("contextmenu", e => {
+  const row = e.target.closest(".trow"); if (!row) return;
+  e.preventDefault();
+  if (row.classList.contains("auto")) return;
+  taskPost({ action: "tick", character: row.dataset.char, task: row.dataset.task, delta: -1 });
+});
+$("taskDefs").addEventListener("click", e => {
+  const b = e.target.closest("button[data-act]"); if (!b) return;
+  const id = b.closest(".tdef").dataset.task, name = tasks.tasks.find(t => t.id === id)?.name;
+  if (b.dataset.act === "delete") { if (confirm(`¿Borrar la tarea «${name}»?`)) taskPost({ action: "delete", task: id }); }
+  else taskPost({ action: "move", task: id, delta: b.dataset.act === "up" ? -1 : 1 });
+});
+$("taskAdd").addEventListener("submit", e => {
+  e.preventDefault();
+  const f = e.target;
+  taskPost({ action: "add", name: f.elements.name.value, cycle: f.elements.cycle.value, times: +f.elements.times.value || 1 });
+  f.elements.name.value = ""; f.elements.times.value = 1;
+});
+setInterval(renderTasks, 30000);            // cuenta atrás de los reinicios
+
+// ---------------- Mascotas ----------------
+let pets = null;
+const PET_FAMILIES = ["Intelecto", "Salvaje", "Naturaleza", "Transformación", "Especial"];
+const petImg = (p, cls = "") => p.icon
+  ? `<img class="peticon ${cls}" src="/icons/${p.icon}.webp" alt="" loading="lazy">` : `<i class="peticon ${cls}"></i>`;
+// «Espíritu de piedra (2) 1/75»; nivel máximo: «(3) Máx.»; nivel aún desconocido: «(?) 4».
+const petCount = p => `(${p.level ?? "?"}) ${p.needed ? `${p.souls}/${p.needed}` : p.level ? "Máx." : p.souls}`;
+function renderPets() {
+  if (!pets || $("viewPets").hidden) return;
+  const q = $("petSearch").value.trim().toLowerCase();
+  const list = pets.pets.filter(p => !q || p.name.toLowerCase().includes(q) || (p.family || "").toLowerCase().includes(q));
+  $("petCount").textContent = pets.pets.length ? `· ${pets.pets.length}` : "";
+  // Agrupadas por familia (en este orden); dentro, la última con novedades primero.
+  const card = p => {
+    const pct = p.needed ? Math.min(100, p.souls * 100 / p.needed) : 0;
+    return `<div class="pet${p.active ? " active" : ""}"${p.active ? ' title="Activa"' : ""}>${petImg(p)}` +
+      `<span class="pn"><b>${esc(p.name)}</b><span class="lv">Nv ${p.level ?? "?"}</span></span>` +
+      `<div class="pbar${p.level && !p.needed ? " max" : ""}"><i style="width:${pct.toFixed(1)}%"></i>` +
+      `<span>${p.needed ? `${p.souls}/${p.needed}` : p.level ? "Máx." : `${p.souls} almas`}</span></div></div>`;
+  };
+  const families = new Map(PET_FAMILIES.map(f => [f, []]));
+  for (const p of list) {
+    const f = p.family || "Otras";
+    if (!families.has(f)) families.set(f, []);
+    families.get(f).push(p);
+  }
+  $("petList").innerHTML = [...families].filter(([, ps]) => ps.length).map(([f, ps]) =>
+    `<div class="petfam">${esc(f)} <span>· ${ps.length}</span></div><div class="petgrid">${ps.map(card).join("")}</div>`).join("")
+    || empty(pets.pets.length ? "Ninguna coincide con la búsqueda." : "Aún no se conoce tu colección.");
+  $("petNote").textContent = pets.listAt ? "" :
+    "La colección completa la envía el juego al entrar a un mapa o cambiar de personaje; mientras tanto se usa la última guardada.";
+  // Historial agrupado por mascota: su estado más reciente, almas sumadas y novedades.
+  const byPet = new Map();
+  for (const h of pets.history) {                  // del más reciente al más antiguo
+    let g = byPet.get(h.id);
+    if (!g) byPet.set(h.id, g = { last: h, souls: 0, count: 0, levelUp: false, isNew: false });
+    if (h.kind === "soul") { g.souls += h.gained; g.count++; }
+    else if (h.kind === "level") g.levelUp = true;
+    else if (h.kind === "new") g.isNew = true;
+  }
+  // El conteo es el actual de la mascota (el mismo de la lista), no el de su última alma.
+  const current = new Map(pets.pets.map(p => [p.id, p]));
+  $("petHistory").innerHTML = [...byPet.values()].map(({ last: h, souls, count, levelUp, isNew }) =>
+    `<div class="phist${levelUp || isNew ? " level" : ""}">${petImg(h, "sm")}` +
+    `<span><b>${esc(h.name)} ${petCount(current.get(h.id) || h)}</b><small>${count ? `${count} ${count === 1 ? "vez" : "veces"} · ` : ""}` +
+    `${isNew ? "¡nueva! · " : levelUp ? "subió de nivel · " : ""}última ${hhmm(h.at)} · ${ago(h.at)}</small></span>` +
+    `<span class="gain">${souls ? `+${souls}` : isNew ? "¡Nueva!" : `Nv ${h.level}`}</span></div>`).join("")
+    || empty("Aún no has obtenido almas de mascota.");
+}
+$("petSearch").addEventListener("input", renderPets);
+$("petClear").onclick = () => { if (confirm("¿Borrar el historial de almas de mascota?")) post("/api/pets/clear"); };
+setInterval(renderPets, 30000);             // «hace X min»
+
+// Pestañas (la ventana del minimapa siempre muestra el mapa).
+function showView(view) {
+  if (MINI) view = "cubes";
+  for (const b of $("tabs").children) b.classList.toggle("on", b.dataset.view === view);
+  $("viewCubes").hidden = view !== "cubes"; $("viewDps").hidden = view !== "dps";
+  $("viewTimers").hidden = view !== "timers"; $("viewPets").hidden = view !== "pets";
+  $("viewTasks").hidden = view !== "tasks";
+  try { localStorage.setItem("view", view); } catch { }
+  if (view === "cubes") requestDraw(); else if (view === "dps") renderDps();
+  else if (view === "pets") renderPets(); else if (view === "tasks") renderTasks(); else renderTimers();
+}
+$("tabs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) showView(b.dataset.view); });
+let savedView = new URLSearchParams(location.search).get("view");   // ?view=dps abre esa pestaña
+try { savedView = savedView || localStorage.getItem("view"); } catch { }
+savedView = ["dps", "timers", "pets", "tasks"].includes(savedView) ? savedView : "cubes";
+showView(savedView);
+
+// ---------------- Captura ----------------
+function showErr(msg) { $("err").textContent = msg || ""; $("err").style.display = msg ? "block" : "none"; }
+let captureIface = null;      // adaptador en uso según el servidor
+function setRunning(on, iface, error) {
+  running = on;
+  $("dot").classList.toggle("on", on);
+  $("dot").title = on ? "Capturando" : "Captura detenida";
+  if (iface !== undefined) { captureIface = iface; if (iface && $("iface").querySelector(`option[value="${CSS.escape(iface)}"]`)) $("iface").value = iface; }
+  if (error) showErr("No se pudo iniciar la captura: " + error +
+    "  (si Npcap se instaló solo para administradores, abre la app como Administrador)");
+  else if (on) showErr("");
+  render();
+}
+
+async function post(url, body) {
+  const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body || {}) });
+  return r.json();
+}
+
+// Cambiar de adaptador reinicia la captura en el nuevo (y queda guardado).
+$("iface").onchange = () => { showErr(""); post("/api/start", { iface: $("iface").value }); };
+$("cubeCfgBtn").onclick = e => { e.stopPropagation(); $("cubeCfg").hidden = !$("cubeCfg").hidden; };
+$("cubeCfg").addEventListener("click", e => e.stopPropagation());
+document.addEventListener("click", () => { $("cubeCfg").hidden = true; });
+$("btnReset").onclick = () => {
+  if (confirm("¿Borrar el cubo activo y todo el historial? No se puede deshacer.")) post("/api/cubes/clear");
+};
+$("btnTest").onclick = () => { flash($("activeCard")); beep(); };
+
+// ---------------- Configuración y ventanas flotantes ----------------
+// La página guarda la configuración en el servidor (settings.json); cada ventana flotante
+// (minimapa, medidor) la recibe por /api/events y la aplica a su propia ventana.
+async function saveSettings(patch) {
+  const r = await post("/api/settings", patch);
+  const msg = r.error ? "No se pudo aplicar: " + r.error : "";
+  if (MINI) $("floatPanel").querySelector(".fErr").textContent = msg; else showErr(msg);
+  return r;
+}
+
+// Ventana principal: los botones abren o cierran directamente la ventana flotante.
+for (const b of document.querySelectorAll(".floatBtn"))
+  b.onclick = () => saveSettings({ [b.dataset.kind]: { enabled: !floatsRunning[b.dataset.kind] } });
+
+// Dentro de una ventana flotante: su configuración se abre con ⚙ en la barra de título.
+if (MINI) {
+  const panel = $("floatPanel"), q = c => panel.querySelector(c), kind = MINI_KIND;
+  panel.innerHTML = `<h4>${MINI_DPS ? "Medidor de daño" : "Minimapa"}</h4>
+    <div class="row"><span>Opacidad</span><input type="range" class="fOpacity" min="20" max="100" step="5"><span class="fOpacityV"></span></div>
+    <label class="chk"><input type="checkbox" class="fTop">Siempre encima</label>
+    ${MINI_DPS ? "" : `<div class="row"><span>Volumen</span><input type="range" class="volRange" min="0" max="100" step="5"><span class="volV"></span></div>
+    <label class="chk"><input type="checkbox" class="fSound">Sonido al encontrar un cubo</label>
+    <button class="fTest">Probar aviso</button>`}
+    <small class="fErr" style="color:var(--danger)"></small>`;
+  if (!MINI_DPS) {
+    q(".fSound").onchange = e => saveSettings({ sound: e.target.checked });
+    q(".fTest").onclick = () => { flash(document.body); beep(); };
+  }
+  $("miniCfg").hidden = false;
+  $("miniReset").hidden = !MINI_DPS;
+  $("miniCfg").onclick = e => { e.stopPropagation(); showPanel(panel.hidden); };
+  panel.addEventListener("click", e => e.stopPropagation());
+  document.addEventListener("click", () => { if (!panel.hidden) showPanel(false); });
+  q(".fTop").onchange = e => saveSettings({ [kind]: { onTop: e.target.checked } });
+  let t = null;          // opacidad: vista previa al arrastrar (cada 150 ms)
+  q(".fOpacity").addEventListener("input", e => {
+    q(".fOpacityV").textContent = e.target.value + " %";
+    clearTimeout(t); t = setTimeout(() => saveSettings({ [kind]: { opacity: e.target.value / 100 } }), 150);
+  });
+  $("miniReset").onclick = () => post("/api/dps/reset");
+}
+
+function applySettings(m) {
+  settings = m.settings; floatsRunning = m.running || {};
+  if (settings.map !== mapSel) setMapSel(settings.map);
+  $("sound").checked = settings.sound;
+  for (const r of document.querySelectorAll(".volRange")) {
+    r.value = Math.round(settings.volume * 100);
+    r.parentElement.querySelector(".volV").textContent = r.value + " %";
+  }
+  $("dpsIdle").value = settings.dpsIdle; $("dpsDummy").value = settings.dpsDummy; $("dpsBossHold").checked = settings.dpsBossHold;
+  $("tzSel").value = settings.regionOffset; $("bossLead").value = settings.bossLead; $("eventLead").value = settings.eventLead;
+  $("popupPos").value = settings.toast.position;
+  if ($("popupMon").options.length) $("popupMon").value = settings.toast.monitor;
+  for (const b of document.querySelectorAll(".floatBtn")) b.classList.toggle("on", !!floatsRunning[b.dataset.kind]);
+  if (MINI) {
+    const s = settings[MINI_KIND], q = c => $("floatPanel").querySelector(c);
+    q(".fOpacity").value = Math.round(s.opacity * 100); q(".fOpacityV").textContent = Math.round(s.opacity * 100) + " %";
+    q(".fTop").checked = s.onTop;
+    if (!MINI_DPS) q(".fSound").checked = settings.sound;
+    applyWindow();
+  }
+}
+
+// Dentro de una ventana flotante: minimapa.py aplica opacidad, encima y clics.
+function applyWindow() {
+  if (!MINI || !settings || !window.pywebview?.api) return;
+  // Con ⚙ abierto la ventana puede estar agrandada: no se vuelve al tamaño guardado aún.
+  window.pywebview.api.apply(panelSize ? { ...settings[MINI_KIND], ...panelSize } : settings[MINI_KIND]);
+}
+
+// ⚙ en una ventana flotante pequeña: se agranda la ventana lo justo para que el panel
+// se vea entero, y al cerrarlo vuelve al tamaño guardado (el temporal no se guarda).
+let panelSize = null;
+function showPanel(open) {
+  const panel = $("floatPanel");
+  panel.hidden = !open;
+  const api = window.pywebview?.api, saved = settings?.[MINI_KIND];
+  if (!api || !saved) return;
+  if (open) {
+    const r = panel.getBoundingClientRect();
+    const needW = Math.ceil(r.width + 8), needH = Math.ceil(r.top + panel.scrollHeight + 8);
+    if (needW > innerWidth || needH > innerHeight) {
+      panelSize = { width: Math.max(innerWidth, needW), height: Math.max(innerHeight, needH) };
+      api.resize(panelSize.width, panelSize.height);
+    }
+  } else if (panelSize) {
+    panelSize = null;
+    api.resize(saved.width, saved.height);
+  }
+}
+window.addEventListener("pywebviewready", applyWindow);
+$("miniClose").onclick = () => window.pywebview?.api.close();
+
+// Alto mínimo: el medidor, lo justo para 5 filas de jugadores (barra de título incluida);
+// el minimapa, 180 px.
+function minWindowHeight() {
+  if (!MINI_DPS) return 180;
+  const row = document.querySelector(".mrow"), bar = document.querySelector(".minibar");
+  const rowH = row ? row.offsetHeight + parseFloat(getComputedStyle(row).marginBottom) : 20;
+  const pad = $("dpsMini"), cs = getComputedStyle(pad);
+  return Math.ceil(bar.offsetHeight + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + 5 * rowH);
+}
+
+// Asa de la esquina: la ventana no tiene bordes, así que el tamaño lo cambia la página.
+// Durante el arrastre se aplica a ~30 fps; al soltar se guarda en settings.json.
+{
+  const grip = $("miniGrip");
+  let start = null, size = null, timer = 0;
+  grip.addEventListener("pointerdown", e => {
+    if (!MINI) return;
+    e.preventDefault(); e.stopPropagation(); grip.setPointerCapture(e.pointerId);
+    start = { x: e.screenX, y: e.screenY, w: innerWidth, h: innerHeight };
+  });
+  grip.addEventListener("pointermove", e => {
+    if (!start) return;
+    size = [Math.max(180, Math.round(start.w + e.screenX - start.x)),
+            Math.max(minWindowHeight(), Math.round(start.h + e.screenY - start.y))];
+    if (!timer) timer = setTimeout(() => { timer = 0; window.pywebview?.api.resize(...size); }, 33);
+  });
+  const end = () => {
+    if (!start) return;
+    start = null; clearTimeout(timer); timer = 0;
+    if (!size) return;
+    window.pywebview?.api.resize(...size);
+    saveSettings({ [MINI_KIND]: { width: size[0], height: size[1] } });
+    size = null;
+  };
+  grip.addEventListener("pointerup", end); grip.addEventListener("pointercancel", end);
+}
+
+$("sound").onchange = e => saveSettings({ sound: e.target.checked });
+{
+  let t = null;
+  document.addEventListener("input", e => {
+    const r = e.target.closest(".volRange"); if (!r) return;
+    r.parentElement.querySelector(".volV").textContent = r.value + " %";
+    clearTimeout(t); t = setTimeout(() => saveSettings({ volume: r.value / 100 }), 150);
+  });
+}
+document.addEventListener("click", () => audioCtx?.resume(), { once: true });
+
+async function loadIfaces() {
+  const { npcap, interfaces: list } = await (await fetch("/api/interfaces")).json();
+  if (!npcap) showErr("Npcap no está instalado. Descárgalo de https://npcap.com, instálalo y vuelve a abrir la app.");
+  $("iface").innerHTML = list.map(i =>
+    `<option value="${esc(i.name)}"${i.default ? " selected" : ""}>${esc(i.desc)}</option>`).join("");
+  if (captureIface && list.some(i => i.name === captureIface)) $("iface").value = captureIface;
+}
+
+function connect() {
+  const es = new EventSource("/api/events");
+  es.onmessage = e => {
+    for (const m of JSON.parse(e.data)) {
+      if (m.type === "status") setRunning(m.running, m.iface, m.error);
+      else if (m.type === "settings") applySettings(m);
+      else if (m.type === "timers") { timers = m; renderTimers(); }
+      else if (m.type === "pets") { pets = m.state; renderPets(); }
+      else if (m.type === "tasks") { tasks = m.state; renderTasks(); }
+      else if (m.type === "update") renderUpdate(m.state);
+      else if (m.type === "dps") {
+        // Al terminar un combate entra uno nuevo arriba del historial: se sigue viendo el mismo.
+        if (m.event === "end" && viewing !== null && dps && m.state.history.length > dps.history.length) viewing++;
+        dps = m.state; renderDps();
+      }
+      else if (m.type === "cubes") {
+        state = m.state; render(); updateAutoLabel(); requestDraw();
+        // Cubo nuevo, o el que vuelve a entrar en rango: el mapa va hacia él.
+        if (m.event === "spawn" || m.event === "return" || m.event === "init") focusCube(state.active[0]);
+        if (m.event === "spawn" && firstAlert(m.key)) alertCube();
+      }
+    }
+  };
+  es.onerror = () => setRunning(false);
+}
+
+setInterval(render, 1000);   // refresca los "hace X s"
+loadMaps().catch(e => showErr("No se pudieron cargar los mapas: " + e + " (¿ejecutaste importar_datos.py?)"));
+if (!MINI) loadIfaces().catch(e => showErr("No se pudieron cargar las interfaces: " + e));
+connect();
+</script>
+</body>
+</html>
