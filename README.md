@@ -1,4 +1,4 @@
-# AIONSour 1.0.12
+# AIONSour 1.0.13
 
 Carpeta portable: descarga el repositorio (Code → Download ZIP), descomprímelo y abre `AIONSour.exe`. Necesita [Npcap](https://npcap.com).
 
