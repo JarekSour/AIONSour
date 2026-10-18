@@ -1,4 +1,4 @@
 {
- "version": "1.0.14",
- "notes": "Prueba del nuevo actualizador"
+ "version": "1.0.15",
+ "notes": "Arregla el error al abrir la versión descargada de GitHub (Python.Runtime.dll)"
 }
