@@ -268,11 +268,11 @@
   .petmapbox header { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--border); }
   .petmapbox header .peticon { width: 28px; height: 28px; }
   .petmapbox header b { font-size: 15px; }
-  .pmtabs { display: flex; gap: 4px; flex-wrap: wrap; }
+  .pmtabs { display: flex; gap: 4px; flex-wrap: wrap; margin-left: 8px; }
   .pmtabs button { padding: 3px 9px; font-size: 12px; }
   .pmtabs button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   /* × centrado y del mismo alto que las pestañas de mapa */
-  #petMapClose { flex: none; display: grid; place-items: center; width: 28px; height: 28px; padding: 0;
+  #petMapClose { flex: none; margin-left: auto; display: grid; place-items: center; width: 28px; height: 28px; padding: 0;
     border: 1px solid transparent; border-radius: 6px; background: none; color: var(--muted);
     font-size: 18px; line-height: 1; }
   #petMapClose:hover { color: var(--text); border-color: var(--border); background: var(--panel2); }
@@ -512,7 +512,7 @@
 
 <div class="petmap" id="petMap" hidden>
   <div class="petmapbox">
-    <header><span id="petMapIcon"></span><b id="petMapName"></b><span class="grow"></span>
+    <header><span id="petMapIcon"></span><b id="petMapName"></b>
       <span class="pmtabs" id="petMapTabs"></span><button id="petMapClose" title="Cerrar">×</button></header>
     <canvas id="petMapCanvas"></canvas>
     <div class="petmapinfo" id="petMapInfo"></div>
