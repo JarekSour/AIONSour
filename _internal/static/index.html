@@ -189,6 +189,8 @@
   .pet { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 2px 8px; align-items: center; padding: 6px 8px;
     border-radius: 6px; background: var(--panel2); }
   .pet.active { box-shadow: inset 3px 0 0 var(--ok); }
+  .pet { cursor: pointer; }
+  .pet:hover { outline: 1px solid var(--accent); }
   .pet.locked { opacity: .45; }
   .pet.locked .peticon { filter: grayscale(1); }
   .pet.locked .pbar span { color: var(--muted); }
@@ -458,6 +460,8 @@
       <input id="petSearch" type="search" placeholder="Buscar…"></h3>
     <div id="petList"></div>
     <div class="histkey" id="petNote"></div>
+    <div class="histkey">Clic en una mascota para ver dónde aparece y qué monstruos la sueltan, en
+      <b>aion2pets.org</b> (guía hecha por fans).</div>
   </div>
   <div class="card">
     <h3>Últimas obtenidas <span class="grow"></span><button id="petClear" title="Borra el historial de almas">Borrar</button></h3>
@@ -1085,10 +1089,10 @@ function renderPets() {
   $("petCount").textContent = pets.pets.length ? `· ${owned} / ${pets.pets.length}` : "";
   // Agrupadas por familia (en este orden); dentro, la última con novedades primero.
   const card = p => {
-    if (!p.owned) return `<div class="pet locked" title="Aún no la tienes">${petImg(p)}` +
+    if (!p.owned) return `<div class="pet locked" data-pet="${p.id}" title="Aún no la tienes · clic: dónde aparece">${petImg(p)}` +
       `<span class="pn"><b>${esc(p.name)}</b></span><div class="pbar"><span>No obtenida</span></div></div>`;
     const pct = p.needed ? Math.min(100, p.souls * 100 / p.needed) : 0;
-    return `<div class="pet${p.active ? " active" : ""}"${p.active ? ' title="Activa"' : ""}>${petImg(p)}` +
+    return `<div class="pet${p.active ? " active" : ""}" data-pet="${p.id}" title="${p.active ? "Activa · " : ""}clic: dónde aparece">${petImg(p)}` +
       `<span class="pn"><b>${esc(p.name)}</b><span class="lv">Nv ${p.level ?? "?"}</span></span>` +
       `<div class="pbar${p.level && !p.needed ? " max" : ""}"><i style="width:${pct.toFixed(1)}%"></i>` +
       `<span>${p.needed ? `${p.souls}/${p.needed}` : p.level ? "Máx." : `${p.souls} almas`}</span></div></div>`;
@@ -1124,6 +1128,11 @@ function renderPets() {
 }
 $("petSearch").addEventListener("input", renderPets);
 $("petFilter").addEventListener("change", renderPets);
+// Clic en una mascota: su página en aion2pets.org (mapa de zonas y monstruos que la sueltan).
+$("petList").addEventListener("click", e => {
+  const c = e.target.closest("[data-pet]");
+  if (c) post("/api/pets/open", { id: +c.dataset.pet }).then(r => { if (r.error) showErr(r.error); });
+});
 $("petClear").onclick = () => { if (confirm("¿Borrar el historial de almas de mascota?")) post("/api/pets/clear"); };
 setInterval(renderPets, 30000);             // «hace X min»
 
