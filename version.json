@@ -1,4 +1,4 @@
 {
- "version": "1.0.13",
- "notes": "Actualizador sin scripts ocultos y datos de versión en el .exe (menos falsos positivos del antivirus)"
+ "version": "1.0.14",
+ "notes": "Prueba del nuevo actualizador"
 }
