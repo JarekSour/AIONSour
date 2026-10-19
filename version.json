@@ -1,4 +1,4 @@
 {
- "version": "1.0.20",
- "notes": "Tareas: las de cuenta (compartidas por tus personajes) en su propia tarjeta"
+ "version": "1.0.21",
+ "notes": "Tareas de cuenta: se leen del personaje que tenga el dato"
 }
