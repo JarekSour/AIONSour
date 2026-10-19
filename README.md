@@ -4,10 +4,12 @@ Compañero portable para **AION 2** (Windows): cubos ocultos, medidor de daño, 
 
 ![Cubos ocultos](capturas/cubos.jpg)
 
+**[⬇ Descargar AIONSour (ZIP)](https://github.com/JarekSour/AIONSour/archive/refs/heads/main.zip)**
+
 ## Instalación
 
 1. Instala [Npcap](https://npcap.com) (lo necesita para leer el tráfico del juego).
-2. Descarga este repositorio (**Code → Download ZIP**) y descomprímelo donde quieras.
+2. [Descarga el ZIP](https://github.com/JarekSour/AIONSour/archive/refs/heads/main.zip) y descomprímelo donde quieras.
 3. Abre `AIONSour.exe` y elige arriba el adaptador de red por el que juegas. La captura empieza sola.
 
 Es una carpeta portable: no se instala nada más y tus datos (historiales, tareas, mascotas, ajustes) se guardan dentro de ella.
