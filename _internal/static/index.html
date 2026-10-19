@@ -288,6 +288,26 @@
   .petmapinfo { padding: 7px 12px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); }
   .petmapinfo b { color: var(--text); font-weight: 500; }
 
+  /* Clases */
+  .classesview { grid-template-columns: 240px 1fr; }
+  .classesview .card { overflow: auto; }
+  .classlist { display: flex; flex-direction: column; gap: 4px; }
+  .classlist button { display: flex; align-items: center; gap: 10px; padding: 6px 10px; text-align: left;
+    border-radius: 8px; font-size: 14px; }
+  .classlist button.on { border-color: var(--accent); background: rgba(79,156,249,.15); }
+  .classlist .clsicon { width: 32px; height: 32px; }
+  .sksec { margin: 14px 0 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--muted); display: flex; gap: 8px; align-items: baseline; }
+  .sksec:first-child { margin-top: 0; }
+  .sksec span { font-weight: 400; }
+  .skgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; }
+  .skill { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; background: var(--panel2); }
+  .skill img, .skill i { flex: none; width: 36px; height: 36px; border-radius: 6px; background: #11151b; }
+  .skill.stigma img { box-shadow: 0 0 0 2px rgba(210,140,255,.75); }
+  .skill.passive img { border-radius: 50%; }
+  .skill span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  @media (max-width: 900px) { body:not(.mini) .classesview { grid-template-columns: 1fr; } }
+
   .menu { position: relative; }
   .floatBtn.on { border-color: var(--gold); color: var(--gold); }
 
@@ -375,6 +395,7 @@
     <button data-view="timers">♛ Jefes y eventos</button>
     <button data-view="pets">🐾 Mascotas</button>
     <button data-view="tasks">✓ Tareas</button>
+    <button data-view="classes">⛨ Clases</button>
   </nav>
   <select id="iface" title="Adaptador de red por el que juegas (la captura empieza sola)"></select>
   <span class="spacer"></span>
@@ -514,6 +535,17 @@
       <button>Añadir</button>
     </form>
     <div class="histkey">Reinicio diario a las 07:00 UTC y semanal el miércoles a las 07:00 UTC (servidores Global).</div>
+  </div>
+</main>
+
+<main id="viewClasses" class="classesview" hidden>
+  <div class="card">
+    <h3>Clases</h3>
+    <div class="classlist" id="classList"></div>
+  </div>
+  <div class="card">
+    <h3 id="classTitle">Elige una clase</h3>
+    <div id="classSkills"></div>
   </div>
 </main>
 
@@ -1201,6 +1233,34 @@ $("petMapCanvas").addEventListener("wheel", e => {
 }
 window.addEventListener("resize", drawPetMap);
 
+// ---------------- Clases ----------------
+// Cada clase con sus habilidades activas, estigmas y pasivas (data/class_skills.json).
+let classes = null, classSel = null;
+const SKILL_KIND = [["active", "Habilidades activas"], ["stigma", "Estigmas"], ["passive", "Pasivas"]];
+async function renderClasses() {
+  if ($("viewClasses").hidden) return;
+  if (!classes) classes = await (await fetch("/api/classes")).json();
+  if (!classSel) try { classSel = localStorage.getItem("classSel"); } catch { }
+  if (!classes.some(c => c.name === classSel)) classSel = classes[0]?.name;
+  $("classList").innerHTML = classes.map(c => `<button class="${c.name === classSel ? "on" : ""}" data-cls="${esc(c.name)}">` +
+    `${clsIcon({ cls: c.name, clsIcon: c.icon })}${esc(c.name)}</button>`).join("");
+  const c = classes.find(x => x.name === classSel);
+  $("classTitle").textContent = c ? c.name : "Elige una clase";
+  $("classSkills").innerHTML = !c ? "" : SKILL_KIND.map(([kind, title]) => {
+    const list = c.skills.filter(s => s.type === kind);
+    return `<div class="sksec">${title} <span>· ${list.length}</span></div><div class="skgrid">` +
+      list.map(s => `<div class="skill ${kind}" title="${esc(s.name)}">` +
+        (s.icon ? `<img src="/icons/${encodeURIComponent(s.icon)}.png" alt="" loading="lazy">` : "<i></i>") +
+        `<span>${esc(s.name)}</span></div>`).join("") + "</div>";
+  }).join("") + (c.partial ? `<div class="histkey">Luchador: aún no se conocen todos sus estigmas; los que faltan aparecen como activas.</div>` : "");
+}
+$("classList").addEventListener("click", e => {
+  const b = e.target.closest("button[data-cls]"); if (!b) return;
+  classSel = b.dataset.cls;
+  try { localStorage.setItem("classSel", classSel); } catch { }
+  renderClasses();
+});
+
 // ---------------- Mascotas ----------------
 let pets = null;
 const PET_FAMILIES = ["Intelecto", "Salvaje", "Naturaleza", "Transformación", "Especial"];
@@ -1290,15 +1350,16 @@ function showView(view) {
   for (const b of $("tabs").children) b.classList.toggle("on", b.dataset.view === view);
   $("viewCubes").hidden = view !== "cubes"; $("viewDps").hidden = view !== "dps";
   $("viewTimers").hidden = view !== "timers"; $("viewPets").hidden = view !== "pets";
-  $("viewTasks").hidden = view !== "tasks";
+  $("viewTasks").hidden = view !== "tasks"; $("viewClasses").hidden = view !== "classes";
   try { localStorage.setItem("view", view); } catch { }
   if (view === "cubes") requestDraw(); else if (view === "dps") renderDps();
-  else if (view === "pets") renderPets(); else if (view === "tasks") renderTasks(); else renderTimers();
+  else if (view === "pets") renderPets(); else if (view === "tasks") renderTasks();
+  else if (view === "classes") renderClasses(); else renderTimers();
 }
 $("tabs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) showView(b.dataset.view); });
 let savedView = new URLSearchParams(location.search).get("view");   // ?view=dps abre esa pestaña
 try { savedView = savedView || localStorage.getItem("view"); } catch { }
-savedView = ["dps", "timers", "pets", "tasks"].includes(savedView) ? savedView : "cubes";
+savedView = ["dps", "timers", "pets", "tasks", "classes"].includes(savedView) ? savedView : "cubes";
 showView(savedView);
 
 // ---------------- Captura ----------------

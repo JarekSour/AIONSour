@@ -1,4 +1,4 @@
 {
- "version": "1.0.15",
- "notes": "Arregla el error al abrir la versión descargada de GitHub (Python.Runtime.dll)"
+ "version": "1.0.16",
+ "notes": "Nueva pestaña Clases: habilidades activas, estigmas y pasivas de cada clase"
 }
