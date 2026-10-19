@@ -1,4 +1,4 @@
 {
- "version": "1.0.19",
- "notes": "Tareas: al cambiar de personaje sus datos ya no se guardan en el anterior"
+ "version": "1.0.20",
+ "notes": "Tareas: las de cuenta (compartidas por tus personajes) en su propia tarjeta"
 }

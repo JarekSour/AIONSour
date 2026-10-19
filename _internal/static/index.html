@@ -243,13 +243,17 @@
   .trow.done .tn { color: var(--muted); text-decoration: line-through; }
   .trow .tn { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .trow .tc { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
-  .tdef { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto auto; gap: 6px; align-items: center;
+  .tdef { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto auto auto; gap: 6px; align-items: center;
     padding: 4px 6px; border-radius: 6px; background: var(--panel2); margin-bottom: 4px; }
   .tdef span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .tdef small { color: var(--muted); font-size: 11px; white-space: nowrap; }
   .tdef button { border: 0; background: none; color: var(--muted); padding: 0 3px; }
   .tdef button:hover { color: var(--text); }
-  .taskadd { display: grid; grid-template-columns: minmax(0, 1fr) auto 52px auto; gap: 6px; margin-top: 8px; }
+  .taskadd { display: grid; grid-template-columns: minmax(0, 1fr) auto 52px auto auto; gap: 6px; margin-top: 8px; }
+  .tchar.account { box-shadow: inset 0 0 0 1px rgba(79,156,249,.55); }
+  .tchar .accicon { width: 26px; text-align: center; font-size: 17px; }
+  .tchar .tnote { font-size: 11px; color: var(--muted); margin: -2px 0 4px; }
+  .scopetag { font-size: 12px; opacity: .8; }
   .taskadd input, .taskadd select { font: inherit; font-size: 12px; color: var(--text); background: var(--panel2);
     border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px; min-width: 0; }
   .trow.auto { cursor: default; }
@@ -532,6 +536,8 @@
       <input name="name" placeholder="Nueva tarea…" maxlength="80" required>
       <select name="cycle"><option value="daily">Diaria</option><option value="weekly">Semanal</option></select>
       <input name="times" type="number" min="1" max="99" value="1" title="Veces">
+      <select name="scope" title="De cada personaje o compartida por la cuenta">
+        <option value="character">Personaje</option><option value="account">Cuenta</option></select>
       <button>Añadir</button>
     </form>
     <div class="histkey">Reinicio diario a las 07:00 UTC y semanal el miércoles a las 07:00 UTC (servidores Global).</div>
@@ -1078,32 +1084,38 @@ function renderTasks() {
   $("taskResets").textContent = `Diario en ${span(Math.max(0, Math.round(tasks.nextDaily - now)))} · ` +
     `semanal en ${span(Math.max(0, Math.round(tasks.nextWeekly - now)))}`;
   const defs = new Map(tasks.tasks.map(t => [t.id, t]));
-  $("taskChars").innerHTML = tasks.characters.map(c => {
-    const section = cycle => {
+  const sections = (c, owner) => ["daily", "weekly"].map(cycle => {
       const rows = c.tasks.filter(t => defs.get(t.id)?.cycle === cycle).map(t => {
         const d = defs.get(t.id);
         const live = t.auto && t.text !== "entra al juego";      // con datos del juego: se marca sola
         const tip = live ? "Se marca sola con los datos del juego" : t.auto
           ? "Se marcará sola cuando entres al juego con este personaje" : t.done ? "Hecha" : "Pendiente";
-        return `<div class="trow${t.done ? " done" : ""}${live ? " auto" : ""}" data-char="${esc(c.name)}" ` +
+        return `<div class="trow${t.done ? " done" : ""}${live ? " auto" : ""}" data-char="${esc(owner)}" ` +
           `data-task="${t.id}" title="${tip}">` +
           `<span class="box">${t.done ? "✓" : ""}</span><span class="tn">${esc(d.name)}</span>` +
           `<span class="tc">${t.auto ? esc(t.text || "") : d.times > 1 ? `${t.count}/${d.times}` : ""}</span></div>`;
       }).join("");
       return rows ? `<div class="tsub">${CYCLE[cycle]}</div>${rows}` : "";
-    };
+    }).join("");
+  const pend = n => `<span class="pend${n ? "" : " ok"}">${n ? `${n} pendiente${n === 1 ? "" : "s"}` : "Todo hecho"}</span>`;
+  // De cuenta: una sola tarjeta, compartida por todos tus personajes.
+  const account = tasks.account?.tasks.length ? `<div class="tchar account"><header><span class="accicon">🌐</span>` +
+    `<b>Cuenta</b>${pend(tasks.account.pending)}</header><div class="tnote">Compartidas por todos tus personajes</div>` +
+    sections(tasks.account, "__cuenta__") + `</div>` : "";
+  $("taskChars").innerHTML = account + tasks.characters.map(c => {
     return `<div class="tchar${c.current ? " current" : ""}"><header>${clsIcon(c)}<b>${esc(c.name)}</b>` +
-      `<span class="pend${c.pending ? "" : " ok"}">${c.pending ? `${c.pending} pendiente${c.pending === 1 ? "" : "s"}` : "Todo hecho"}</span>` +
-      `<button class="x" data-remove="${esc(c.name)}" title="Quitar personaje">×</button></header>` +
+      pend(c.pending) + `<button class="x" data-remove="${esc(c.name)}" title="Quitar personaje">×</button></header>` +
       (c.energy ? `<div class="odbar" title="Energía de Od (+ cargas extra)"><i style="width:${Math.min(100, c.energy.count * 100 / c.energy.cap).toFixed(1)}%"></i>` +
         `<span>Energía de Od <b>${c.energy.count}</b>${c.energy.charged ? ` (+${c.energy.charged})` : ""} / ${c.energy.cap}</span></div>` : "") +
-      section("daily") + section("weekly") + `</div>`;
+      sections(c, c.name) + `</div>`;
   }).join("") || empty("Entra al juego con un personaje y aparecerá aquí.");
   $("taskDefs").innerHTML = ["daily", "weekly"].map(cy => {
     const list = tasks.tasks.filter(t => t.cycle === cy);
     return `<div class="tsub">${CYCLE[cy]}</div>` + (list.map(t =>
       `<div class="tdef" data-task="${t.id}"><span title="${esc(t.name)}">${esc(t.name)}</span>` +
       `<small>${t.game ? '<span class="autotag" title="Se marca sola con los datos del juego">auto</span>' : t.times > 1 ? `×${t.times}` : ""}</small>` +
+      (t.game ? `<span class="scopetag" title="${t.scope === "account" ? "De cuenta (lo dice el juego)" : "De personaje"}">${t.scope === "account" ? "🌐" : "👤"}</span>`
+        : `<button data-act="scope" title="${t.scope === "account" ? "De cuenta: pasar a de personaje" : "De personaje: pasar a de cuenta"}">${t.scope === "account" ? "🌐" : "👤"}</button>`) +
       `<button data-act="up" title="Subir">▲</button><button data-act="down" title="Bajar">▼</button>` +
       `<button data-act="delete" title="Borrar tarea">×</button></div>`).join("") || empty("Sin tareas."));
   }).join("");
@@ -1132,12 +1144,17 @@ $("taskDefs").addEventListener("click", e => {
   const b = e.target.closest("button[data-act]"); if (!b) return;
   const id = b.closest(".tdef").dataset.task, name = tasks.tasks.find(t => t.id === id)?.name;
   if (b.dataset.act === "delete") { if (confirm(`¿Borrar la tarea «${name}»?`)) taskPost({ action: "delete", task: id }); }
+  else if (b.dataset.act === "scope") {
+    const t = tasks.tasks.find(x => x.id === id);
+    taskPost({ action: "edit", task: id, scope: t.scope === "account" ? "character" : "account" });
+  }
   else taskPost({ action: "move", task: id, delta: b.dataset.act === "up" ? -1 : 1 });
 });
 $("taskAdd").addEventListener("submit", e => {
   e.preventDefault();
   const f = e.target;
-  taskPost({ action: "add", name: f.elements.name.value, cycle: f.elements.cycle.value, times: +f.elements.times.value || 1 });
+  taskPost({ action: "add", name: f.elements.name.value, cycle: f.elements.cycle.value, times: +f.elements.times.value || 1,
+             scope: f.elements.scope.value });
   f.elements.name.value = ""; f.elements.times.value = 1;
 });
 setInterval(renderTasks, 30000);            // cuenta atrás de los reinicios
