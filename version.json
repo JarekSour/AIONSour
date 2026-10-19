@@ -1,4 +1,4 @@
 {
- "version": "1.0.18",
- "notes": "Tareas: los contadores que cambian ya se leen siempre (entradas a mazmorras); la Fisura desconocida cuenta sus 14 entradas semanales sola"
+ "version": "1.0.19",
+ "notes": "Tareas: al cambiar de personaje sus datos ya no se guardan en el anterior"
 }
