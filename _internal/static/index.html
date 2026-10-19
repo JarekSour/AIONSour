@@ -88,7 +88,7 @@
     background: rgba(23,27,33,.85); border-radius: 6px; padding: 3px 8px; }
   main[hidden] { display: none; }
   .tabs { display: flex; gap: 2px; background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 2px; }
-  .tabs button { border: 0; background: none; padding: 5px 12px; border-radius: 6px; color: var(--muted); }
+  .tabs button { border: 0; background: none; padding: 5px 10px; border-radius: 6px; color: var(--muted); }
   .tabs button.on { background: var(--accent); color: #fff; }
   .tabs .live { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--danger);
     margin-left: 6px; vertical-align: middle; animation: pulse 1.2s infinite; }
@@ -253,6 +253,8 @@
   .taskadd { display: grid; grid-template-columns: minmax(0, 1fr) 52px minmax(0, 1fr) auto; gap: 6px; margin-top: 8px; }
   .taskadd input[name=name] { grid-column: 1 / -1; }
   .tchar.account { grid-column: 1 / -1; box-shadow: inset 0 0 0 1px rgba(79,156,249,.55); }
+  .tchar.account .trow { grid-template-columns: 16px minmax(0, 280px) auto; justify-content: start; column-gap: 7px; }
+  .tchar.account .trow .tc { padding-left: 24px; }
   .tchar .accicon { width: 26px; text-align: center; font-size: 17px; }
   .tchar .tnote { font-size: 11px; color: var(--muted); margin: -2px 0 4px; }
   .scopetag { font-size: 12px; opacity: .8; }
@@ -263,6 +265,7 @@
   .trow.auto .box { border: 0; background: none; color: var(--ok); font-size: 13px; font-weight: 700; }
   .trow.auto.done .box { background: none; }
   .trow.auto .tc { color: var(--accent); }
+  .trow.key .tc { color: var(--gold); font-weight: 600; }
   .trow.auto.done .tc { color: var(--ok); }
   .autotag { font-size: 10px; color: var(--accent); border: 1px solid rgba(79,156,249,.5); border-radius: 4px; padding: 0 4px; }
   .odbar { position: relative; height: 16px; border-radius: 4px; background: #11151b; overflow: hidden; margin: 0 0 4px;
@@ -296,6 +299,70 @@
 
   /* Clases */
   .classesview { grid-template-columns: 240px 1fr; }
+  .dutyview { grid-template-columns: 340px 1fr; }
+  @media (max-width: 900px) { body:not(.mini) .dutyview { grid-template-columns: 1fr; } }
+  .dutyfilters { display: flex; flex-direction: column; gap: 10px; }
+  .dutyfilters select { width: 100%; }
+  .dutymarks .dmhead { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .dutymarks .dmhead .grow { flex: 1; }
+  .dutyview .card { overflow: auto; }
+  .dutyview .dmeta { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--muted); }
+  .dutyview .tnote { font-size: 11px; color: var(--muted); margin-top: 8px; }
+  #dutyList { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 6px; align-items: start; }
+  #dutyList > .empty { grid-column: 1 / -1; }
+  #dutyList .dsub { grid-column: 1 / -1; font-size: 10px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--muted); margin: 4px 0 0; }
+  #dutyList .dsub:first-child { margin-top: 0; }
+  .duty { background: var(--panel2); border-radius: 8px; padding: 8px 10px; }
+  .duty.accepted { box-shadow: inset 3px 0 0 var(--ok); }
+  .duty .dh { display: flex; flex-wrap: wrap; gap: 2px 8px; align-items: baseline; margin-bottom: 6px; }
+  .duty .dname { cursor: pointer; }
+  .duty .dname.unnamed { color: var(--muted); font-style: italic; font-weight: 500; }
+  .duty .dh small { color: var(--muted); font-size: 11px; }
+  .duty .dstate { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; padding: 1px 6px; border-radius: 4px;
+    background: rgba(60,207,142,.15); color: var(--ok); }
+  .duty .dstate.other { background: rgba(255,255,255,.06); color: var(--muted); }
+  .duty .dstate.done { background: rgba(255,209,102,.14); color: var(--gold); }
+  .duty.done { box-shadow: inset 3px 0 0 var(--gold); opacity: .8; }
+  /* Recompensas como en el juego: casilla con icono, cantidad abreviada abajo y candado si es ligado. */
+  .drw-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .drw { display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; }
+  .drw .tile { position: relative; width: 48px; height: 48px; border-radius: 4px; overflow: hidden;
+    background: #1b2129; border: 1px solid rgba(0,0,0,.45); }
+  /* Fondo por grado (AION2 Hub), de oscuro arriba a claro abajo. Special, Rare y Epic tomados de
+     una captura del juego (19/10); Common, Heroic, Unique, Legendary y Mythic, aproximados. */
+  .drw .tile.g-common { background: linear-gradient(#2a2d31 25%, #6b7078); }
+  .drw .tile.g-rare { background: linear-gradient(#172712 25%, #447137); }
+  .drw .tile.g-epic { background: linear-gradient(#072331 25%, #1e6e98); }
+  .drw .tile.g-special { background: linear-gradient(#015550 25%, #0fe6e4); }
+  .drw .tile.g-heroic { background: linear-gradient(#24103a 25%, #7c45b8); }
+  .drw .tile.g-unique { background: linear-gradient(#3a2a06 25%, #c99a2e); }
+  .drw .tile.g-legendary { background: linear-gradient(#3a1a05 25%, #d0702a); }
+  .drw .tile.g-mythic { background: linear-gradient(#3a0a10 25%, #c8364a); }
+  .drw .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .drw .tile .q { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 3px; text-align: right;
+    font-size: 11px; font-weight: 700; line-height: 14px; color: #fff; font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 2px #000, 0 0 2px #000, 0 1px 1px #000; }
+  .drw .tile .q.long { font-size: 9.5px; letter-spacing: -.3px; padding-left: 12px; }
+  .drw .tile .lock { position: absolute; left: 3px; bottom: 2px; z-index: 1; width: 9px; height: 11px; color: #e8ebef;
+    filter: drop-shadow(0 0 1px #000) drop-shadow(0 0 1px #000); }
+  .drw .tile .noicon { display: none; position: absolute; inset: 4px 4px 14px; font-size: 9px; line-height: 10px;
+    color: var(--muted); overflow: hidden; text-align: center; }
+  .drw .tile.broken .noicon { display: block; }      /* sin icono en AION2 Hub: su nombre */
+  .drw .c { color: var(--muted); font-size: 10px; font-variant-numeric: tabular-nums; }
+  .drw.hit .tile { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
+  .drw:hover .tile { border-color: var(--accent); }
+  /* Marcar recompensas: sin ocultar nada, resalta los encargos que dan alguna de las elegidas. */
+  .dutymarks .lbl { font-size: 11px; color: var(--muted); }
+  #dutyMarks { display: flex; flex-wrap: wrap; gap: 4px; }
+  #dutyMarks .drw .tile { width: 34px; height: 34px; }
+  #dutyMarks .drw.on .tile { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
+  #dutyMarks .drw .tile .q { display: none; }
+  .dutymarks .dmcount { display: block; margin-top: 6px; font-size: 11px; color: var(--gold); }
+  .dutymarks button { padding: 2px 8px; font-size: 11px; }
+  .duty.marked { box-shadow: inset 0 0 0 1px var(--gold); background: linear-gradient(rgba(255,209,102,.07), rgba(255,209,102,.02)), var(--panel2); }
+  .duty.marked.accepted { box-shadow: inset 3px 0 0 var(--ok), inset 0 0 0 1px var(--gold); }
+  .drw.mark .tile { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
   .classesview .card { overflow: auto; }
   .classlist { display: flex; flex-direction: column; gap: 4px; }
   .classlist button { display: flex; align-items: center; gap: 10px; padding: 6px 10px; text-align: left;
@@ -401,9 +468,9 @@
     <button data-view="timers">♛ Jefes y eventos</button>
     <button data-view="pets">🐾 Mascotas</button>
     <button data-view="tasks">✓ Tareas</button>
+    <button data-view="duty">📜 Encargos</button>
     <button data-view="classes">⛨ Clases</button>
   </nav>
-  <select id="iface" title="Adaptador de red por el que juegas (la captura empieza sola)"></select>
   <span class="spacer"></span>
   <button class="floatBtn" data-kind="mini" title="Abre o cierra el minimapa flotante (se configura en su ⚙)">🗺 Minimapa</button>
   <button class="floatBtn" data-kind="dps" title="Abre o cierra el medidor de daño flotante (se configura en su ⚙)">⚔ Medidor</button>
@@ -543,6 +610,24 @@
       <button>Añadir</button>
     </form>
     <div class="histkey">Reinicio diario a las 07:00 UTC y semanal el miércoles a las 07:00 UTC (servidores Global).</div>
+  </div>
+</main>
+
+<main id="viewDuty" class="dutyview" hidden>
+  <div class="card dutyfilters">
+    <h3>Filtros</h3>
+    <select id="dutyFilter" title="Ver solo los encargos que dan esta recompensa"></select>
+    <div class="dutymarks">
+      <div class="dmhead"><span class="lbl">Marcar recompensas</span><span class="grow"></span>
+        <button id="dutyMarkClear" hidden>Quitar marcas</button></div>
+      <div id="dutyMarks"></div>
+      <span class="dmcount" id="dutyMarkCount"></span>
+    </div>
+    <div class="tnote">Pulsa el nombre de una misión o de una recompensa para ponerle nombre, como sale en el juego.</div>
+  </div>
+  <div class="card">
+    <h3>Misiones de encargo <span class="grow"></span><span class="dmeta" id="dutyMeta"></span></h3>
+    <div id="dutyList"></div>
   </div>
 </main>
 
@@ -897,14 +982,14 @@ function renderDps() {
       ["Duración", secs(f.duration)], ["Jugadores", f.players.length]]
       .map(([l, v]) => `<div><b>${v}</b><span>${l}</span></div>`).join("");
     const sel = pickPlayer(f), top = f.players[0]?.damage || 1;
-    $("dpsPlayers").innerHTML = f.players.map((p, i) =>
+    animateRows($("dpsPlayers"), f.players.map((p, i) =>
       `<div class="prow${p.self ? " self" : ""}${p === sel ? " sel" : ""}" data-id="${p.id}">` +
       `<span class="fill" style="width:${(p.damage / top * 100).toFixed(1)}%;${barStyle(p)}"></span><span class="rank">${i + 1}</span>` +
       `<span class="who">${clsIcon(p)}<span><b>${esc(p.name)}</b>` +
       `<small>${esc(p.cls || "clase desconocida")}${p.heal ? " · curación " + fmt(p.heal) : ""}</small></span></span>` +
       `<span class="num">${deathMark(p)}</span>` +
       `<span class="num">${fmt(p.damage)}</span><span class="num">${kfmt(p.dps)}</span><span class="num">${pct(p.share)}</span></div>`).join("")
-      || empty("Sin daño de jugadores en este combate.");
+      || empty("Sin daño de jugadores en este combate."));
     $("dpsSkillsTitle").textContent = !sel ? "Habilidades" : sel.self ? "Tus habilidades" : `Habilidades de ${sel.name}`;
     const topS = sel?.skills[0]?.damage || 1;
     $("dpsSkills").innerHTML = sel ? sel.skills.map(sk => `<div class="srow">` +
@@ -945,12 +1030,36 @@ function renderDpsMini() {
   $("miniTitle").innerHTML = !f ? "⚔ Sin combates" :
     `⚔ ${esc(short(f.target || "Combate", 16))} · <span class="dur">${secs(f.duration)}</span> · ${kfmt(f.dps)} DPS`;
   const top = f?.players[0]?.damage || 1;
-  $("dpsMini").innerHTML = !f ? empty(running ? "Ataca a algo y aparecerá aquí." : "La captura está detenida.") :
-    f.players.map(p => `<div class="mrow${p.self ? " self" : ""}"><span class="fill" style="width:${(p.damage / top * 100).toFixed(1)}%;` +
+  animateRows($("dpsMini"), !f ? empty(running ? "Ataca a algo y aparecerá aquí." : "La captura está detenida.") :
+    f.players.map(p => `<div class="mrow${p.self ? " self" : ""}" data-id="${p.id}"><span class="fill" style="width:${(p.damage / top * 100).toFixed(1)}%;` +
       `${barStyle(p)}"></span>` +
       `<span class="n">${clsIcon(p)}<span>${esc(p.name)}</span></span>` +
       `<span class="num">${deathMark(p)}</span>` +
-      `<span class="num">${kfmt(p.dps)}</span><span class="num">${pct(p.share)}</span></div>`).join("");
+      `<span class="num">${kfmt(p.dps)}</span><span class="num">${pct(p.share)}</span></div>`).join(""));
+}
+
+// Redibuja las filas de jugadores animando el cambio (técnica FLIP): quien adelanta a otro
+// sube deslizándose por encima y las barras crecen desde su ancho anterior en vez de saltar.
+const REDUCED_MOTION = matchMedia("(prefers-reduced-motion: reduce)").matches;
+function animateRows(box, html) {
+  const before = new Map();
+  for (const r of box.querySelectorAll("[data-id]"))
+    before.set(r.dataset.id, { top: r.getBoundingClientRect().top, width: r.querySelector(".fill")?.getBoundingClientRect().width });
+  box.innerHTML = html;
+  if (REDUCED_MOTION || !before.size) return;
+  for (const r of box.querySelectorAll("[data-id]")) {
+    const old = before.get(r.dataset.id);
+    if (!old) continue;
+    const dy = old.top - r.getBoundingClientRect().top;
+    if (Math.abs(dy) > 0.5) {
+      r.style.zIndex = dy > 0 ? 2 : 1;                     // la que sube pasa por encima
+      r.animate([{ transform: `translateY(${dy}px)` }, { transform: "none" }],
+                { duration: 450, easing: "cubic-bezier(.2,.8,.2,1)" }).onfinish = () => { r.style.zIndex = ""; };
+    }
+    const fill = r.querySelector(".fill"), w = fill?.getBoundingClientRect().width;
+    if (fill && old.width != null && Math.abs(old.width - w) > 0.5)
+      fill.animate([{ width: `${old.width}px` }, { width: `${w}px` }], { duration: 450, easing: "ease-out" });
+  }
 }
 
 $("dpsPlayers").addEventListener("click", e => {
@@ -1079,20 +1188,22 @@ $("updateLater").onclick = () => {
 
 // ---------------- Tareas ----------------
 let tasks = null;
-const CYCLE = { daily: "Diarias", weekly: "Semanales" };
+const CYCLE = { daily: "Diarias", weekly: "Semanales", keys: "Llaves y entradas" };
+// Grupo de una tarea: su ciclo, o «Llaves y entradas» (solo informan, sin casilla).
+const taskGroup = d => d?.section === "keys" ? "keys" : d?.cycle;
 function renderTasks() {
   if (!tasks || $("viewTasks").hidden) return;
   const now = Date.now() / 1000;
   $("taskResets").textContent = `Diario en ${span(Math.max(0, Math.round(tasks.nextDaily - now)))} · ` +
     `semanal en ${span(Math.max(0, Math.round(tasks.nextWeekly - now)))}`;
   const defs = new Map(tasks.tasks.map(t => [t.id, t]));
-  const sections = (c, owner) => ["daily", "weekly"].map(cycle => {
-      const rows = c.tasks.filter(t => defs.get(t.id)?.cycle === cycle).map(t => {
+  const sections = (c, owner) => ["daily", "weekly", "keys"].map(cycle => {
+      const rows = c.tasks.filter(t => taskGroup(defs.get(t.id)) === cycle).map(t => {
         const d = defs.get(t.id);
         const live = t.auto && t.text !== "entra al juego";      // con datos del juego: se marca sola
         const tip = live ? "Se marca sola con los datos del juego" : t.auto
           ? "Se marcará sola cuando entres al juego con este personaje" : t.done ? "Hecha" : "Pendiente";
-        return `<div class="trow${t.done ? " done" : ""}${live ? " auto" : ""}" data-char="${esc(owner)}" ` +
+        return `<div class="trow${t.done ? " done" : ""}${live ? " auto" : ""}${cycle === "keys" ? " key" : ""}" data-char="${esc(owner)}" ` +
           `data-task="${t.id}" title="${tip}">` +
           `<span class="box">${t.done ? "✓" : ""}</span><span class="tn">${esc(d.name)}</span>` +
           `<span class="tc">${t.auto ? esc(t.text || "") : d.times > 1 ? `${t.count}/${d.times}` : ""}</span></div>`;
@@ -1112,8 +1223,9 @@ function renderTasks() {
         `<span>Energía de Od <b>${c.energy.count}</b>${c.energy.charged ? ` (+${c.energy.charged})` : ""} / ${c.energy.cap}</span></div>` : "") +
       sections(c, c.name) + `</div>`;
   }).join("") || empty("Entra al juego con un personaje y aparecerá aquí.");
-  $("taskDefs").innerHTML = ["daily", "weekly"].map(cy => {
-    const list = tasks.tasks.filter(t => t.cycle === cy);
+  $("taskDefs").innerHTML = ["daily", "weekly", "keys"].map(cy => {
+    const list = tasks.tasks.filter(t => taskGroup(t) === cy);
+    if (cy === "keys" && !list.length) return "";
     return `<div class="tsub">${CYCLE[cy]}</div>` + (list.map(t =>
       `<div class="tdef" data-task="${t.id}"><span title="${esc(t.name)}">${esc(t.name)}</span>` +
       `<small>${t.game ? '<span class="autotag" title="Se marca sola con los datos del juego">auto</span>' : t.times > 1 ? `×${t.times}` : ""}</small>` +
@@ -1364,6 +1476,146 @@ $("petList").addEventListener("click", e => {
 $("petClear").onclick = () => { if (confirm("¿Borrar el historial de almas de mascota?")) post("/api/pets/clear"); };
 setInterval(renderPets, 30000);             // «hace X min»
 
+// ---------------- Encargos ----------------
+// Tablón de misiones de encargo (de la cuenta) con sus recompensas. El juego solo manda
+// ids: los nombres son tuyos (pulsando) o, para objetos, de AION2 Hub (en inglés).
+let duty = null;
+async function loadDuty() {
+  try { duty = await (await fetch("/api/duty")).json(); } catch { }
+  renderDuty();
+}
+const itemName = id => duty.names.items[id] || duty.names.hub[id]?.name || null;
+const itemGrade = id => (duty.names.hub[id]?.grade || "").toLowerCase();
+// Cantidad como la abrevia el juego: 500, 1,0A (mil), 60,0A; millones con M (sin ver aún en el juego).
+const gameQty = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace(".", ",") + "M"
+  : n >= 1000 ? (n / 1000).toFixed(1).replace(".", ",") + "A" : String(n);
+const LOCK = '<svg class="lock" viewBox="0 0 9 11" aria-hidden="true"><path fill="currentColor" d="M4.5 0A2.6 2.6 0 0 0 1.9 2.6V4H1a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-.9V2.6A2.6 2.6 0 0 0 4.5 0zm-1.4 2.6a1.4 1.4 0 0 1 2.8 0V4H3.1z"/></svg>';
+const questName = id => duty.names.quests[id] || null;
+let dutyMarks = new Set();                     // recompensas marcadas (se guardan en los ajustes)
+// Para marcar no salen el equipo (ids 1xx…–3xx…: armas, armaduras y accesorios), salvo el
+// legendario, ni Kina ni Enhance Stone (están en casi todos los encargos), ni los materiales
+// comunes o raros (tipo «Crafting Material»; sin tipo guardado, ids 61xxxxxxx).
+const KINA = 930100001, ENHANCE_STONE = 930100023;
+const isMaterial = id => {
+  const kind = duty.names.hub[id]?.kind;
+  return kind ? kind === "Crafting Material" : id >= 610000000 && id < 620000000;
+};
+const NOT_MARKABLE = /Balaur|Wrathful|Fearsome|Wing|Featherdown|Scarlet Desire/;
+const markable = id => id !== KINA && id !== ENHANCE_STONE && !NOT_MARKABLE.test(duty.names.hub[id]?.name || "")
+  && (id >= 400000000 || itemGrade(id) === "legendary")
+  && !(isMaterial(id) && ["common", "rare"].includes(itemGrade(id)));
+// Orden con sentido: por familia según el nombre (cristales, tickets, llaves, energía, gemas,
+// minerales, madera, otros materiales, resto, equipo); dentro, por nombre base (sin «Fine»,
+// «Pure»… para que cada gema vaya junta) y de menor a mayor grado.
+const GRADE_RANK = { common: 0, rare: 1, heroic: 2, epic: 3, special: 4, unique: 5, legendary: 6, mythic: 7 };
+const FAMILIES = [/Soul Crystal/, /Ticket/, /\bKey\b/, /Odyle Energy/, /Gemstone/, /\bOre\b|^(Pure|Radiant) Odyle$/, /\bLog\b/, /Balaur Scale/, /Balaur Leather/, /Balaur Horn/, /^(Maddened )?Wrathful/, /Rampaging Fearsome/, /Refining Stone|Amplify Stone/, /Featherdown/];
+function rewardOrder(id) {
+  const info = duty.names.hub[id] || {}, name = info.name || "";
+  let family = FAMILIES.findIndex(re => re.test(name));
+  if (family < 0) family = id < 400000000 ? 99 : info.kind === "Crafting Material" ? 50 : 60;
+  const base = name.replace(/\s*\(Bound\)/, "").replace(/^(Fine|Pure|Radiant|Small|Large|Fresh|Shining|Enhanced|Tanned)\s+/, "");
+  return [family, base || label0(id), GRADE_RANK[itemGrade(id)] ?? 9, name];
+}
+const label0 = id => itemName(id) || `Objeto ${id}`;
+const byReward = (x, y) => {
+  const a = rewardOrder(x), b = rewardOrder(y);
+  return a[0] - b[0] || a[1].localeCompare(b[1], "es") || a[2] - b[2] || a[3].localeCompare(b[3], "es");
+};
+// En los ajustes (settings.json) y no en el navegador: la ventana de la app no conserva su almacenamiento.
+const saveMarks = () => saveSettings({ dutyMarks: [...dutyMarks] });
+// Cantidad sobre la casilla; las largas («100,0A») en letra más pequeña para que quepan.
+const qtyLabel = count => {
+  const q = count == null ? "" : gameQty(count);
+  return `<span class="q${q.length >= 6 ? " long" : ""}">${q}</span>`;
+};
+// Icono que no carga: prueba la imagen de la página del objeto (la oficial del juego) y, si
+// tampoco, la casilla muestra su nombre.
+function iconFailed(img) {
+  if (img.dataset.alt && img.src !== img.dataset.alt) { img.src = img.dataset.alt; return; }
+  img.parentNode.classList.add("broken"); img.remove();
+}
+// Casilla de recompensa (icono, fondo de su grado, candado si es ligado y cantidad).
+function rewardTile(id, count, cls, extra) {
+  const n = itemName(id), bound = /\(Bound\)/.test(duty.names.hub[id]?.name || "");
+  return `<span class="drw${cls}" data-kind="items" data-id="${id}" title="${esc(n || `Objeto ${id}`)}` +
+    `${duty.names.hub[id]?.grade ? ` (${esc(duty.names.hub[id].grade)})` : ""}${extra}">` +
+    `<span class="tile g-${itemGrade(id) || "none"}"><span class="noicon">${esc(n || id)}</span>` +
+    `<img src="${(duty.localIcons || []).includes(id) ? `/icons/objetos/${id}.png` : duty.icon.replace("{}", id)}" ` +
+    `alt="" loading="lazy" referrerpolicy="no-referrer"` +
+    (duty.names.hub[id]?.image ? ` data-alt="${esc(duty.names.hub[id].image)}"` : "") + ` onerror="iconFailed(this)">` +
+    (bound ? LOCK : "") + qtyLabel(count) + `</span>`;
+}
+function renderDuty() {
+  if ($("viewDuty").hidden) return;
+  const b = duty?.board;
+  if (!b) {
+    $("dutyMeta").textContent = ""; $("dutyFilter").innerHTML = "";
+    $("dutyList").innerHTML = empty("Entra al juego (o completa un encargo) y aparecerá el tablón.");
+    return;
+  }
+  $("dutyMeta").textContent = b.at ? `tablón de ${b.character} · ${hhmm(b.at)}` : "";
+  const label = id => itemName(id) || `Objeto ${id}`;
+  const all = [...(b.taken || []), ...b.missions];   // aceptadas (lista aparte) y libres del tablón
+  const counts = new Map();                  // objeto -> en cuántos encargos sale
+  for (const m of all) for (const id of new Set(m.rewards.map(r => r.item))) counts.set(id, (counts.get(id) || 0) + 1);
+  const keep = $("dutyFilter").value;
+  $("dutyFilter").innerHTML = `<option value="">Todas las recompensas</option>` +
+    [...counts].sort((x, y) => label(x[0]).localeCompare(label(y[0]), "es"))
+      .map(([id, n]) => `<option value="${id}">${esc(label(id))} (${n})</option>`).join("");
+  $("dutyFilter").value = counts.has(+keep) ? keep : "";
+  const want = +$("dutyFilter").value || null;
+  // Con filtro: primero los que dan esa recompensa con más probabilidad y cantidad.
+  const score = m => Math.max(0, ...m.rewards.filter(r => r.item === want).map(r => r.chance * 1e9 + r.count));
+  // Como en el juego: por número de misión (llegan en el orden en que se crearon).
+  const shown = items => {
+    const out = items.filter(m => !want || m.rewards.some(r => r.item === want)).sort((x, y) => x.quest - y.quest);
+    return want ? out.sort((x, y) => score(y) - score(x)) : out;
+  };
+  // Marcas: solo las recompensas que hay en este tablón.
+  const known = new Set([...counts.keys(), ...(duty.catalog || []).map(Number), ...Object.keys(duty.names.hub).map(Number)]);
+  const choices = [...known].filter(markable);
+  const marked = new Set([...dutyMarks].filter(id => choices.includes(id)));
+  $("dutyMarks").innerHTML = choices.sort(byReward)
+    .map(id => rewardTile(id, null, marked.has(id) ? " on" : "", `\nPulsa para marcar los encargos que lo dan`) + `</span>`).join("");
+  const hasMark = m => m.rewards.some(r => marked.has(r.item));
+  const nMarked = all.filter(hasMark).length;
+  $("dutyMarkCount").textContent = marked.size ? `${nMarked} encargo${nMarked === 1 ? "" : "s"} marcado${nMarked === 1 ? "" : "s"}` : "";
+  $("dutyMarkClear").hidden = !marked.size;
+  const card = m => {
+    const q = questName(m.quest);
+    // Estados del juego: 1 libre, 2 aceptada (en curso), 4 completada.
+    return `<div class="duty${m.status === 2 ? " accepted" : m.status === 4 ? " done" : ""}${hasMark(m) ? " marked" : ""}"><div class="dh">` +
+      (m.status === 2 ? `<span class="dstate">Aceptada</span>` : m.status === 4 ? `<span class="dstate done">Completada</span>`
+        : m.status !== 1 ? `<span class="dstate other">estado ${m.status}</span>` : "") +
+      `<b class="dname${q ? "" : " unnamed"}" data-kind="quests" data-id="${m.quest}" title="Pulsa para ponerle nombre">` +
+      `${esc(q || `Misión ${m.quest}`)}</b><small>#${m.quest}</small></div><div class="drw-list">` +
+      m.rewards.map(r => rewardTile(r.item, r.count, (r.item === want ? " hit" : "") + (marked.has(r.item) ? " mark" : ""),
+          ` ×${fmt(r.count)} · ${r.chance} %\nPulsa para ponerle nombre`) + `<span class="c">${r.chance} %</span></span>`)
+        .join("") + `</div></div>`;
+  };
+  // Aceptadas (en curso o completadas hoy) aparte, arriba; debajo, las disponibles del tablón.
+  const section = (title, items) => items.length ? `<div class="dsub">${title} · ${items.length}</div>` + items.map(card).join("") : "";
+  $("dutyList").innerHTML = (section("Aceptadas", shown(b.taken || [])) + section("Disponibles", shown(b.missions)))
+    || empty(want ? "Ningún encargo da esa recompensa." : "Sin encargos.");
+}
+$("dutyFilter").addEventListener("change", renderDuty);
+$("dutyMarks").addEventListener("click", e => {
+  const el = e.target.closest("[data-id]"); if (!el) return;
+  const id = +el.dataset.id;
+  if (dutyMarks.has(id)) dutyMarks.delete(id); else dutyMarks.add(id);
+  saveMarks(); renderDuty();
+});
+$("dutyMarkClear").addEventListener("click", () => { dutyMarks.clear(); saveMarks(); renderDuty(); });
+$("dutyList").addEventListener("click", async e => {
+  const el = e.target.closest("[data-kind]"); if (!el || !duty) return;
+  const kind = el.dataset.kind, id = +el.dataset.id;
+  const current = kind === "items" ? (duty.names.items[id] || duty.names.hub[id]?.name || "") : (duty.names.quests[id] || "");
+  const name = prompt(`Nombre ${kind === "items" ? "del objeto" : "de la misión"} ${id}, como sale en el juego (vacío: quitarlo):`, current);
+  if (name === null) return;
+  const r = await post("/api/names", { kind, id, name });
+  if (r.error) showErr(r.error); else loadDuty();
+});
+
 // Pestañas (la ventana del minimapa siempre muestra el mapa).
 function showView(view) {
   if (MINI) view = "cubes";
@@ -1371,25 +1623,24 @@ function showView(view) {
   $("viewCubes").hidden = view !== "cubes"; $("viewDps").hidden = view !== "dps";
   $("viewTimers").hidden = view !== "timers"; $("viewPets").hidden = view !== "pets";
   $("viewTasks").hidden = view !== "tasks"; $("viewClasses").hidden = view !== "classes";
+  $("viewDuty").hidden = view !== "duty";
   try { localStorage.setItem("view", view); } catch { }
   if (view === "cubes") requestDraw(); else if (view === "dps") renderDps();
   else if (view === "pets") renderPets(); else if (view === "tasks") renderTasks();
-  else if (view === "classes") renderClasses(); else renderTimers();
+  else if (view === "classes") renderClasses(); else if (view === "duty") loadDuty(); else renderTimers();
 }
 $("tabs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) showView(b.dataset.view); });
 let savedView = new URLSearchParams(location.search).get("view");   // ?view=dps abre esa pestaña
 try { savedView = savedView || localStorage.getItem("view"); } catch { }
-savedView = ["dps", "timers", "pets", "tasks", "classes"].includes(savedView) ? savedView : "cubes";
+savedView = ["dps", "timers", "pets", "tasks", "duty", "classes"].includes(savedView) ? savedView : "cubes";
 showView(savedView);
 
 // ---------------- Captura ----------------
 function showErr(msg) { $("err").textContent = msg || ""; $("err").style.display = msg ? "block" : "none"; }
-let captureIface = null;      // adaptador en uso según el servidor
-function setRunning(on, iface, error) {
+function setRunning(on, error) {
   running = on;
   $("dot").classList.toggle("on", on);
   $("dot").title = on ? "Capturando" : "Captura detenida";
-  if (iface !== undefined) { captureIface = iface; if (iface && $("iface").querySelector(`option[value="${CSS.escape(iface)}"]`)) $("iface").value = iface; }
   if (error) showErr("No se pudo iniciar la captura: " + error +
     "  (si Npcap se instaló solo para administradores, abre la app como Administrador)");
   else if (on) showErr("");
@@ -1401,8 +1652,6 @@ async function post(url, body) {
   return r.json();
 }
 
-// Cambiar de adaptador reinicia la captura en el nuevo (y queda guardado).
-$("iface").onchange = () => { showErr(""); post("/api/start", { iface: $("iface").value }); };
 $("cubeCfgBtn").onclick = e => { e.stopPropagation(); $("cubeCfg").hidden = !$("cubeCfg").hidden; };
 $("cubeCfg").addEventListener("click", e => e.stopPropagation());
 document.addEventListener("click", () => { $("cubeCfg").hidden = true; });
@@ -1455,6 +1704,7 @@ if (MINI) {
 
 function applySettings(m) {
   settings = m.settings; floatsRunning = m.running || {};
+  dutyMarks = new Set(settings.dutyMarks || []); renderDuty();
   if (settings.map !== mapSel) setMapSel(settings.map);
   $("sound").checked = settings.sound;
   for (const r of document.querySelectorAll(".volRange")) {
@@ -1553,23 +1803,22 @@ $("sound").onchange = e => saveSettings({ sound: e.target.checked });
 }
 document.addEventListener("click", () => audioCtx?.resume(), { once: true });
 
-async function loadIfaces() {
-  const { npcap, interfaces: list } = await (await fetch("/api/interfaces")).json();
+// La captura va por todos los adaptadores conectados: solo se avisa si falta Npcap.
+async function checkNpcap() {
+  const { npcap } = await (await fetch("/api/npcap")).json();
   if (!npcap) showErr("Npcap no está instalado. Descárgalo de https://npcap.com, instálalo y vuelve a abrir la app.");
-  $("iface").innerHTML = list.map(i =>
-    `<option value="${esc(i.name)}"${i.default ? " selected" : ""}>${esc(i.desc)}</option>`).join("");
-  if (captureIface && list.some(i => i.name === captureIface)) $("iface").value = captureIface;
 }
 
 function connect() {
   const es = new EventSource("/api/events");
   es.onmessage = e => {
     for (const m of JSON.parse(e.data)) {
-      if (m.type === "status") setRunning(m.running, m.iface, m.error);
+      if (m.type === "status") setRunning(m.running, m.error);
       else if (m.type === "settings") applySettings(m);
       else if (m.type === "timers") { timers = m; renderTimers(); }
       else if (m.type === "pets") { pets = m.state; renderPets(); }
-      else if (m.type === "tasks") { tasks = m.state; renderTasks(); }
+      else if (m.type === "tasks") { tasks = m.state; renderTasks(); if (!$("viewDuty").hidden) loadDuty(); }
+      else if (m.type === "names") { if (!$("viewDuty").hidden) loadDuty(); }
       else if (m.type === "update") renderUpdate(m.state);
       else if (m.type === "dps") {
         // Al terminar un combate entra uno nuevo arriba del historial: se sigue viendo el mismo.
@@ -1589,7 +1838,7 @@ function connect() {
 
 setInterval(render, 1000);   // refresca los "hace X s"
 loadMaps().catch(e => showErr("No se pudieron cargar los mapas: " + e + " (¿ejecutaste importar_datos.py?)"));
-if (!MINI) loadIfaces().catch(e => showErr("No se pudieron cargar las interfaces: " + e));
+if (!MINI) checkNpcap().catch(() => { });
 connect();
 </script>
 </body>
