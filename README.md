@@ -66,7 +66,7 @@ Es una carpeta portable: no se instala nada más y tus datos (historiales, tarea
 ![Tareas](capturas/tareas.png)
 
 - Lista de pendientes diarias y semanales **por personaje**; los personajes se añaden solos al entrar al juego con ellos.
-- Tareas **automáticas** (marcadas «auto») que se actualizan solas con los datos del juego: misiones de encargo, recompensas de asistencia, tope de kinah, suministros del Abismo, prueba de ascenso, tiempo y puntos del Abismo, Energía de Od, compras semanales, misiones de evento…
+- Tareas **automáticas** (marcadas «auto») que se actualizan solas con los datos del juego: misiones de encargo, recompensas de asistencia, tope de kinah, suministros del Abismo, prueba de ascenso, Pesadilla, tiempo y puntos del Abismo, Energía de Od, compras semanales, misiones de evento…
 - Tareas **de cuenta** aparte (🌐), compartidas por todos tus personajes, como las entradas a la Fisura desconocida (14 a la semana, se descuentan solas) o fabricar Energía de Od.
 - Barra de Energía de Od de cada personaje.
 - Tus propias tareas: nombre, diaria o semanal, número de veces y si son de personaje o de cuenta. Clic para sumar, clic derecho para restar.
