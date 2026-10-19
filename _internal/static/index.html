@@ -252,7 +252,7 @@
   /* Nombre en su propia fila; debajo ciclo, veces, alcance y Añadir. */
   .taskadd { display: grid; grid-template-columns: minmax(0, 1fr) 52px minmax(0, 1fr) auto; gap: 6px; margin-top: 8px; }
   .taskadd input[name=name] { grid-column: 1 / -1; }
-  .tchar.account { box-shadow: inset 0 0 0 1px rgba(79,156,249,.55); }
+  .tchar.account { grid-column: 1 / -1; box-shadow: inset 0 0 0 1px rgba(79,156,249,.55); }
   .tchar .accicon { width: 26px; text-align: center; font-size: 17px; }
   .tchar .tnote { font-size: 11px; color: var(--muted); margin: -2px 0 4px; }
   .scopetag { font-size: 12px; opacity: .8; }
@@ -1104,6 +1104,7 @@ function renderTasks() {
   const account = tasks.account?.tasks.length ? `<div class="tchar account"><header><span class="accicon">🌐</span>` +
     `<b>Cuenta</b>${pend(tasks.account.pending)}</header><div class="tnote">Compartidas por todos tus personajes</div>` +
     sections(tasks.account, "__cuenta__") + `</div>` : "";
+  // Arriba, a todo el ancho.
   $("taskChars").innerHTML = account + tasks.characters.map(c => {
     return `<div class="tchar${c.current ? " current" : ""}"><header>${clsIcon(c)}<b>${esc(c.name)}</b>` +
       pend(c.pending) + `<button class="x" data-remove="${esc(c.name)}" title="Quitar personaje">×</button></header>` +
