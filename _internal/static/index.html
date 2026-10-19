@@ -1236,7 +1236,7 @@ window.addEventListener("resize", drawPetMap);
 // ---------------- Clases ----------------
 // Cada clase con sus habilidades activas, estigmas y pasivas (data/class_skills.json).
 let classes = null, classSel = null;
-const SKILL_KIND = [["active", "Habilidades activas"], ["stigma", "Estigmas"], ["passive", "Pasivas"]];
+const SKILL_KIND = [["active", "Habilidades activas"], ["passive", "Pasivas"], ["stigma", "Estigmas"]];
 async function renderClasses() {
   if ($("viewClasses").hidden) return;
   if (!classes) classes = await (await fetch("/api/classes")).json();
