@@ -1,4 +1,4 @@
 {
- "version": "1.0.17",
- "notes": "Clases: orden activas, pasivas y estigmas"
+ "version": "1.0.18",
+ "notes": "Tareas: los contadores que cambian ya se leen siempre (entradas a mazmorras); la Fisura desconocida cuenta sus 14 entradas semanales sola"
 }
