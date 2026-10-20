@@ -1,6 +1,6 @@
 # AIONSour
 
-Compañero portable para **AION 2** (Windows): cubos ocultos, medidor de daño, jefes de campo y eventos, mascotas, tareas diarias y semanales, misiones de encargo con sus recompensas y las habilidades de cada clase. Lee el tráfico del juego en tu PC, no modifica el juego ni envía tus datos a ningún sitio.
+Compañero portable para **AION 2** (Windows): inicio con los próximos eventos, llaves y monedas, cubos ocultos, medidor de daño, jefes de campo y eventos, mascotas, tareas diarias y semanales, misiones de encargo con sus recompensas y las habilidades de cada clase. Lee el tráfico del juego en tu PC, no modifica el juego ni envía tus datos a ningún sitio.
 
 ![Cubos ocultos](capturas/cubos.jpg)
 
@@ -15,6 +15,14 @@ Compañero portable para **AION 2** (Windows): cubos ocultos, medidor de daño, 
 Es una carpeta portable: no se instala nada más y tus datos (historiales, tareas, mascotas, ajustes) se guardan dentro de ella.
 
 ## Funciones
+
+### Inicio
+
+![Inicio](capturas/inicio.png)
+
+- Cuenta atrás del **reinicio semanal** (y del diario), el **Festival de Shugo**, la **Invasión dimensional** y la **Grieta espacio-temporal**, o hasta cuándo siguen abiertos. Se ponen en amarillo cuando queda menos de 1 h y en rojo con menos de 15 min.
+- **Batallas por los corredores**: las próximas batallas por los artefactos, desde cuándo están abiertos los corredores del Abismo y cuándo caducan, y de quién es cada artefacto (Elyos o Asmodian), leído del juego.
+- **Llaves y monedas**: llaves de Shugo y de Invasión dimensional de la cuenta y, por personaje, llaves de cubo, kinah, kinah vinculada, puntos de Abismo, fichas de raíz centenaria y fragmentos de ensueño.
 
 ### Cubos ocultos
 
@@ -67,9 +75,11 @@ Es una carpeta portable: no se instala nada más y tus datos (historiales, tarea
 ![Tareas](capturas/tareas.png)
 
 - Lista de pendientes diarias y semanales **por personaje**; los personajes se añaden solos al entrar al juego con ellos.
-- Tareas **automáticas** (marcadas «auto») que se actualizan solas con los datos del juego: tope de kinah, suministros del Abismo, prueba de ascenso, Pesadilla, tiempo y puntos del Abismo, Energía de Od, compras semanales, misiones de evento…
+- Tareas **automáticas** (marcadas «auto») que se actualizan solas con los datos del juego: tope de kinah, suministros del Abismo, prueba de ascenso, Pesadilla, tiempo y puntos del Abismo, compras de Energía de Od y de Piedras de grieta en la tienda, misiones de evento…
+- **Poder de combate** de cada personaje en su tarjeta, abreviado como en el juego (112,1A).
+- Sección **Por batalla**: los corredores del Abismo que te quedan, que se reinician con cada batalla por los artefactos.
 - Tarjeta **Cuenta** arriba (🌐), con lo que comparten todos tus personajes: misiones de encargo (5 al día por cuenta, sumando las de cada personaje), recompensas de asistencia, entradas a la Fisura desconocida (14 a la semana, se descuentan solas) y fabricar Energía de Od.
-- Sección **Llaves y entradas**: llaves de Shugo y de Invasión dimensional (de cuenta) y llaves de cubo de cada personaje, leídas del juego. Solo informan: no cuentan como pendientes.
+- Sección **Llaves y entradas**: llaves de Shugo y de Invasión dimensional (de cuenta) y llaves de cubo de cada personaje, leídas del juego. Se ven en **Inicio** y no cuentan como pendientes.
 - Barra de Energía de Od de cada personaje.
 - Tus propias tareas: nombre, diaria o semanal, número de veces y si son de personaje o de cuenta. Clic para sumar, clic derecho para restar.
 - Reinicio diario y semanal automático a la hora del servidor.

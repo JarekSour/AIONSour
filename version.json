@@ -1,4 +1,4 @@
 {
- "version": "1.0.26",
- "notes": "Nueva pestaña Inicio: reinicio semanal, Festival de Shugo, Invasión dimensional, Grieta espacio-temporal y batallas por los corredores con los dueños de los artefactos; llaves y monedas por personaje (llaves de cubo, kina, kina vinculada, puntos de Abismo, fichas de raíz centenaria y fragmentos de ensueño). Tareas: poder de combate por personaje, corredores del Abismo por batalla y automáticos, compras de Energía de Od y piedras de grieta automáticas. Captura en todos los adaptadores de red (sin selector). Corregidos iconos de habilidades, la clase de los jugadores en el medidor de daño y la duración de la Grieta (10 min) y del Festival de Shugo (3 min)."
+ "version": "1.0.27",
+ "notes": "README actualizado con la pestaña Inicio y las novedades de Tareas, con capturas nuevas."
 }
