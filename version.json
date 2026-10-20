@@ -1,4 +1,4 @@
 {
- "version": "1.0.27",
- "notes": "README actualizado con la pestaña Inicio y las novedades de Tareas, con capturas nuevas."
+ "version": "1.0.28",
+ "notes": "Inicio: contador del Campo de batalla (11:00-14:00 y 19:00-21:00) e icono nuevo de la Invasión dimensional. Tareas semanales automáticas de PvP solo, PvP cooperativo y Campo de batalla (victorias y participación), leídas del historial al abrir la ventana de PvP; tareas agrupadas por nombre. Corredores del Abismo: los abiertos son de la cuenta y cada personaje cuenta los suyos. Las tareas automáticas sin datos ya no se pueden marcar a mano. Corregidos los iconos de Acierto de impacto y Voluntad de supervivencia del Templario y los de habilidades en el medidor de daño."
 }

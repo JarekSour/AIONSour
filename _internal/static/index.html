@@ -287,6 +287,8 @@
   .trow.done .tn { color: var(--muted); text-decoration: line-through; }
   .trow .tn { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .trow .tc { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .tgroup { padding: 3px 4px 0 27px; }                     /* encabezado de «Grupo: parte» */
+  .trow.sub .tn { padding-left: 14px; }
   .tdef { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto auto auto; gap: 6px; align-items: center;
     padding: 4px 6px; border-radius: 6px; background: var(--panel2); margin-bottom: 4px; }
   .tdef span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -311,6 +313,7 @@
   .trow.auto .tc { color: var(--accent); }
   .trow.key .tc { color: var(--gold); font-weight: 600; }
   .trow.auto.done .tc { color: var(--ok); }
+  .trow.auto.nodata .tc { color: var(--muted); }            /* automática aún sin datos del juego */
   .autotag { font-size: 10px; color: var(--accent); border: 1px solid rgba(79,156,249,.5); border-radius: 4px; padding: 0 4px; }
   .odbar { position: relative; height: 16px; border-radius: 4px; background: #11151b; overflow: hidden; margin: 0 0 4px;
     font-size: 10.5px; line-height: 16px; text-align: center; font-variant-numeric: tabular-nums; }
@@ -559,6 +562,12 @@
     <ul class="hlist" id="homeSiegeList"></ul>
     <div class="hnote">Al terminar cada batalla por los artefactos se abren los corredores del Abismo (para la
       facción que la gana); caducan al empezar la siguiente.</div>
+  </div>
+  <div class="card hcard">
+    <h3><svg class="hico" viewBox="0 0 16 16" style="color:#f59e0b"><path fill="currentColor" d="M3 1h1.4v14H3zM4.4 1.6h8.2l-2 3 2 3H4.4z"/></svg>Campo de batalla</h3>
+    <div class="hbig" id="homeBattlefield">–</div>
+    <div class="hsub" id="homeBattlefieldAt"></div>
+    <div class="hnote">Abierto todos los días de 11:00 a 14:00 y de 19:00 a 21:00.</div>
   </div>
   <div class="card hcard hwide">
     <h3><img class="hico" src="/icons/objetos/630900003.png" alt="">Llaves y monedas</h3>
@@ -1284,14 +1293,23 @@ function renderTasks() {
     `batalla en ${span(Math.max(0, Math.round(tasks.nextBattle - now)))}`;
   const defs = new Map(tasks.tasks.map(t => [t.id, t]));
   const sections = (c, owner) => ["daily", "weekly", "battle"].map(cycle => {     // las llaves, en Inicio
-      const rows = c.tasks.filter(t => taskGroup(defs.get(t.id)) === cycle).map(t => {
-        const d = defs.get(t.id);
-        const live = t.auto && t.text !== "entra al juego";      // con datos del juego: se marca sola
+      // Tareas seguidas con el mismo «Grupo: parte» (Campo de batalla: participación / victorias)
+      // van bajo un encabezado con el grupo, y cada una solo con su parte.
+      const list = c.tasks.filter(t => taskGroup(defs.get(t.id)) === cycle);
+      const groupOf = t => { const n = defs.get(t.id).name, i = n.indexOf(": "); return i > 0 ? n.slice(0, i) : null; };
+      const rows = list.map((t, i) => {
+        const d = defs.get(t.id), g = groupOf(t);
+        const prev = i > 0 ? groupOf(list[i - 1]) : null, next = list[i + 1] ? groupOf(list[i + 1]) : null;
+        const grouped = g && (prev === g || next === g);
+        const head = grouped && prev !== g ? `<div class="tgroup">${esc(g)}</div>` : "";
+        const part = grouped ? d.name.slice(g.length + 2) : d.name;
+        const label = part.charAt(0).toUpperCase() + part.slice(1);
+        const live = t.auto && !t.noData;                        // con datos del juego: se marca sola
         const tip = live ? "Se marca sola con los datos del juego" : t.auto
           ? "Se marcará sola cuando entres al juego con este personaje" : t.done ? "Hecha" : "Pendiente";
-        return `<div class="trow${t.done ? " done" : ""}${live ? " auto" : ""}${cycle === "keys" ? " key" : ""}" data-char="${esc(owner)}" ` +
+        return head + `<div class="trow${t.done ? " done" : ""}${t.auto ? " auto" : ""}${t.auto && !live ? " nodata" : ""}${cycle === "keys" ? " key" : ""}${grouped ? " sub" : ""}" data-char="${esc(owner)}" ` +
           `data-task="${t.id}" title="${tip}">` +
-          `<span class="box">${t.done ? "✓" : ""}</span><span class="tn">${esc(d.name)}</span>` +
+          `<span class="box">${t.done ? "✓" : ""}</span><span class="tn">${esc(label)}</span>` +
           `<span class="tc">${t.auto ? esc(t.text || "") : d.times > 1 ? `${t.count}/${d.times}` : ""}</span></div>`;
       }).join("");
       return rows ? `<div class="tsub">${CYCLE[cycle]}</div>${rows}` : "";
@@ -1722,6 +1740,7 @@ function renderHome() {
   const now = Date.now() / 1000;
   const marks = [home.weeklyReset, home.dailyReset, home.shugo?.next, home.shugo?.liveUntil,
     home.invasion?.next, home.invasion?.liveUntil, home.rift?.next, home.rift?.liveUntil,
+    home.battlefield?.next, home.battlefield?.liveUntil,
     home.siege?.liveUntil, ...(home.siege?.next || [])].filter(Boolean);
   if (marks.some(t => t <= now)) { home = null; loadHome(); return; }      // pasó una de las horas
   const set = (id, text, cls = "") => { $(id).textContent = text; $(id).className = "hbig" + (cls ? " " + cls : ""); };
@@ -1738,6 +1757,7 @@ function renderHome() {
   eventCard(home.shugo, "homeShugo", "homeShugoAt");
   eventCard(home.invasion, "homeInvasion", "homeInvasionAt");
   eventCard(home.rift, "homeRift", "homeRiftAt");
+  eventCard(home.battlefield, "homeBattlefield", "homeBattlefieldAt");
   const sg = home.siege;
   if (sg?.liveUntil) { set("homeSiege", "En curso", "live"); $("homeSiegeAt").textContent = `Termina en ${untilText(sg.liveUntil)}`; }
   else if (sg?.next?.length) { set("homeSiege", untilText(sg.next[0]), urgency(sg.next[0])); $("homeSiegeAt").textContent = longDay(sg.next[0]); }
