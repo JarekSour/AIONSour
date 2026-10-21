@@ -8,7 +8,7 @@
   :root {
     --bg: #0f1216; --panel: #171b21; --panel2: #1e232b; --border: #2a313b;
     --text: #e3e7ed; --muted: #8b95a3; --accent: #4f9cf9; --danger: #f2555a; --ok: #3ccf8e;
-    --gold: #ffd166; --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --gold: #ffd166; --extra: #34b3ce; --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
   }
   * { box-sizing: border-box; }
   /* Barras de desplazamiento finas, del color de los bordes; se iluminan al pasar el ratón. */
@@ -35,6 +35,14 @@
   button:hover { border-color: var(--accent); }
   button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   button.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+  /* Ventana de confirmación (askConfirm) */
+  dialog.ask { background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 10px;
+    padding: 18px 20px 16px; width: min(380px, calc(100vw - 32px)); box-shadow: 0 12px 40px rgba(0,0,0,.5); }
+  dialog.ask::backdrop { background: rgba(0,0,0,.55); }
+  dialog.ask h3 { margin: 0 0 8px; font-size: 15px; }
+  dialog.ask p { margin: 0 0 16px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+  dialog.ask p b { color: var(--text); font-weight: 600; }
+  dialog.ask .askbtns { display: flex; justify-content: flex-end; gap: 8px; }
   .spacer { flex: 1; }
   label.chk { display: flex; gap: 5px; align-items: center; color: var(--muted); }
   #err { color: var(--danger); width: 100%; display: none; }
@@ -170,6 +178,7 @@
   .hkeys .hk .clsicon { width: 22px; height: 22px; padding: 2px; }
   .hkeys .hk .n { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .hkeys .hk b { color: var(--gold); font-variant-numeric: tabular-nums; }
+  .hkeys .hk .hrefill { color: var(--muted); font-size: 11px; white-space: nowrap; }
   .homeview .hwide { grid-column: span 2; }
   @media (max-width: 700px) { .homeview .hwide { grid-column: auto; } }
   /* Personajes: una fila cada uno con columnas alineadas (llaves de cubo y monedas). */
@@ -286,24 +295,30 @@
   .trow.done .box { background: var(--ok); border-color: var(--ok); }
   .trow.done .tn { color: var(--muted); text-decoration: line-through; }
   .trow .tn { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* Nombre que no cabe: con el ratón encima rueda en bucle (dos copias; --dur según su largo) */
+  .trow .tn.marquee { text-overflow: clip; }
+  .trow .tn.marquee > span { display: inline-block; animation: tn-marquee var(--dur, 6s) linear infinite; }
+  .trow .tn.marquee .gap { display: inline-block; width: 2.5em; }
+  @keyframes tn-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   .trow .tc { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
   .tgroup { padding: 3px 4px 0 27px; }                     /* encabezado de «Grupo: parte» */
   .trow.sub .tn { padding-left: 14px; }
-  .tdef { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto auto auto; gap: 6px; align-items: center;
-    padding: 4px 6px; border-radius: 6px; background: var(--panel2); margin-bottom: 4px; }
-  .tdef span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .tdef small { color: var(--muted); font-size: 11px; white-space: nowrap; }
-  .tdef button { border: 0; background: none; color: var(--muted); padding: 0 3px; }
-  .tdef button:hover { color: var(--text); }
   /* Nombre en su propia fila; debajo ciclo, veces, alcance y Añadir. */
   .taskadd { display: grid; grid-template-columns: minmax(0, 1fr) 52px minmax(0, 1fr) auto; gap: 6px; margin-top: 8px; }
   .taskadd input[name=name] { grid-column: 1 / -1; }
   .tchar.account { grid-column: 1 / -1; box-shadow: inset 0 0 0 1px rgba(79,156,249,.55); }
   .tchar.account .trow { grid-template-columns: 16px minmax(0, 280px) auto; justify-content: start; column-gap: 7px; }
+  /* Tus tareas (las creadas), debajo de «Nueva tarea», con su botón de borrar */
+  .mytasks { margin-top: 12px; }
+  .mytask { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: center;
+    padding: 4px 6px; border-radius: 6px; background: var(--panel2); margin-bottom: 4px; font-size: 13px; }
+  .mytask span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mytask small { color: var(--muted); font-size: 11px; white-space: nowrap; }
+  .mytask button { border: 0; background: none; color: var(--muted); padding: 0 3px; }
+  .mytask button:hover { color: var(--danger); }
   .tchar.account .trow .tc { padding-left: 24px; }
   .tchar .accicon { width: 26px; text-align: center; font-size: 17px; }
   .tchar .tnote { font-size: 11px; color: var(--muted); margin: -2px 0 4px; }
-  .scopetag { font-size: 12px; opacity: .8; }
   .taskadd input, .taskadd select { font: inherit; font-size: 12px; color: var(--text); background: var(--panel2);
     border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px; min-width: 0; }
   .trow.auto { cursor: default; }
@@ -313,8 +328,8 @@
   .trow.auto .tc { color: var(--accent); }
   .trow.key .tc { color: var(--gold); font-weight: 600; }
   .trow.auto.done .tc { color: var(--ok); }
+  .extra { color: var(--extra); }                          /* cantidades adicionales (+N) */
   .trow.auto.nodata .tc { color: var(--muted); }            /* automática aún sin datos del juego */
-  .autotag { font-size: 10px; color: var(--accent); border: 1px solid rgba(79,156,249,.5); border-radius: 4px; padding: 0 4px; }
   .odbar { position: relative; height: 16px; border-radius: 4px; background: #11151b; overflow: hidden; margin: 0 0 4px;
     font-size: 10.5px; line-height: 16px; text-align: center; font-variant-numeric: tabular-nums; }
   .odbar i { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, rgba(79,156,249,.55), rgba(79,156,249,.25)); }
@@ -511,11 +526,11 @@
   <h1><span class="dot" id="dot"></span>AIONSour<small class="ver" id="appVersion"></small></h1>
   <nav class="tabs" id="tabs">
     <button data-view="home" class="on">🏠 Inicio</button>
+    <button data-view="tasks">✓ Tareas</button>
     <button data-view="cubes">◆ Cubos</button>
     <button data-view="dps">⚔ Daño<span class="live" id="dpsLive" hidden></span></button>
     <button data-view="timers">♛ Jefes y eventos</button>
     <button data-view="pets">🐾 Mascotas</button>
-    <button data-view="tasks">✓ Tareas</button>
     <button data-view="duty">📜 Encargos</button>
     <button data-view="classes">⛨ Clases</button>
   </nav>
@@ -688,20 +703,19 @@
   <div class="card">
     <h3>Pendientes por personaje <span class="grow"></span><span class="muted" id="taskResets"></span></h3>
     <div class="taskchars" id="taskChars"></div>
-    <div class="histkey">Las tareas «auto» se marcan solas con los datos del juego. En las demás, clic: +1 (o la marca hecha); clic derecho: −1. Los personajes se añaden solos al entrar al juego con ellos.</div>
   </div>
   <div class="card">
-    <h3>Tareas</h3>
-    <div id="taskDefs"></div>
+    <h3>Nueva tarea</h3>
     <form class="taskadd" id="taskAdd">
       <input name="name" placeholder="Nueva tarea…" maxlength="80" required>
       <select name="cycle"><option value="daily">Diaria</option><option value="weekly">Semanal</option>
-        <option value="battle" title="Se reinicia en cada batalla por los artefactos">Por batalla</option></select>
-      <input name="times" type="number" min="1" max="99" value="1" title="Veces">
-      <select name="scope" title="De cada personaje o compartida por la cuenta">
+        <option value="battle">Por batalla</option></select>
+      <input name="times" type="number" min="1" max="99" value="1">
+      <select name="scope">
         <option value="character">Personaje</option><option value="account">Cuenta</option></select>
       <button>Añadir</button>
     </form>
+    <div class="mytasks" id="myTasks"></div>
     <div class="histkey">Reinicio diario a las 07:00 UTC y semanal el miércoles a las 07:00 UTC (servidores Global).</div>
   </div>
 </main>
@@ -723,6 +737,12 @@
     <div id="dutyList"></div>
   </div>
 </main>
+
+<dialog class="ask" id="askDlg">
+  <h3 id="askTitle"></h3>
+  <p id="askText"></p>
+  <div class="askbtns"><button id="askNo">Cancelar</button><button id="askYes" class="danger"></button></div>
+</dialog>
 
 <main id="viewClasses" class="classesview" hidden>
   <div class="card">
@@ -749,6 +769,8 @@
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+// Texto escapado con las cantidades adicionales «(+N)» (cargas extra) en su color.
+const withExtra = s => esc(s).replace(/\(\+[\d.,]+\)/g, m => `<span class="extra">${m}</span>`);
 const MINI_PARAM = new URLSearchParams(location.search).get("mini");   // dentro de una ventana flotante
 const MINI_KIND = MINI_PARAM === null ? null : MINI_PARAM === "dps" ? "dps" : "mini";
 const MINI = !!MINI_KIND, MINI_DPS = MINI_KIND === "dps";
@@ -969,9 +991,11 @@ new ResizeObserver(requestDraw).observe(canvas);
 
 async function loadMaps() {
   maps = await (await fetch("/maps/maps.json")).json();
+  // Solo los mapas con cubos (los de maps.worlds: Verteron y Altgard); el resto es para Mascotas.
+  const cubeMaps = maps.maps.filter(m => Object.values(maps.worlds).includes(m.id));
   $("mapSel").innerHTML = `<option value="auto">Automático</option>` +
-    maps.maps.map(m => `<option value="${esc(m.id)}">${esc(m.name)}</option>`).join("");
-  if (mapSel !== "auto" && !maps.maps.some(m => m.id === mapSel)) mapSel = "auto";
+    cubeMaps.map(m => `<option value="${esc(m.id)}">${esc(m.name)}</option>`).join("");
+  if (mapSel !== "auto" && !cubeMaps.some(m => m.id === mapSel)) mapSel = "auto";
   $("mapSel").value = mapSel;
   updateAutoLabel(); render(); focusCube(state?.active[0]); requestDraw();
 }
@@ -1287,6 +1311,7 @@ const CYCLE = { daily: "Diarias", weekly: "Semanales", battle: "Por batalla", ke
 const taskGroup = d => d?.section === "keys" ? "keys" : d?.cycle;
 function renderTasks() {
   if (!tasks || $("viewTasks").hidden) return;
+  renderMyTasks();
   const now = Date.now() / 1000;
   $("taskResets").textContent = `Diario en ${span(Math.max(0, Math.round(tasks.nextDaily - now)))} · ` +
     `semanal en ${span(Math.max(0, Math.round(tasks.nextWeekly - now)))} · ` +
@@ -1305,17 +1330,15 @@ function renderTasks() {
         const part = grouped ? d.name.slice(g.length + 2) : d.name;
         const label = part.charAt(0).toUpperCase() + part.slice(1);
         const live = t.auto && !t.noData;                        // con datos del juego: se marca sola
-        const tip = live ? "Se marca sola con los datos del juego" : t.auto
-          ? "Se marcará sola cuando entres al juego con este personaje" : t.done ? "Hecha" : "Pendiente";
         return head + `<div class="trow${t.done ? " done" : ""}${t.auto ? " auto" : ""}${t.auto && !live ? " nodata" : ""}${cycle === "keys" ? " key" : ""}${grouped ? " sub" : ""}" data-char="${esc(owner)}" ` +
-          `data-task="${t.id}" title="${tip}">` +
+          `data-task="${t.id}">` +
           `<span class="box">${t.done ? "✓" : ""}</span><span class="tn">${esc(label)}</span>` +
-          `<span class="tc">${t.auto ? esc(t.text || "") : d.times > 1 ? `${t.count}/${d.times}` : ""}</span></div>`;
+          `<span class="tc">${t.auto ? withExtra(t.text || "") : d.times > 1 ? `${t.count}/${d.times}` : ""}</span></div>`;
       }).join("");
       return rows ? `<div class="tsub">${CYCLE[cycle]}</div>${rows}` : "";
     }).join("");
   // Poder de combate (de la trama del personaje), como lo abrevia el juego (112,0A).
-  const cpBadge = cp => cp ? `<span class="cp" title="Poder de combate: ${fmt(cp)}">${CP_ICON}${gameQty(cp)}</span>` : "";
+  const cpBadge = cp => cp ? `<span class="cp">${CP_ICON}${gameQty(cp)}</span>` : "";
   const pend = n => `<span class="pend${n ? "" : " ok"}">${n ? `${n} pendiente${n === 1 ? "" : "s"}` : "Todo hecho"}</span>`;
   // De cuenta: una sola tarjeta, compartida por todos tus personajes.
   const account = tasks.account?.tasks.length ? `<div class="tchar account"><header><span class="accicon">🌐</span>` +
@@ -1324,24 +1347,50 @@ function renderTasks() {
   // Arriba, a todo el ancho.
   $("taskChars").innerHTML = account + tasks.characters.map(c => {
     return `<div class="tchar${c.current ? " current" : ""}"><header>${clsIcon(c)}<b>${esc(c.name)}</b>` +
-      cpBadge(c.cp) + `<button class="x" data-remove="${esc(c.name)}" title="Quitar personaje">×</button></header>` +
-      (c.energy ? `<div class="odbar" title="Energía de Od (+ cargas extra)"><i style="width:${Math.min(100, c.energy.count * 100 / c.energy.cap).toFixed(1)}%"></i>` +
-        `<span>Energía de Od <b>${c.energy.count}</b>${c.energy.charged ? ` (+${c.energy.charged})` : ""} / ${c.energy.cap}</span></div>` : "") +
+      cpBadge(c.cp) + `<button class="x" data-remove="${esc(c.name)}">×</button></header>` +
+      (c.energy ? `<div class="odbar"><i style="width:${Math.min(100, c.energy.count * 100 / c.energy.cap).toFixed(1)}%"></i>` +
+        `<span>Energía de Od <b>${c.energy.count}</b>${c.energy.charged ? ` <span class="extra">(+${c.energy.charged})</span>` : ""} / ${c.energy.cap}</span></div>` : "") +
       sections(c, c.name) + `</div>`;
   }).join("") || empty("Entra al juego con un personaje y aparecerá aquí.");
-  $("taskDefs").innerHTML = ["daily", "weekly", "battle", "keys"].map(cy => {
-    const list = tasks.tasks.filter(t => taskGroup(t) === cy);
-    if (cy === "keys" && !list.length) return "";
-    return `<div class="tsub">${CYCLE[cy]}</div>` + (list.map(t =>
-      `<div class="tdef" data-task="${t.id}"><span title="${esc(t.name)}">${esc(t.name)}</span>` +
-      `<small>${t.game ? '<span class="autotag" title="Se marca sola con los datos del juego">auto</span>' : t.times > 1 ? `×${t.times}` : ""}</small>` +
-      (t.game ? `<span class="scopetag" title="${t.scope === "account" ? "De cuenta (lo dice el juego)" : "De personaje"}">${t.scope === "account" ? "🌐" : "👤"}</span>`
-        : `<button data-act="scope" title="${t.scope === "account" ? "De cuenta: pasar a de personaje" : "De personaje: pasar a de cuenta"}">${t.scope === "account" ? "🌐" : "👤"}</button>`) +
-      `<button data-act="up" title="Subir">▲</button><button data-act="down" title="Bajar">▼</button>` +
-      `<button data-act="delete" title="Borrar tarea">×</button></div>`).join("") || empty("Sin tareas."));
-  }).join("");
+  if (marqueeRow) {                              // se redibujó con el ratón encima: sigue rodando
+    const { char, task } = marqueeRow.dataset;
+    marqueeRow = null;
+    startMarquee([...$("taskChars").querySelectorAll(".trow")].find(r => r.dataset.char === char && r.dataset.task === task), marqueeSince);
+  }
 }
 const taskPost = body => post("/api/tasks", body).then(r => { if (r.error) showErr(r.error); });
+// Tus tareas (no las automáticas): debajo de «Nueva tarea», para poder borrarlas.
+const ONE_CYCLE = { daily: "diaria", weekly: "semanal", battle: "por batalla" };
+function renderMyTasks() {
+  const mine = (tasks?.tasks || []).filter(t => !t.game);
+  $("myTasks").innerHTML = mine.length ? `<div class="tsub">Tus tareas</div>` + mine.map(t =>
+    `<div class="mytask" data-task="${t.id}"><span>${esc(t.name)}</span>` +
+    `<small>${ONE_CYCLE[t.cycle] || t.cycle}${t.times > 1 ? ` · ×${t.times}` : ""} · ${t.scope === "account" ? "cuenta" : "personaje"}</small>` +
+    `<button>×</button></div>`).join("") : "";
+}
+$("myTasks").addEventListener("click", async e => {
+  const b = e.target.closest("button"); if (!b) return;
+  const id = b.closest(".mytask").dataset.task, name = tasks.tasks.find(t => t.id === id)?.name;
+  const text = `Se quitará <b>${esc(name)}</b> de todos tus personajes, junto con lo que tengas marcado.`;
+  if (await askConfirm("Borrar tarea", text, "Borrar")) taskPost({ action: "delete", task: id });
+});
+// Confirmación con el estilo de la app (en vez de confirm()): resuelve true si se acepta.
+// `html` ya escapado. Esc, Cancelar o pulsar fuera: false.
+function askConfirm(title, html, ok = "Aceptar") {
+  const d = $("askDlg");
+  $("askTitle").textContent = title; $("askText").innerHTML = html; $("askYes").textContent = ok;
+  d.returnValue = "";
+  return new Promise(resolve => {
+    d.onclose = () => resolve(d.returnValue === "yes");
+    d.showModal(); $("askNo").focus();
+  });
+}
+$("askYes").onclick = () => $("askDlg").close("yes");
+$("askNo").onclick = () => $("askDlg").close("no");
+$("askDlg").addEventListener("click", e => {          // pulsar fuera de la ventana: cancelar
+  const r = $("askDlg").getBoundingClientRect();
+  if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) $("askDlg").close("no");
+});
 $("taskChars").addEventListener("click", e => {
   const rm = e.target.closest("[data-remove]");
   if (rm) {
@@ -1355,21 +1404,40 @@ $("taskChars").addEventListener("click", e => {
   const delta = row.classList.contains("done") && d?.times === 1 ? -1 : 1;
   taskPost({ action: "tick", character: row.dataset.char, task: row.dataset.task, delta });
 });
+// Nombre de tarea que no cabe: al entrar en su fila rueda en bucle (~40 px/s); al salir vuelve.
+// Se calcula una vez por fila (medirlo mientras rueda hacía que temblara).
+let marqueeRow = null, marqueeSince = 0;
+function stopMarquee() {
+  const tn = marqueeRow?.querySelector(".tn.marquee");
+  if (tn) { tn.textContent = tn.dataset.text; tn.classList.remove("marquee"); }
+  marqueeRow = null;
+}
+// Empieza a rodar el nombre de `row` si no cabe; `since` (ms): cuándo empezó, para seguir en el
+// mismo punto si la tarjeta se redibuja (cada 30 s).
+function startMarquee(row, since = performance.now()) {
+  const tn = row?.querySelector(".tn");
+  if (!tn || tn.scrollWidth <= tn.clientWidth) return;
+  marqueeRow = row; marqueeSince = since;
+  const text = tn.textContent, copy = `${esc(text)}<span class="gap"></span>`;
+  tn.dataset.text = text;
+  tn.innerHTML = `<span>${copy}${copy}</span>`;
+  const dur = Math.max(3, tn.firstChild.scrollWidth / 2 / 40);
+  tn.style.setProperty("--dur", `${dur}s`);
+  tn.firstChild.style.animationDelay = `-${((performance.now() - since) / 1000) % dur}s`;
+  tn.classList.add("marquee");
+}
+$("taskChars").addEventListener("mouseover", e => {
+  const row = e.target.closest(".trow");
+  if (row === marqueeRow) return;
+  stopMarquee();
+  startMarquee(row);
+});
+$("taskChars").addEventListener("mouseleave", stopMarquee);
 $("taskChars").addEventListener("contextmenu", e => {
   const row = e.target.closest(".trow"); if (!row) return;
   e.preventDefault();
   if (row.classList.contains("auto")) return;
   taskPost({ action: "tick", character: row.dataset.char, task: row.dataset.task, delta: -1 });
-});
-$("taskDefs").addEventListener("click", e => {
-  const b = e.target.closest("button[data-act]"); if (!b) return;
-  const id = b.closest(".tdef").dataset.task, name = tasks.tasks.find(t => t.id === id)?.name;
-  if (b.dataset.act === "delete") { if (confirm(`¿Borrar la tarea «${name}»?`)) taskPost({ action: "delete", task: id }); }
-  else if (b.dataset.act === "scope") {
-    const t = tasks.tasks.find(x => x.id === id);
-    taskPost({ action: "edit", task: id, scope: t.scope === "account" ? "character" : "account" });
-  }
-  else taskPost({ action: "move", task: id, delta: b.dataset.act === "up" ? -1 : 1 });
 });
 $("taskAdd").addEventListener("submit", e => {
   e.preventDefault();
@@ -1642,13 +1710,13 @@ function iconFailed(img) {
 }
 // Casilla de recompensa (icono, fondo de su grado, candado si es ligado y cantidad).
 function rewardTile(id, count, cls, extra) {
-  const n = itemName(id), bound = /\(Bound\)/.test(duty.names.hub[id]?.name || "");
+  const hub = duty.names.hub[id], n = itemName(id), bound = /\(Bound\)/.test(hub?.name || "");
   return `<span class="drw${cls}" data-kind="items" data-id="${id}" title="${esc(n || `Objeto ${id}`)}` +
-    `${duty.names.hub[id]?.grade ? ` (${esc(duty.names.hub[id].grade)})` : ""}${extra}">` +
+    `${hub?.grade ? ` (${esc(hub.grade)})` : ""}${extra}">` +
     `<span class="tile g-${itemGrade(id) || "none"}"><span class="noicon">${esc(n || id)}</span>` +
     `<img src="${(duty.localIcons || []).includes(id) ? `/icons/objetos/${id}.png` : duty.icon.replace("{}", id)}" ` +
     `alt="" loading="lazy" referrerpolicy="no-referrer"` +
-    (duty.names.hub[id]?.image ? ` data-alt="${esc(duty.names.hub[id].image)}"` : "") + ` onerror="iconFailed(this)">` +
+    (hub?.image ? ` data-alt="${esc(hub.image)}"` : "") + ` onerror="iconFailed(this)">` +
     (bound ? LOCK : "") + qtyLabel(count) + `</span>`;
 }
 function renderDuty() {
@@ -1777,11 +1845,13 @@ const COIN_COLUMNS = [[630900003, "Llaves de cubo"], [930100031, "Kina"], [93010
 // Llaves y monedas: las de cuenta arriba; debajo, una fila por personaje con sus llaves de cubo y
   // sus monedas (de su inventario; llegan al entrar al juego con él).
   const k = home.keys || { account: [], characters: [] };
-  const keyRow = (label, value) => `<div class="hk"><span class="n">${esc(label)}</span><b>${esc(value ?? "—")}</b></div>`;
+  // refill: próxima recarga {at, amount} de las que se recargan al reiniciar, por debajo del tope.
+  const keyRow = (label, value, refill) => `<div class="hk"><span class="n">${esc(label)}</span><b>${withExtra(value ?? "—")}</b>` +
+    (refill ? `<small class="hrefill">+${refill.amount} en ${untilText(refill.at)}</small>` : "") + `</div>`;
   const val = (v, title = "") => `<span class="hv${v == null ? " none" : ""}"${title ? ` title="${esc(title)}"` : ""}>` +
     `${v == null ? "—" : typeof v === "number" ? fmt(v) : esc(v)}</span>`;
   $("homeKeys").innerHTML =
-    (k.account.length ? `<div class="hkeys"><div class="hsec">Cuenta</div>` + k.account.map(x => keyRow(x.name, x.text)).join("") + `</div>` : "") +
+    (k.account.length ? `<div class="hkeys"><div class="hsec">Cuenta</div>` + k.account.map(x => keyRow(x.name, x.text, x.refill)).join("") + `</div>` : "") +
     (k.characters.length ? `<div class="hkeys"><div class="hsec">Personajes</div></div><div class="hchars">` +
       `<span></span>` + COIN_COLUMNS.map(([id, title]) =>
         `<span class="hh" title="${title}"><img src="/icons/objetos/${id}.png" alt="${title}"></span>`).join("") +

@@ -22,11 +22,27 @@ Es una carpeta portable: no se instala nada más y tus datos (historiales, tarea
 
 - Cuenta atrás del **reinicio semanal** (y del diario), el **Festival de Shugo**, la **Invasión dimensional** y la **Grieta espacio-temporal**, o hasta cuándo siguen abiertos. Se ponen en amarillo cuando queda menos de 1 h y en rojo con menos de 15 min.
 - **Batallas por los corredores**: las próximas batallas por los artefactos, desde cuándo están abiertos los corredores del Abismo y cuándo caducan, y de quién es cada artefacto (Elyos o Asmodian), leído del juego.
-- **Llaves y monedas**: llaves de Shugo y de Invasión dimensional de la cuenta y, por personaje, llaves de cubo, kinah, kinah vinculada, puntos de Abismo, fichas de raíz centenaria y fragmentos de ensueño.
+- **Campo de batalla**: cuánto falta para que abra (todos los días de 11:00 a 14:00 y de 19:00 a 21:00) o hasta cuándo sigue abierto.
+- **Llaves y monedas**: llaves de Shugo y de Invasión dimensional de la cuenta, con su tope (21 y 7) y cuánto falta para la próxima recarga (+3 y +1 en cada reinicio diario); por personaje, llaves de cubo, kinah, kinah vinculada, puntos de Abismo, fichas de raíz centenaria y fragmentos de ensueño. Las cantidades adicionales salen entre paréntesis y en otro color: «16 (+3) / 21».
+
+### Tareas
+
+![Tareas](capturas/tareas.png)
+
+- Lista de pendientes diarias y semanales **por personaje**; los personajes se añaden solos al entrar al juego con ellos.
+- Tareas **automáticas** que se marcan solas con los datos del juego: tope de kinah, suministros (urgentes y semanales), compras de Energía de Od y de Piedras de grieta, Pesadilla, prueba de ascenso, tiempo y puntos del Abismo… Mientras no hay datos del juego dicen «entra al juego» y no se pueden marcar a mano.
+- **PvP solo, PvP cooperativo y Campo de batalla**: victorias y participación de la semana (30 y 10; 3 y 3 en el Campo de batalla). Se actualizan solas al ganar o perder cada partida y al abrir la ventana de PvP del juego.
+- Las entradas adicionales («quedan 0 (+2) / 3») se muestran aparte y no dejan la tarea pendiente.
+- **Poder de combate** de cada personaje en su tarjeta, abreviado como en el juego (112,1A), y al día al equipar o cambiar de personaje.
+- Sección **Por batalla**: los corredores del Abismo abiertos para tu cuenta y cuáles hizo cada personaje; se reinician con cada batalla por los artefactos.
+- Tarjeta **Cuenta** arriba (🌐), con lo que comparten todos tus personajes: misiones de encargo (5 al día por cuenta), recompensas de asistencia, entradas a la Fisura desconocida (14 a la semana), compra de órdenes (12 a la semana) y fabricar Energía de Od.
+- Barra de Energía de Od de cada personaje.
+- **Tus propias tareas**: nombre, diaria, semanal o por batalla, número de veces y si son de personaje o de cuenta. Clic para sumar, clic derecho para restar. Debajo de «Nueva tarea» aparecen las que creaste, con su botón para borrarlas.
+- Reinicio diario y semanal automático a la hora del servidor.
 
 ### Cubos ocultos
 
-- Detecta los cubos ocultos al aparecer y los marca en el mapa de la zona, con todos los puntos posibles donde pueden salir.
+- Detecta los cubos ocultos al aparecer y los marca en el mapa de la zona (Verteron o Altgard), con todos los puntos posibles donde pueden salir.
 - Historial con la hora y el resultado de cada uno: **verde** si lo abriste tú, **rojo** si lo abrió otro jugador, o reemplazado por uno nuevo.
 - Aviso con sonido y notificación al aparecer un cubo (configurable).
 
@@ -53,8 +69,8 @@ Es una carpeta portable: no se instala nada más y tus datos (historiales, tarea
 
 ![Jefes y eventos](capturas/jefes.png)
 
-- Estado de los jefes de campo de cada zona: vivo o cuánto falta para que reaparezca.
-- Próximos eventos (grietas, invasiones, festival de Shugo, arenas, asedios, reinicios…) con cuenta atrás.
+- Estado de los jefes de campo de Verteron, Altgard y Reshanta Inferior del Caos: vivo o cuánto falta para que reaparezca.
+- Próximos eventos de la versión Global con cuenta atrás: Invasión dimensional, Grieta espacio-temporal, Festival de Shugo y los reinicios diario y semanal.
 - Marca los que te interesan (☆ en jefes, casilla en eventos) y te avisa unos minutos antes y al empezar:
 
   ![Aviso](capturas/aviso.png)
@@ -70,26 +86,12 @@ Es una carpeta portable: no se instala nada más y tus datos (historiales, tarea
 
 ![Dónde aparece una mascota](capturas/mascota-mapa.jpg)
 
-### Tareas
-
-![Tareas](capturas/tareas.png)
-
-- Lista de pendientes diarias y semanales **por personaje**; los personajes se añaden solos al entrar al juego con ellos.
-- Tareas **automáticas** (marcadas «auto») que se actualizan solas con los datos del juego: tope de kinah, suministros del Abismo, prueba de ascenso, Pesadilla, tiempo y puntos del Abismo, compras de Energía de Od y de Piedras de grieta en la tienda, misiones de evento…
-- **Poder de combate** de cada personaje en su tarjeta, abreviado como en el juego (112,1A).
-- Sección **Por batalla**: los corredores del Abismo que te quedan, que se reinician con cada batalla por los artefactos.
-- Tarjeta **Cuenta** arriba (🌐), con lo que comparten todos tus personajes: misiones de encargo (5 al día por cuenta, sumando las de cada personaje), recompensas de asistencia, entradas a la Fisura desconocida (14 a la semana, se descuentan solas) y fabricar Energía de Od.
-- Sección **Llaves y entradas**: llaves de Shugo y de Invasión dimensional (de cuenta) y llaves de cubo de cada personaje, leídas del juego. Se ven en **Inicio** y no cuentan como pendientes.
-- Barra de Energía de Od de cada personaje.
-- Tus propias tareas: nombre, diaria o semanal, número de veces y si son de personaje o de cuenta. Clic para sumar, clic derecho para restar.
-- Reinicio diario y semanal automático a la hora del servidor.
-
 ### Misiones de encargo
 
 ![Misiones de encargo](capturas/encargos.png)
 
 - El tablón de encargos de tu cuenta con las **recompensas** de cada uno, como en el juego: icono, cantidad abreviada (500, 1,0A…), candado si es ligado, fondo según su grado y probabilidad (100 %, 50 %, 33 %, 25 % y 10 %).
-- **Aceptadas** aparte, arriba, y **disponibles** debajo, en el mismo orden que el juego. Se actualizan al momento al aceptar, abandonar, completar o reiniciar la lista, y las aceptadas se mantienen al reiniciarla.
+- **Aceptadas** aparte, arriba, y **disponibles** debajo, en el mismo orden que el juego. Se actualizan al momento al aceptar, abandonar, completar o reiniciar la lista; las aceptadas se mantienen al reiniciarla y se vacían con el reinicio diario. Los encargos que empiezas con una orden comprada no se mezclan con los del tablón.
 - **Filtro por recompensa**: elige un objeto y verás solo los encargos que lo dan, primero los de más probabilidad.
 - **Marcar recompensas**: elige las que te interesan (cristales de alma, tickets, llaves, materiales épicos…) y los encargos que las dan quedan resaltados. Tus marcas se guardan.
 - Pulsa una misión o una recompensa para ponerle el nombre que sale en el juego; queda guardado.
