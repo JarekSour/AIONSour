@@ -4,8 +4,6 @@ Portable companion for **AION 2** (Windows): a home screen with upcoming events,
 
 Available in **English and Spanish**: it follows your Windows language the first time, and you can switch it at any time from the selector at the top right.
 
-![Hidden cubes](capturas/cubos.jpg)
-
 **[⬇ Download AIONSour (ZIP)](https://github.com/JarekSour/AIONSour/archive/refs/heads/main.zip)**
 
 ## Installation
@@ -44,6 +42,8 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 - Automatic daily and weekly reset at server time.
 
 ### Hidden cubes
+
+![Hidden cubes](capturas/cubos.jpg)
 
 - Detects hidden cubes as they appear and marks them on the zone map (Verteron or Altgard), with all the possible spots where they can show up.
 - History with the time and outcome of each one: **green** if you opened it, **red** if another player did, or replaced by a new one.
