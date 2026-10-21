@@ -86,7 +86,11 @@ const I18N = (() => {
     "Reinicio diario a las 07:00 UTC y semanal el miércoles a las 07:00 UTC (servidores Global).":
       "Daily reset at 07:00 UTC and weekly on Wednesday at 07:00 UTC (Global servers).",
     "Entra al juego con un personaje y aparecerá aquí.": "Log in with a character and it will show up here.",
-    "Borrar tarea": "Delete task", "Borrar combates": "Delete fights", "Quitar personaje": "Remove character",
+    "Borrar tarea": "Delete task", "A la venta": "For sale", "Agotada": "Sold out",
+    "Ya tienes al máximo todas las mascotas a la venta.": "All pets for sale are already maxed.",
+    "Abre una tienda de mascotas en el juego para verlas aquí.": "Open a pet shop in the game to see them here.",
+    "La tienda se renovó: vuelve a abrirla para ver lo que vende ahora.": "The shop has refreshed: open it again to see what it sells now.",
+    "Borrar combates": "Delete fights", "Quitar personaje": "Remove character",
     "Quitar": "Remove", "Cancelar": "Cancel", "Aceptar": "OK",
     "Se quitará {0} de todos tus personajes, junto con lo que tengas marcado.":
       "{0} will be removed from all your characters, along with anything you've checked.",
@@ -136,11 +140,11 @@ const I18N = (() => {
   };
   // Frases con números o nombres dentro: [patrón, reemplazo].
   const PATTERNS = [
-    [/^quedan (.+)$/, "$1 left"], [/^hace (.+)$/, "$1 ago"], [/^visto hace (.+)$/, "seen $1 ago"],
+    [/^quedan (.+)$/, "$1 left"], [/^hace (.+)$/, "$1 ago"], [/^visto hace (.+)$/, "seen $1 ago"], [/^· se renueva en (.+)$/, "· refreshes in $1"],
     [/^Vivo \(visto hace (.+)\)$/, "Alive (seen $1 ago)"], [/^abierto por otro tras (.+)$/, "opened by another after $1"],
     [/^abierto por ti tras (.+)$/, "opened by you after $1"], [/^reemplazado tras (.+)$/, "replaced after $1"],
     [/^fuera de rango tras (.+)$/, "out of range after $1"], [/^Misión (\d+)$/, "Mission $1"], [/^Artefacto (\d+)$/, "Artifact $1"],
-    [/^Nv (\d+)$/, "Lv $1"], [/^mundo (\d+)$/, "world $1"], [/^(\d+) veces$/, "$1 times"], [/^1 vez$/, "1 time"],
+    [/^Nv (\d+)$/, "Lv $1"], [/^(\d+)\/(\d+) almas$/, "$1/$2 souls"], [/^mundo (\d+)$/, "world $1"], [/^(\d+) veces$/, "$1 times"], [/^1 vez$/, "1 time"],
     [/^última (.+)$/, "last $1"], [/^Abre en (.+)$/, "Opens in $1"], [/^tablón de ([^·]+?)( · .+)?$/, (m, who, rest) => `${tr(who)}'s board${rest || ""}`],
     [/^Aceptadas$/, "Accepted"], [/^Disponibles$/, "Available"],
     [/^Un combate termina tras (.+) sin golpes, o contra un jefe al morir o desaparecer\. Solo cuenta el daño de jugadores y sus invocaciones\.$/,

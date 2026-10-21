@@ -1,4 +1,4 @@
 {
- "version": "1.0.32",
- "notes": "Cube alert test sound plays in the window you click; alerts can sound in floating windows without a prior click. Volume slider no longer jumps back while dragging and stays in sync across windows; settings panels don't close when a drag ends outside them. Volume row fits in the floating minimap panel. Default volume 20%."
+ "version": "1.0.33",
+ "notes": "Pets: new 'For sale' section with the pets in the game's shops that you're missing or haven't maxed, with your level and souls, normal and discounted price; bought ones show as sold out (read from the shop list itself) and offers expire when the shop refreshes. Recently obtained shows the last 5 pets."
 }

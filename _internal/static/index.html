@@ -268,6 +268,15 @@
   .phist b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; font-variant-numeric: tabular-nums; }
   .phist small { color: var(--muted); font-size: 11px; }
   .phist .gain { color: var(--ok); font-weight: 600; font-variant-numeric: tabular-nums; }
+  /* Tienda: las mascotas a la venta que te faltan; precio normal tachado y el rebajado. */
+  .petsview .side { grid-template-rows: minmax(0, 1fr) auto; }   /* la tienda crece; el historial son 5 */
+  .phist .price { text-align: right; font-variant-numeric: tabular-nums; line-height: 1.25; }
+  .phist .price s { color: var(--muted); font-size: 11px; display: block; }
+  .phist .price b { color: var(--gold); }
+  #petShop .phist { cursor: pointer; }                       /* como la lista: clic abre su mapa */
+  #petShop .phist:hover { outline: 1px solid var(--accent); }
+  .phist.sold { opacity: .5; }
+  .phist .price b.out { color: var(--muted); font-weight: 600; }
   .phist.level .gain, .phist.new .gain { color: var(--gold); }
   @media (max-width: 900px) { body:not(.mini) .petsview { grid-template-columns: 1fr; } }
 
@@ -700,9 +709,15 @@
     <div class="histkey" id="petNote"></div>
     <div class="histkey">Clic en una mascota para ver en el mapa dónde aparecen los monstruos que la sueltan.</div>
   </div>
-  <div class="card">
-    <h3>Últimas obtenidas <span class="grow"></span><button id="petClear" title="Borra el historial de almas">Borrar</button></h3>
-    <div id="petHistory"></div>
+  <div class="side">
+    <div class="card petshop">
+      <h3>A la venta <span class="muted" id="petShopAt"></span></h3>
+      <div id="petShop"></div>
+    </div>
+    <div class="card">
+      <h3>Últimas obtenidas <span class="grow"></span><button id="petClear" title="Borra el historial de almas">Borrar</button></h3>
+      <div id="petHistory"></div>
+    </div>
   </div>
 </main>
 
@@ -1628,6 +1643,7 @@ function renderPets() {
     || empty(pets.pets.length ? "Ninguna coincide con la búsqueda." : "Aún no se conoce tu colección.");
   $("petNote").textContent = pets.listAt ? "" :
     "La colección completa la envía el juego al entrar a un mapa o cambiar de personaje; mientras tanto se usa la última guardada.";
+  renderPetShop();
   // Historial agrupado por mascota: su estado más reciente, almas sumadas y novedades.
   const byPet = new Map();
   for (const h of pets.history) {                  // del más reciente al más antiguo
@@ -1639,13 +1655,31 @@ function renderPets() {
   }
   // El conteo es el actual de la mascota (el mismo de la lista), no el de su última alma.
   const current = new Map(pets.pets.map(p => [p.id, p]));
-  $("petHistory").innerHTML = [...byPet.values()].map(({ last: h, souls, count, levelUp, isNew }) =>
+  // Solo las 5 mascotas con novedades más recientes.
+  $("petHistory").innerHTML = [...byPet.values()].slice(0, 5).map(({ last: h, souls, count, levelUp, isNew }) =>
     `<div class="phist${levelUp || isNew ? " level" : ""}">${petImg(h, "sm")}` +
     `<span><b class="marquee"><span>${esc(h.name)} ${petCount(current.get(h.id) || h)}</span></b><small>${count ? `${count} ${count === 1 ? "vez" : "veces"} · ` : ""}` +
     `${isNew ? "¡nueva! · " : levelUp ? "subió de nivel · " : ""}última ${hhmm(h.at)} · ${ago(h.at)}</small></span>` +
     `<span class="gain">${souls ? `+${souls}` : isNew ? "¡Nueva!" : `Nv ${h.level}`}</span></div>`).join("")
     || empty("Aún no has obtenido almas de mascota.");
 }
+// A la venta (tiendas del juego): solo las que te faltan o no están al máximo, hasta que la
+// tienda se renueve. Cada segundo, por la cuenta atrás y para quitarlas al renovarse.
+function renderPetShop() {
+  if (!pets || $("viewPets").hidden) return;
+  const now = Date.now() / 1000, shop = pets.shop || { offers: [] };
+  const offers = shop.offers.filter(o => !o.until || o.until > now);
+  const until = offers.length ? Math.min(...offers.map(o => o.until || Infinity)) : null;
+  $("petShopAt").textContent = until && until !== Infinity ? `· se renueva en ${untilText(until)}` : "";
+  const html = offers.map(o =>
+    `<div class="phist${o.sold ? " sold" : ""}" data-pet="${o.id}" title="Clic: dónde aparece">${petImg(o, "sm")}` +
+    `<span><b class="marquee"><span>${esc(o.name)}</span></b><small>${o.level ? `Nv ${o.level} · ${o.souls}/${o.needed} almas` : "No obtenida"}</small></span>` +
+    `<span class="price">${o.sold ? `<b class="out">Agotada</b>` : `<s>${fmt(o.price)}</s><b>${fmt(o.discount)}</b>`}</span></div>`).join("")
+    || empty(shop.offers.length ? "La tienda se renovó: vuelve a abrirla para ver lo que vende ahora."
+      : shop.seenAt ? "Ya tienes al máximo todas las mascotas a la venta." : "Abre una tienda de mascotas en el juego para verlas aquí.");
+  if ($("petShop").dataset.html !== html) { $("petShop").innerHTML = html; $("petShop").dataset.html = html; }
+}
+setInterval(renderPetShop, 1000);
 $("petSearch").addEventListener("input", renderPets);
 $("petFilter").addEventListener("change", renderPets);
 // Desplazamiento de los nombres cortados (solo si de verdad no caben).
@@ -1661,6 +1695,10 @@ document.addEventListener("mouseover", e => {
 });
 // Clic en una mascota: mapa de dónde aparece.
 $("petList").addEventListener("click", e => {
+  const c = e.target.closest("[data-pet]");
+  if (c) openPetMap(+c.dataset.pet).catch(err => showErr(String(err)));
+});
+$("petShop").addEventListener("click", e => {
   const c = e.target.closest("[data-pet]");
   if (c) openPetMap(+c.dataset.pet).catch(err => showErr(String(err)));
 });
