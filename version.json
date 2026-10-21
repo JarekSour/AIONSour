@@ -1,4 +1,4 @@
 {
- "version": "1.0.29",
- "notes": "Tareas: PvP solo, PvP cooperativo y Campo de batalla se actualizan al ganar, perder y abrir la ventana de PvP; compra de órdenes (cuenta, 12/semana); corredores de cuenta por personaje; entradas adicionales en otro color y sin dejar pendiente; prueba de ascenso x/3; suministros renombrados; nuevo orden semanal; tus tareas en una lista para borrarlas; sin Halloween ni Conquista de Expedición. Inicio: Campo de batalla y recarga de llaves de Shugo (+3) e Invasión (+1, tope 7). Encargos: las aceptadas se vacían al reinicio diario y las órdenes no se mezclan. Jefes y eventos solo con lo de la versión Global. Medidor: clase por combate, iconos de Teostonas y poder de combate en directo."
+ "version": "1.0.30",
+ "notes": "App in English and Spanish (follows Windows, selector at the top right). Weekly maintenance on Home: starts 30 min before the weekly reset (~5-6 h) and the card shows 'Under maintenance'. Event countdowns in the list change color like the Home ones. The cube alert switches to the Cubes tab and flashes the background (also 'Test alert'). Field boss and event alerts translated. README and screenshots in English."
 }

@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AIONSour</title>
+<script src="/i18n.js"></script>
 <style>
   :root {
     --bg: #0f1216; --panel: #171b21; --panel2: #1e232b; --border: #2a313b;
@@ -35,6 +36,7 @@
   button:hover { border-color: var(--accent); }
   button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   button.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+  .langsel { padding: 6px 6px; font-weight: 600; }
   /* Ventana de confirmación (askConfirm) */
   dialog.ask { background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 10px;
     padding: 18px 20px 16px; width: min(380px, calc(100vw - 32px)); box-shadow: 0 12px 40px rgba(0,0,0,.5); }
@@ -79,10 +81,7 @@
   .cube b { display: block; white-space: nowrap; }
   .cube small { color: var(--muted); font-family: var(--mono); font-size: 11px; }
   .empty { color: var(--muted); text-align: center; padding: 24px 10px; }
-  .stats { color: var(--muted); font-size: 11px; font-family: var(--mono); margin-top: 10px; }
-  .stats.warn { color: var(--gold); }
   @keyframes flash { 0%, 100% { background: var(--panel); } 50% { background: #4a3d12; } }
-  .card.flash { animation: flash .6s 10; }        /* cubo encontrado: parpadea 6 s */
 
   .mapcard { position: relative; padding: 0; overflow: hidden; background: #0b0e12; }
   #map { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
@@ -212,7 +211,8 @@
   .brow.vivo .bs { color: var(--ok); font-weight: 600; }
   .brow.ya .bs { color: #8fd9b6; }
   .brow.vivo { box-shadow: inset 3px 0 0 var(--ok); }
-  .erow.live { box-shadow: inset 3px 0 0 var(--danger); } .erow.live .es { color: var(--danger); font-weight: 600; }
+  .erow.live { box-shadow: inset 3px 0 0 var(--ok); } .erow.live .es { color: var(--ok); font-weight: 600; }
+  .erow .es.warn { color: var(--gold); font-weight: 600; } .erow .es.danger { color: var(--danger); font-weight: 600; }
   .star { border: 0; background: none; padding: 0; font-size: 17px; color: var(--muted); line-height: 1; }
   .star.on { color: var(--gold); }
   .erow .dot2 { width: 10px; height: 10px; border-radius: 50%; }
@@ -504,6 +504,9 @@
   .floatpanel .fErr:empty { display: none; }
   .floatpanel button { align-self: flex-start; padding: 5px 10px; font-size: 12px; }
   body.mini.flash .minibar { animation: flash .6s 10; }
+  /* Cubo encontrado (ventana principal): el fondo de la página parpadea 6 s */
+  @keyframes bgflash { 0%, 100% { background-color: var(--bg); } 50% { background-color: #4a3d12; } }
+  body:not(.mini).flash { animation: bgflash .6s 10; }
 
   @media (max-width: 900px) {   /* página en pantalla estrecha; el minimapa siempre llena su ventana */
     body:not(.mini) { height: auto; }
@@ -537,6 +540,7 @@
   <span class="spacer"></span>
   <button class="floatBtn" data-kind="mini" title="Abre o cierra el minimapa flotante (se configura en su ⚙)">🗺 Minimapa</button>
   <button class="floatBtn" data-kind="dps" title="Abre o cierra el medidor de daño flotante (se configura en su ⚙)">⚔ Medidor</button>
+  <select id="langSel" class="langsel" title="Idioma" data-noi18n><option value="es">ES</option><option value="en">EN</option></select>
   <div id="err"></div>
   <div id="updateBar" hidden>
     <span class="upmsg" id="updateMsg"></span>
@@ -552,6 +556,7 @@
     <div class="hbig" id="homeWeekly">–</div>
     <div class="hsub" id="homeWeeklyAt"></div>
     <div class="hsub" id="homeDaily"></div>
+    <div class="hsub" id="homeMaint"></div>
   </div>
   <div class="card hcard">
     <h3><img class="hico" src="/icons/eventos/shugo.png" alt="">Festival de Shugo</h3>
@@ -604,8 +609,8 @@
     <div class="legend"><span style="color:var(--gold)">◆</span> cubo activo · <span style="color:#c9d3e0">•</span> punto posible de cubo</div>
   </div>
   <div class="side">
-    <div class="card" id="activeCard">
-      <h3>Cubo encontrado <span class="grow"></span>
+    <div class="card">
+      <h3>Historial <span class="grow"></span><button id="btnReset" title="Borra el cubo activo y todo el historial">Borrar historial</button>
         <span class="menu"><button id="cubeCfgBtn" title="Configuración de los avisos de cubos">⚙</button>
           <span class="panel cubecfg" id="cubeCfg" hidden>
             <span class="h">Avisos de cubos</span>
@@ -614,11 +619,6 @@
             <button id="btnTest" title="Probar el aviso">Probar aviso</button>
             <small>Si el minimapa flotante está abierto, el aviso suena en él.</small>
           </span></span></h3>
-      <div class="list" id="active"></div>
-      <div class="stats" id="stats"></div>
-    </div>
-    <div class="card">
-      <h3>Historial <span class="grow"></span><button id="btnReset" title="Borra el cubo activo y todo el historial">Borrar historial</button></h3>
       <div class="list" id="history"></div>
       <div class="histkey"><b style="color:var(--ok)">Verde</b>: lo abriste tú · <b style="color:var(--danger)">Rojo</b>: lo abrió otro jugador</div>
     </div>
@@ -787,10 +787,6 @@ const empty = text => `<div class="empty">${text}</div>`;
 // ---------------- Listas ----------------
 function render() {
   if (!state) return;
-  $("active").innerHTML = state.active.length ? state.active.map((c, i) => `<div class="cube live" data-src="active" data-i="${i}">` +
-    `<span class="icon">◆</span><span><b>Cubo oculto</b><small>${esc(mapName(c.world))} · visto ${ago(c.at)}</small></span>` +
-    `<small>EnvId<br>${c.envId}</small></div>`).join("")
-    : empty(running ? "Ningún cubo a la vista." : "La captura no está activa: revisa el adaptador de red de arriba.");
   $("history").innerHTML = state.history.length ? state.history.map((h, i) => `<div class="cube ${h.goneAt || h.lost ? "gone" : "live"}` +
     `${h.opened && h.mine === true ? " mine" : h.opened && h.mine === false ? " other" : ""}` +
     `${cubeKey(h) === selCube ? " sel" : ""}" data-src="history" data-i="${i}">` +
@@ -802,10 +798,6 @@ function render() {
   if (!MINI_DPS) $("miniTitle").className = "t pywebview-drag-region" + (c ? " live" : "");
   if (!MINI_DPS) $("miniTitle").textContent = c ? `◆ Cubo oculto · ${mapName(c.world)} · ${ago(c.at)}`
     : `Sin cubo · ${mapName(state.world)}`;
-  const st = state.stats, err = st.decodeErrors + st.bundleErrors;
-  $("stats").className = "stats" + (st.segments && !st.frames || err > st.frames / 10 ? " warn" : "");
-  $("stats").textContent = !running ? "" : !st.segments ? "Esperando tráfico del juego (puerto 13328)…" :
-    `Tramas ${st.frames} · agrupadas ${st.bundles} · errores ${err} · huecos ${st.gaps} · mundo ${state.world ?? "?"}`;
 }
 
 function openedBy(h) {
@@ -819,7 +811,7 @@ const cubeKey = c => c ? `${c.at}:${c.envId}:${c.x}:${c.y}` : null;
 function selectedCube() {
   return selCube && state ? state.history.find(h => cubeKey(h) === selCube) || null : null;
 }
-for (const id of ["active", "history"]) $(id).addEventListener("click", e => {
+$("history").addEventListener("click", e => {
   const row = e.target.closest(".cube"); if (!row || !state) return;
   const c = state[row.dataset.src][+row.dataset.i];
   if (row.dataset.src === "history") selCube = cubeKey(c) === selCube ? null : cubeKey(c);
@@ -951,6 +943,7 @@ function pin(x, y, label, color = "#ffd166") {
   ctx.fillStyle = "#3a2c05"; ctx.font = "bold 12px system-ui"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
   ctx.fillText("◆", x, y - 22);
   if (label) {
+    label = I18N.tr(label);                       // el lienzo no lo traduce el observador
     ctx.font = "600 12px system-ui"; const tw = ctx.measureText(label).width + 10;
     ctx.fillStyle = "rgba(23,27,33,.9)"; ctx.fillRect(x - tw / 2, y - 52, tw, 18);
     ctx.fillStyle = color; ctx.fillText(label, x, y - 43);
@@ -1029,7 +1022,8 @@ const beep = () => tones([[0, 1046.5], [0.09, 1318.5], [0.18, 1568], [0.27, 2093
 function flash(el) { el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
 function alertCube() {
   if (MINI_DPS) return;                     // el medidor flotante no avisa de cubos
-  flash(MINI ? document.body : $("activeCard"));
+  if (MINI) flash(document.body);
+  else { showView("cubes"); flash(document.body); }   // ventana principal: a Cubos y parpadea el fondo
   // Suena el minimapa si está abierto; si no, la página. Nunca los dos.
   if (settings?.sound !== false && (MINI || !floatsRunning.mini)) beep();
   document.title = "◆ ¡Cubo oculto!";
@@ -1053,7 +1047,7 @@ function firstAlert(key) {
 
 // ---------------- Medidor de daño ----------------
 let dps = null, viewing = null, selPlayer = null;   // viewing: índice del historial o null = actual
-const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");   // 5956 -> 5.956
+const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, I18N.lang === "en" ? "," : ".");   // 5.956 / 5,956
 // DPS abreviado: 15211 -> 15.2k, 1234567 -> 1.2M (menos de 1000: tal cual).
 const kfmt = n => n >= 1e6 ? (n / 1e6).toFixed(1) + "M" : n >= 1000 ? (n / 1000).toFixed(1) + "k" : String(Math.round(n));
 const pct = n => n.toFixed(1) + "%";
@@ -1207,8 +1201,8 @@ const untilText = at => span(Math.max(0, Math.round(at - Date.now() / 1000)));
 const sinceText = t => span(Math.max(0, Math.round(Date.now() / 1000 - t)));
 const dayTime = t => {
   const d = new Date(t * 1000), same = d.toDateString() === new Date().toDateString();
-  return (same ? "" : d.toLocaleDateString("es", { weekday: "short" }) + " ") +
-    d.toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit", hour12: false });
+  return (same ? "" : d.toLocaleDateString(I18N.locale(), { weekday: "short" }) + " ") +
+    d.toLocaleTimeString(I18N.locale(), { hour: "2-digit", minute: "2-digit", hour12: false });
 };
 
 function bossStatus(b) {
@@ -1230,11 +1224,15 @@ function renderTimers() {
       `<button class="star${b.star ? " on" : ""}" data-npc="${b.npc}" title="${b.star ? "Quitar aviso" : "Avisarme"}">${b.star ? "★" : "☆"}</button>` +
       `<span class="bn">${esc(b.name)}</span><span class="bs">${bossStatus(b)}</span></div>`).join("")).join("");
   const now = Date.now() / 1000;
+  // Como los contadores de Inicio: en curso en verde (y cuánto le queda); los próximos en
+  // amarillo con 1 h o menos y en rojo con 15 min o menos.
+  const urgency = t => t - now <= 900 ? " danger" : t - now <= 3600 ? " warn" : "";
   $("eventList").innerHTML = timers.events.map(e => {
     const live = e.liveUntil && e.liveUntil > now;
     return `<div class="erow${live ? " live" : ""}"><input type="checkbox" data-id="${esc(e.id)}"${e.selected ? " checked" : ""} title="Avisarme">` +
       `<span class="dot2" style="background:${esc(e.color)}"></span><span class="en">${esc(e.name)}</span>` +
-      `<span class="es">${live ? `En curso · termina ${dayTime(e.liveUntil)}` : `en ${untilText(e.at)} · ${dayTime(e.at)}`}</span></div>`;
+      (live ? `<span class="es">En curso · termina en ${untilText(e.liveUntil)}</span>`
+        : `<span class="es${urgency(e.at)}">en ${untilText(e.at)} · ${dayTime(e.at)}</span>`) + `</div>`;
   }).join("") || empty("Sin eventos.");
 }
 
@@ -1371,7 +1369,8 @@ function renderMyTasks() {
 $("myTasks").addEventListener("click", async e => {
   const b = e.target.closest("button"); if (!b) return;
   const id = b.closest(".mytask").dataset.task, name = tasks.tasks.find(t => t.id === id)?.name;
-  const text = `Se quitará <b>${esc(name)}</b> de todos tus personajes, junto con lo que tengas marcado.`;
+  // La frase se traduce entera ({0}: el nombre en negrita), no a trozos.
+  const text = esc(I18N.tr("Se quitará {0} de todos tus personajes, junto con lo que tengas marcado.")).replace("{0}", `<b>${esc(name)}</b>`);
   if (await askConfirm("Borrar tarea", text, "Borrar")) taskPost({ action: "delete", task: id });
 });
 // Confirmación con el estilo de la app (en vez de confirm()): resuelve true si se acepta.
@@ -1484,7 +1483,7 @@ function drawPetMap() {
   const m = maps?.maps.find(x => x.id === petMap.mapId), pts = petMap.data?.maps[petMap.mapId];
   if (!m || !pts) {
     g.fillStyle = "#8b95a3"; g.font = "13px system-ui"; g.textAlign = "center";
-    g.fillText(petMap.data?.elsewhere.length ? "Solo aparece en mazmorras (ver abajo)." : "No hay posiciones conocidas.", w / 2, h / 2);
+    g.fillText(I18N.tr(petMap.data?.elsewhere.length ? "Solo aparece en mazmorras (ver abajo)." : "No hay posiciones conocidas."), w / 2, h / 2);
     g.textAlign = "start"; return;
   }
   if (!petMap.view) {                          // encuadre: todos los puntos con margen
@@ -1658,11 +1657,15 @@ async function loadDuty() {
   try { duty = await (await fetch("/api/duty")).json(); } catch { }
   renderDuty();
 }
-const itemName = id => duty.names.items[id] || duty.names.hub[id]?.name || null;
+// Nombre a mostrar: el tuyo, el del idioma de la app (labels) o el de AION2 Hub (inglés, el que se usa para agrupar).
+const itemName = id => duty.names.items[id] || duty.names.labels?.[id] || duty.names.hub[id]?.name || null;
 const itemGrade = id => (duty.names.hub[id]?.grade || "").toLowerCase();
 // Cantidad como la abrevia el juego: 500, 1,0A (mil), 60,0A; millones con M (sin ver aún en el juego).
-const gameQty = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace(".", ",") + "M"
-  : n >= 1000 ? (n / 1000).toFixed(1).replace(".", ",") + "A" : String(n);
+// En inglés el juego usa K y punto decimal (112.0K); en español, A y coma (112,0A).
+const gameQty = n => {
+  const en = I18N.lang === "en", dec = x => en ? x : x.replace(".", ",");
+  return n >= 1e6 ? dec((n / 1e6).toFixed(1)) + "M" : n >= 1000 ? dec((n / 1000).toFixed(1)) + (en ? "K" : "A") : String(n);
+};
 const LOCK = '<svg class="lock" viewBox="0 0 9 11" aria-hidden="true"><path fill="currentColor" d="M4.5 0A2.6 2.6 0 0 0 1.9 2.6V4H1a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-.9V2.6A2.6 2.6 0 0 0 4.5 0zm-1.4 2.6a1.4 1.4 0 0 1 2.8 0V4H3.1z"/></svg>';
 const questName = id => duty.names.quests[id] || null;
 let dutyMarks = new Set();                     // recompensas marcadas (se guardan en los ajustes)
@@ -1693,7 +1696,7 @@ function rewardOrder(id) {
 const label0 = id => itemName(id) || `Objeto ${id}`;
 const byReward = (x, y) => {
   const a = rewardOrder(x), b = rewardOrder(y);
-  return a[0] - b[0] || a[1].localeCompare(b[1], "es") || a[2] - b[2] || a[3].localeCompare(b[3], "es");
+  return a[0] - b[0] || a[1].localeCompare(b[1], I18N.locale()) || a[2] - b[2] || a[3].localeCompare(b[3], I18N.locale());
 };
 // En los ajustes (settings.json) y no en el navegador: la ventana de la app no conserva su almacenamiento.
 const saveMarks = () => saveSettings({ dutyMarks: [...dutyMarks] });
@@ -1734,7 +1737,7 @@ function renderDuty() {
   for (const m of all) for (const id of new Set(m.rewards.map(r => r.item))) counts.set(id, (counts.get(id) || 0) + 1);
   const keep = $("dutyFilter").value;
   $("dutyFilter").innerHTML = `<option value="">Todas las recompensas</option>` +
-    [...counts].sort((x, y) => label(x[0]).localeCompare(label(y[0]), "es"))
+    [...counts].sort((x, y) => label(x[0]).localeCompare(label(y[0]), I18N.locale()))
       .map(([id, n]) => `<option value="${id}">${esc(label(id))} (${n})</option>`).join("");
   $("dutyFilter").value = counts.has(+keep) ? keep : "";
   const want = +$("dutyFilter").value || null;
@@ -1800,13 +1803,13 @@ async function loadHome() {
 }
 const longDay = t => {
   const d = new Date(t * 1000);
-  return d.toLocaleDateString("es", { weekday: "long" }) + " " +
-    d.toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit", hour12: false });
+  return d.toLocaleDateString(I18N.locale(), { weekday: "long" }) + " " +
+    d.toLocaleTimeString(I18N.locale(), { hour: "2-digit", minute: "2-digit", hour12: false });
 };
 function renderHome() {
   if (!home || $("viewHome").hidden) return;
   const now = Date.now() / 1000;
-  const marks = [home.weeklyReset, home.dailyReset, home.shugo?.next, home.shugo?.liveUntil,
+  const marks = [home.weeklyReset, home.dailyReset, home.maintenance?.next, home.maintenance?.liveUntil, home.shugo?.next, home.shugo?.liveUntil,
     home.invasion?.next, home.invasion?.liveUntil, home.rift?.next, home.rift?.liveUntil,
     home.battlefield?.next, home.battlefield?.liveUntil,
     home.siege?.liveUntil, ...(home.siege?.next || [])].filter(Boolean);
@@ -1814,9 +1817,20 @@ function renderHome() {
   const set = (id, text, cls = "") => { $(id).textContent = text; $(id).className = "hbig" + (cls ? " " + cls : ""); };
   // Poco tiempo: amarillo con 1 h o menos, rojo con 15 min o menos.
   const urgency = t => t - now <= 900 ? "danger" : t - now <= 3600 ? "warn" : "";
-  set("homeWeekly", untilText(home.weeklyReset), urgency(home.weeklyReset));
-  $("homeWeeklyAt").textContent = longDay(home.weeklyReset);
+
   $("homeDaily").textContent = `Reinicio diario en ${untilText(home.dailyReset)}`;
+  // Mantenimiento semanal (30 min antes del reinicio, ~5–6 h): en amarillo mientras dura.
+  // Mientras dura, la tarjeta lo dice en lugar de la cuenta atrás al reinicio.
+  const m = home.maintenance;
+  if (m?.liveUntil) {
+    set("homeWeekly", "En mantenimiento", "warn");
+    $("homeWeeklyAt").textContent = `Termina ~${dayTime(m.endMin)}–${dayTime(m.liveUntil)}`;
+    $("homeMaint").textContent = "";
+  } else {
+    set("homeWeekly", untilText(home.weeklyReset), urgency(home.weeklyReset));
+    $("homeWeeklyAt").textContent = longDay(home.weeklyReset);
+    $("homeMaint").textContent = m?.next ? `Mantenimiento: ${longDay(m.next)} · ~5–6 h` : "";
+  }
   // Eventos con la misma forma: próximo, o en curso y cuándo termina.
   const eventCard = (ev, big, sub) => {
     if (ev?.liveUntil) { set(big, "En curso", "live"); $(sub).textContent = `Termina en ${untilText(ev.liveUntil)}`; }
@@ -1910,11 +1924,12 @@ document.addEventListener("click", () => { $("cubeCfg").hidden = true; });
 $("btnReset").onclick = () => {
   if (confirm("¿Borrar el cubo activo y todo el historial? No se puede deshacer.")) post("/api/cubes/clear");
 };
-$("btnTest").onclick = () => { flash($("activeCard")); beep(); };
+$("btnTest").onclick = () => post("/api/cubes/test");      // llega a todas las ventanas como un cubo
 
 // ---------------- Configuración y ventanas flotantes ----------------
 // La página guarda la configuración en el servidor (settings.json); cada ventana flotante
 // (minimapa, medidor) la recibe por /api/events y la aplica a su propia ventana.
+$("langSel").onchange = e => saveSettings({ language: e.target.value });
 async function saveSettings(patch) {
   const r = await post("/api/settings", patch);
   const msg = r.error ? "No se pudo aplicar: " + r.error : "";
@@ -1938,7 +1953,7 @@ if (MINI) {
     <small class="fErr" style="color:var(--danger)"></small>`;
   if (!MINI_DPS) {
     q(".fSound").onchange = e => saveSettings({ sound: e.target.checked });
-    q(".fTest").onclick = () => { flash(document.body); beep(); };
+    q(".fTest").onclick = () => post("/api/cubes/test");
   }
   $("miniCfg").hidden = false;
   $("miniReset").hidden = !MINI_DPS;
@@ -1956,6 +1971,13 @@ if (MINI) {
 
 function applySettings(m) {
   settings = m.settings; floatsRunning = m.running || {};
+  if (settings.language && settings.language !== I18N.lang) {   // idioma: la página y los datos del servidor
+    I18N.set(settings.language);
+    fetch("/api/timers").then(r => r.json()).then(t => { timers = t; renderTimers(); }).catch(() => {});
+    classes = null; if (!$("viewClasses").hidden) renderClasses();     // habilidades en el otro idioma
+    if (typeof render === "function") render();
+  }
+  $("langSel").value = I18N.lang;
   dutyMarks = new Set(settings.dutyMarks || []); renderDuty();
   if (settings.map !== mapSel) setMapSel(settings.map);
   $("sound").checked = settings.sound;
@@ -2087,6 +2109,9 @@ function connect() {
         // Cubo nuevo, o el que vuelve a entrar en rango: el mapa va hacia él.
         if (m.event === "spawn" || m.event === "return" || m.event === "init") focusCube(state.active[0]);
         if (m.event === "spawn" && firstAlert(m.key)) alertCube();
+      }
+      else if (m.type === "cubetest") {                       // «Probar aviso» desde cualquier ventana
+        alertCube();
       }
     }
   };

@@ -1,113 +1,114 @@
 # AIONSour
 
-Compañero portable para **AION 2** (Windows): inicio con los próximos eventos, llaves y monedas, cubos ocultos, medidor de daño, jefes de campo y eventos, mascotas, tareas diarias y semanales, misiones de encargo con sus recompensas y las habilidades de cada clase. Lee el tráfico del juego en tu PC, no modifica el juego ni envía tus datos a ningún sitio.
+Portable companion for **AION 2** (Windows): a home screen with upcoming events, keys and currencies, hidden cubes, a damage meter, field bosses and events, pets, daily and weekly tasks, duty missions with their rewards, and every class's skills. It reads the game's traffic on your PC; it doesn't modify the game or send your data anywhere.
 
-![Cubos ocultos](capturas/cubos.jpg)
+Available in **English and Spanish**: it follows your Windows language the first time, and you can switch it at any time from the selector at the top right.
 
-**[⬇ Descargar AIONSour (ZIP)](https://github.com/JarekSour/AIONSour/archive/refs/heads/main.zip)**
+![Hidden cubes](capturas/cubos.jpg)
 
-## Instalación
+**[⬇ Download AIONSour (ZIP)](https://github.com/JarekSour/AIONSour/archive/refs/heads/main.zip)**
 
-1. Instala [Npcap](https://npcap.com) (lo necesita para leer el tráfico del juego).
-2. [Descarga el ZIP](https://github.com/JarekSour/AIONSour/archive/refs/heads/main.zip) y descomprímelo donde quieras.
-3. Abre `AIONSour.exe`. La captura empieza sola: escucha en todos tus adaptadores de red (cable, wifi, VPN…), así que no hay que elegir ninguno.
+## Installation
 
-Es una carpeta portable: no se instala nada más y tus datos (historiales, tareas, mascotas, ajustes) se guardan dentro de ella.
+1. Install [Npcap](https://npcap.com) (needed to read the game's traffic).
+2. [Download the ZIP](https://github.com/JarekSour/AIONSour/archive/refs/heads/main.zip) and extract it anywhere.
+3. Open `AIONSour.exe`. Capture starts on its own: it listens on all your network adapters (wired, Wi-Fi, VPN…), so there's nothing to choose.
 
-## Funciones
+It's a portable folder: nothing else gets installed, and your data (history, tasks, pets, settings) is stored inside it.
 
-### Inicio
+## Features
 
-![Inicio](capturas/inicio.png)
+### Home
 
-- Cuenta atrás del **reinicio semanal** (y del diario), el **Festival de Shugo**, la **Invasión dimensional** y la **Grieta espacio-temporal**, o hasta cuándo siguen abiertos. Se ponen en amarillo cuando queda menos de 1 h y en rojo con menos de 15 min.
-- **Batallas por los corredores**: las próximas batallas por los artefactos, desde cuándo están abiertos los corredores del Abismo y cuándo caducan, y de quién es cada artefacto (Elyos o Asmodian), leído del juego.
-- **Campo de batalla**: cuánto falta para que abra (todos los días de 11:00 a 14:00 y de 19:00 a 21:00) o hasta cuándo sigue abierto.
-- **Llaves y monedas**: llaves de Shugo y de Invasión dimensional de la cuenta, con su tope (21 y 7) y cuánto falta para la próxima recarga (+3 y +1 en cada reinicio diario); por personaje, llaves de cubo, kinah, kinah vinculada, puntos de Abismo, fichas de raíz centenaria y fragmentos de ensueño. Las cantidades adicionales salen entre paréntesis y en otro color: «16 (+3) / 21».
+![Home](capturas/inicio.png)
 
-### Tareas
+- Countdowns to the **weekly reset** (and the daily one), the **Shugo Festival**, the **Dimensional Invasion** and the **Spacetime Rift**, or how long they stay open. They turn yellow with less than 1 h left and red with less than 15 min.
+- **Weekly maintenance**: when it starts (30 min before the weekly reset, about 5–6 h long); while it lasts, the card shows «Under maintenance» and its approximate end.
+- **Corridor battles**: the upcoming artifact battles, since when the Abyss corridors are open and when they expire, and who holds each artifact (Elyos or Asmodian), read from the game.
+- **Battlefield**: time until it opens (every day from 11:00 to 14:00 and from 19:00 to 21:00) or how long it stays open.
+- **Keys and currency**: the account's Shugo and Dimensional Invasion keys, with their cap (21 and 7) and time to the next refill (+3 and +1 at each daily reset); per character, cube keys, kinah, bound kinah, Abyss points, centennial root tokens and dream fragments. Extra amounts are shown in parentheses in another color: «16 (+3) / 21».
 
-![Tareas](capturas/tareas.png)
+### Tasks
 
-- Lista de pendientes diarias y semanales **por personaje**; los personajes se añaden solos al entrar al juego con ellos.
-- Tareas **automáticas** que se marcan solas con los datos del juego: tope de kinah, suministros (urgentes y semanales), compras de Energía de Od y de Piedras de grieta, Pesadilla, prueba de ascenso, tiempo y puntos del Abismo… Mientras no hay datos del juego dicen «entra al juego» y no se pueden marcar a mano.
-- **PvP solo, PvP cooperativo y Campo de batalla**: victorias y participación de la semana (30 y 10; 3 y 3 en el Campo de batalla). Se actualizan solas al ganar o perder cada partida y al abrir la ventana de PvP del juego.
-- Las entradas adicionales («quedan 0 (+2) / 3») se muestran aparte y no dejan la tarea pendiente.
-- **Poder de combate** de cada personaje en su tarjeta, abreviado como en el juego (112,1A), y al día al equipar o cambiar de personaje.
-- Sección **Por batalla**: los corredores del Abismo abiertos para tu cuenta y cuáles hizo cada personaje; se reinician con cada batalla por los artefactos.
-- Tarjeta **Cuenta** arriba (🌐), con lo que comparten todos tus personajes: misiones de encargo (5 al día por cuenta), recompensas de asistencia, entradas a la Fisura desconocida (14 a la semana), compra de órdenes (12 a la semana) y fabricar Energía de Od.
-- Barra de Energía de Od de cada personaje.
-- **Tus propias tareas**: nombre, diaria, semanal o por batalla, número de veces y si son de personaje o de cuenta. Clic para sumar, clic derecho para restar. Debajo de «Nueva tarea» aparecen las que creaste, con su botón para borrarlas.
-- Reinicio diario y semanal automático a la hora del servidor.
+![Tasks](capturas/tareas.png)
 
-### Cubos ocultos
+- Daily and weekly to-do list **per character**; characters are added on their own when you log in with them.
+- **Automatic** tasks checked off from game data: kinah cap, supplies (urgent and weekly), Od Energy and Rift Stone purchases, Nightmare, Ascension Trial, Abyss time and points… Until there's game data they say «log in to the game» and can't be ticked by hand.
+- **Solo PvP, Co-op PvP and Battlefield**: the week's wins and participation (30 and 10; 3 and 3 on the Battlefield). They update on their own when you win or lose each match and when you open the game's PvP window.
+- Extra entries («0 left (+2) / 3») are shown apart and don't leave the task pending.
+- **Combat power** of each character on its card, abbreviated as in the game, and up to date when you change gear or character.
+- **Per battle** section: the Abyss corridors open for your account and which ones each character did; they reset with each artifact battle.
+- **Account** card at the top (🌐), with what all your characters share: duty missions (5 a day per account), attendance rewards, Unknown Fissure entries (14 a week), order purchases (12 a week) and crafting Od Energy.
+- Each character's Od Energy bar.
+- **Your own tasks**: name, daily, weekly or per battle, number of times, and per character or per account. Click to add, right-click to subtract. The ones you created appear under «New task», with a button to delete them.
+- Automatic daily and weekly reset at server time.
 
-- Detecta los cubos ocultos al aparecer y los marca en el mapa de la zona (Verteron o Altgard), con todos los puntos posibles donde pueden salir.
-- Historial con la hora y el resultado de cada uno: **verde** si lo abriste tú, **rojo** si lo abrió otro jugador, o reemplazado por uno nuevo.
-- Aviso con sonido y notificación al aparecer un cubo (configurable).
+### Hidden cubes
 
-### Medidor de daño
+- Detects hidden cubes as they appear and marks them on the zone map (Verteron or Altgard), with all the possible spots where they can show up.
+- History with the time and outcome of each one: **green** if you opened it, **red** if another player did, or replaced by a new one.
+- Alert with sound when a cube appears: the app switches to the Cubes tab and flashes (configurable).
 
-![Medidor de daño](capturas/dano.png)
+### Damage meter
 
-- Daño total, DPS y porcentaje de cada jugador del grupo, con su clase, y muertes del combate.
-- Al pulsar un jugador, el desglose por habilidad: daño, golpes y críticos.
-- Historial de combates con el nombre del jefe o monstruo, duración y número de jugadores.
-- Solo cuenta el daño de jugadores y sus invocaciones; el combate termina al morir el jefe o tras un tiempo sin golpes (configurable).
-- Barras animadas: crecen suavemente y, cuando un jugador adelanta a otro, su fila sube deslizándose por encima.
+![Damage meter](capturas/dano.png)
 
-### Ventanas flotantes
+- Total damage, DPS and share of each group member, with their class, and the fight's deaths.
+- Click a player for the per-skill breakdown: damage, hits and crits.
+- Fight history with the boss or monster name, duration and number of players.
+- Only damage from players and their summons counts; the fight ends when the boss dies or after a time without hits (configurable).
+- Animated bars: they grow smoothly and, when a player overtakes another, their row slides up above it.
 
-| Minimapa | Medidor |
+### Floating windows
+
+| Minimap | Meter |
 | --- | --- |
-| ![Minimapa flotante](capturas/minimapa.jpg) | ![Medidor flotante](capturas/medidor.png) |
+| ![Floating minimap](capturas/minimapa.jpg) | ![Floating meter](capturas/medidor.png) |
 
-- **Minimapa** con el cubo activo y **medidor de daño** compacto, siempre encima del juego.
-- Cada una con su ⚙: opacidad, tamaño y posición. Se abren con los botones de arriba a la derecha.
+- **Minimap** with the active cube and a compact **damage meter**, always on top of the game.
+- Each one has its ⚙: opacity, size and position. Open them with the buttons at the top right.
 
-### Jefes de campo y eventos
+### Field bosses and events
 
-![Jefes y eventos](capturas/jefes.png)
+![Bosses and events](capturas/jefes.png)
 
-- Estado de los jefes de campo de Verteron, Altgard y Reshanta Inferior del Caos: vivo o cuánto falta para que reaparezca.
-- Próximos eventos de la versión Global con cuenta atrás: Invasión dimensional, Grieta espacio-temporal, Festival de Shugo y los reinicios diario y semanal.
-- Marca los que te interesan (☆ en jefes, casilla en eventos) y te avisa unos minutos antes y al empezar:
+- Status of the field bosses in Verteron, Altgard and Chaotic Lower Reshanta: alive, or time until they respawn.
+- Upcoming events for the Global version with countdowns: Dimensional Invasion, Spacetime Rift, Shugo Festival and the daily and weekly resets.
+- Mark the ones you care about (☆ on bosses, checkbox on events) and you'll get an alert a few minutes before and when they start:
 
-  ![Aviso](capturas/aviso.png)
+  ![Alert](capturas/aviso.png)
 
-### Mascotas
+### Pets
 
-![Mascotas](capturas/mascotas.png)
+![Pets](capturas/mascotas.png)
 
-- Todas las mascotas del juego, por atributo, con su nivel y progreso de almas; las que aún no tienes aparecen atenuadas.
-- Últimas almas obtenidas, con subida de nivel automática.
-- Filtro por origen: de campo, solo de mazmorras o de tienda/otras. Buscador por nombre.
-- Al pulsar una mascota, el **mapa con los puntos donde aparecen** los monstruos que la sueltan, por zona:
+- Every pet in the game, by attribute, with its level and soul progress; the ones you don't have yet are dimmed.
+- Latest souls obtained, with automatic level-ups.
+- Filter by source: field, dungeons only, or shop/other. Search by name.
+- Click a pet to see the **map with the spots where the monsters that drop it spawn**, by zone:
 
-![Dónde aparece una mascota](capturas/mascota-mapa.jpg)
+![Where a pet drops](capturas/mascota-mapa.jpg)
 
-### Misiones de encargo
+### Duty missions
 
-![Misiones de encargo](capturas/encargos.png)
+![Duty missions](capturas/encargos.png)
 
-- El tablón de encargos de tu cuenta con las **recompensas** de cada uno, como en el juego: icono, cantidad abreviada (500, 1,0A…), candado si es ligado, fondo según su grado y probabilidad (100 %, 50 %, 33 %, 25 % y 10 %).
-- **Aceptadas** aparte, arriba, y **disponibles** debajo, en el mismo orden que el juego. Se actualizan al momento al aceptar, abandonar, completar o reiniciar la lista; las aceptadas se mantienen al reiniciarla y se vacían con el reinicio diario. Los encargos que empiezas con una orden comprada no se mezclan con los del tablón.
-- **Filtro por recompensa**: elige un objeto y verás solo los encargos que lo dan, primero los de más probabilidad.
-- **Marcar recompensas**: elige las que te interesan (cristales de alma, tickets, llaves, materiales épicos…) y los encargos que las dan quedan resaltados. Tus marcas se guardan.
-- Pulsa una misión o una recompensa para ponerle el nombre que sale en el juego; queda guardado.
+- Your account's duty board with each mission's **rewards**, as in the game: icon, abbreviated amount, a lock if bound, background by grade, and chance (100 %, 50 %, 33 %, 25 % and 10 %).
+- **Accepted** ones apart at the top and **available** ones below, in the same order as the game. They update instantly when you accept, abandon, complete or refresh the list; accepted ones are kept when you refresh it and cleared at the daily reset. Missions you start with a purchased order aren't mixed with the board's.
+- **Filter by reward**: pick an item and see only the missions that give it, highest chance first.
+- **Mark rewards**: pick the ones you want (soul crystals, tickets, keys, epic materials…) and the missions that give them are highlighted. Your marks are saved.
+- Click a mission or a reward to give it the name shown in the game; it's saved.
 
-### Clases
+### Classes
 
-![Clases](capturas/clases.png)
+![Classes](capturas/clases.png)
 
-- Las 9 clases con sus habilidades activas, pasivas y estigmas, con icono y nombre en español.
+- All 9 classes with their active and passive skills and stigmas, with icons and names in your language.
 
-### Actualizaciones
+### Updates
 
-- La app comprueba al abrirse (y cada 6 h) si hay una versión nueva y se actualiza con un clic, conservando tus datos.
+- On launch (and every 6 h) the app checks for a new version and updates with one click, keeping your data.
 
-## Notas
+## Notes
 
-- Las capturas son de la propia app; los nombres de personaje se han cambiado por su clase.
-- Nombres (en inglés), grados e iconos de los objetos: [AION2 Hub](https://aion2hub.com).
-- Proyecto de aficionados, sin relación con NCSOFT.
+- Fan project, not affiliated with NCSOFT.
