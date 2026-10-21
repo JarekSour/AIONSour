@@ -218,6 +218,7 @@
   .erow .dot2 { width: 10px; height: 10px; border-radius: 50%; }
   .timerscfg { width: 300px; text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text); font-size: 13px; }
   .timerscfg .row, .cubecfg .row { display: grid; grid-template-columns: 110px 1fr 46px; align-items: center; gap: 8px; }
+  .cubecfg .row { grid-template-columns: auto minmax(0, 1fr) 40px; }      /* el % no se sale del panel */
   .timerscfg select { min-width: 0; }
   .timerscfg .h { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
   .timerscfg input[type=number] { width: 60px; font: inherit; color: var(--text); background: var(--panel2);
@@ -466,7 +467,8 @@
     display: flex; flex-direction: column; gap: 10px; }
   .panel[hidden] { display: none; }
   .panel h4 { margin: 0; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-  .panel .row { display: grid; grid-template-columns: 70px 1fr 50px; align-items: center; gap: 8px; }
+  .panel .row { display: grid; grid-template-columns: 70px minmax(0, 1fr) 50px; align-items: center; gap: 8px; }
+  .panel .row input[type=range] { min-width: 0; width: 100%; }
   .panel .row span:last-child { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
   .panel label.chk { color: var(--text); }
   .panel small { color: var(--muted); line-height: 1.35; }
@@ -504,8 +506,8 @@
   .cubecfg .h { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
   .cubecfg button { align-self: flex-start; padding: 5px 10px; font-size: 12px; }
   body.mini .floatpanel:not([hidden]) { display: flex; position: fixed; top: 32px; right: 4px; left: auto;
-    width: 300px; z-index: 30; }
-  .floatpanel .row { grid-template-columns: 66px 1fr 54px; }
+    width: min(300px, calc(100vw - 8px)); max-height: calc(100vh - 36px); overflow: auto; z-index: 30; }
+  .floatpanel .row { grid-template-columns: auto minmax(0, 1fr) 40px; }
   .floatpanel .fErr:empty { display: none; }
   .floatpanel button { align-self: flex-start; padding: 5px 10px; font-size: 12px; }
   body.mini.flash .minibar { animation: flash .6s 10; }
@@ -782,7 +784,7 @@ const MINI = !!MINI_KIND, MINI_DPS = MINI_KIND === "dps";
 if (MINI) document.body.classList.add("mini");
 if (MINI_DPS) document.body.classList.add("mini-dps");
 let state = null, running = false, audioCtx = null;
-let settings = null, floatsRunning = {};   // settings.json del servidor y ventanas flotantes abiertas
+let settings = null, floatsRunning = {}, volDragging = null;   // settings.json del servidor y ventanas flotantes abiertas
 
 const ago = t => { const s = Math.max(0, Math.round(Date.now() / 1000 - t));
   return s < 60 ? `hace ${s} s` : s < 3600 ? `hace ${Math.floor(s / 60)} min` : new Date(t * 1000).toLocaleString(); };
@@ -1006,10 +1008,11 @@ function updateAutoLabel() {
 // ---------------- Avisos ----------------
 // Notas con el volumen de los avisos (settings.volume, 0..1).
 function tones(notes, length, wave = "triangle") {
-  const vol = settings?.volume ?? 0.35;
+  const vol = settings?.volume ?? 0.2;
   if (vol <= 0) return;
   try {
     audioCtx = audioCtx || new AudioContext();
+    if (audioCtx.state === "suspended") audioCtx.resume();
     const t = audioCtx.currentTime, peak = Math.max(0.0002, 0.7 * vol);
     for (const [d, freq] of notes) {
       const o = audioCtx.createOscillator(), g = audioCtx.createGain();
@@ -1024,13 +1027,22 @@ function tones(notes, length, wave = "triangle") {
 // Cubo encontrado: arpegio ascendente de «tesoro» (do-mi-sol-do) con un destello final.
 const beep = () => tones([[0, 1046.5], [0.09, 1318.5], [0.18, 1568], [0.27, 2093], [0.36, 2637]], 0.45, "sine");
 
+// Paneles ⚙: se cierran al pulsar fuera, pero no al soltar fuera un arrastre que empezó dentro
+// (el slider de volumen), que el navegador cuenta como clic fuera.
+function closeOnOutsideClick(panel) {
+  let downInside = false;
+  document.addEventListener("pointerdown", e => { downInside = panel.contains(e.target); }, true);
+  panel.addEventListener("click", e => e.stopPropagation());
+  document.addEventListener("click", () => { if (!downInside) panel.hidden = true; });
+}
+
 function flash(el) { el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
-function alertCube() {
+function alertCube(silent = false) {
   if (MINI_DPS) return;                     // el medidor flotante no avisa de cubos
   if (MINI) flash(document.body);
   else { showView("cubes"); flash(document.body); }   // ventana principal: a Cubos y parpadea el fondo
   // Suena el minimapa si está abierto; si no, la página. Nunca los dos.
-  if (settings?.sound !== false && (MINI || !floatsRunning.mini)) beep();
+  if (!silent && settings?.sound !== false && (MINI || !floatsRunning.mini)) beep();
   document.title = "◆ ¡Cubo oculto!";
   setTimeout(() => { document.title = "AIONSour"; }, 8000);
 }
@@ -1187,8 +1199,7 @@ $("dpsHistory").addEventListener("click", e => {
 $("dpsBack").onclick = () => { viewing = null; renderDps(); };
 $("dpsReset").onclick = () => { viewing = null; post("/api/dps/reset"); };
 $("dpsCfgBtn").onclick = e => { e.stopPropagation(); $("dpsCfg").hidden = !$("dpsCfg").hidden; };
-$("dpsCfg").addEventListener("click", e => e.stopPropagation());
-document.addEventListener("click", () => { $("dpsCfg").hidden = true; });
+closeOnOutsideClick($("dpsCfg"));
 $("dpsIdle").onchange = e => saveSettings({ dpsIdle: Math.max(1, Math.min(300, Math.round(+e.target.value) || 20)) });
 $("dpsDummy").onchange = e => saveSettings({ dpsDummy: Math.max(0, Math.min(1800, Math.round(+e.target.value) || 0)) });
 $("dpsBossHold").onchange = e => saveSettings({ dpsBossHold: e.target.checked });
@@ -1259,8 +1270,7 @@ $("timersCfgBtn").onclick = e => {
   e.stopPropagation(); $("timersCfg").hidden = !$("timersCfg").hidden;
   if (!$("timersCfg").hidden) loadMonitors();
 };
-$("timersCfg").addEventListener("click", e => e.stopPropagation());
-document.addEventListener("click", () => { $("timersCfg").hidden = true; });
+closeOnOutsideClick($("timersCfg"));
 $("tzSel").innerHTML = Array.from({ length: 27 }, (_, i) => i - 12)
   .map(h => `<option value="${h * 60}">UTC${h >= 0 ? "+" : "−"}${Math.abs(h)}</option>`).join("");
 $("tzSel").onchange = e => saveSettings({ regionOffset: +e.target.value });
@@ -1929,13 +1939,14 @@ async function post(url, body) {
 }
 
 $("cubeCfgBtn").onclick = e => { e.stopPropagation(); $("cubeCfg").hidden = !$("cubeCfg").hidden; };
-$("cubeCfg").addEventListener("click", e => e.stopPropagation());
-document.addEventListener("click", () => { $("cubeCfg").hidden = true; });
+closeOnOutsideClick($("cubeCfg"));
 $("btnReset").onclick = async () => {
   if (await askConfirm("Borrar historial", esc("¿Borrar el cubo activo y todo el historial? No se puede deshacer."), "Borrar"))
     post("/api/cubes/clear");
 };
-$("btnTest").onclick = () => post("/api/cubes/test");      // llega a todas las ventanas como un cubo
+// Suena aquí mismo (el clic deja reproducir audio) y el resto de ventanas cambian a Cubos y parpadean.
+const testCube = () => { if (settings?.sound !== false) beep(); post("/api/cubes/test"); };
+$("btnTest").onclick = testCube;
 
 // ---------------- Configuración y ventanas flotantes ----------------
 // La página guarda la configuración en el servidor (settings.json); cada ventana flotante
@@ -1964,7 +1975,7 @@ if (MINI) {
     <small class="fErr" style="color:var(--danger)"></small>`;
   if (!MINI_DPS) {
     q(".fSound").onchange = e => saveSettings({ sound: e.target.checked });
-    q(".fTest").onclick = () => post("/api/cubes/test");
+    q(".fTest").onclick = testCube;
   }
   $("miniCfg").hidden = false;
   $("miniReset").hidden = !MINI_DPS;
@@ -1993,6 +2004,7 @@ function applySettings(m) {
   if (settings.map !== mapSel) setMapSel(settings.map);
   $("sound").checked = settings.sound;
   for (const r of document.querySelectorAll(".volRange")) {
+    if (r === volDragging) continue;                // no se le mueve el slider a quien lo arrastra
     r.value = Math.round(settings.volume * 100);
     r.parentElement.querySelector(".volV").textContent = r.value + " %";
   }
@@ -2078,13 +2090,23 @@ function minWindowHeight() {
 }
 
 $("sound").onchange = e => saveSettings({ sound: e.target.checked });
+// Volumen: se guarda al soltar (y, mientras se arrastra, cada 150 ms sin moverse); los ajustes
+// que vuelven del servidor no tocan el slider que se está arrastrando.
 {
   let t = null;
+  const save = r => { clearTimeout(t); t = null; saveSettings({ volume: r.value / 100 }); };
+  document.addEventListener("pointerdown", e => { volDragging = e.target.closest(".volRange"); });
+  document.addEventListener("pointerup", () => { volDragging = null; }, true);
+  document.addEventListener("pointercancel", () => { volDragging = null; }, true);
   document.addEventListener("input", e => {
     const r = e.target.closest(".volRange"); if (!r) return;
     r.parentElement.querySelector(".volV").textContent = r.value + " %";
-    clearTimeout(t); t = setTimeout(() => saveSettings({ volume: r.value / 100 }), 150);
+    clearTimeout(t); t = setTimeout(() => save(r), 150);
   });
+  // Fin del arrastre también al confirmar el valor o al perder el foco: en una ventana flotante
+  // pequeña el ratón se suelta fuera y el pointerup puede no llegar.
+  document.addEventListener("change", e => { const r = e.target.closest(".volRange"); if (r) { volDragging = null; save(r); } });
+  window.addEventListener("blur", () => { volDragging = null; });
 }
 document.addEventListener("click", () => audioCtx?.resume(), { once: true });
 
@@ -2122,7 +2144,7 @@ function connect() {
         if (m.event === "spawn" && firstAlert(m.key)) alertCube();
       }
       else if (m.type === "cubetest") {                       // «Probar aviso» desde cualquier ventana
-        alertCube();
+        alertCube(true);                                      // el sonido ya sonó en la que lo pidió
       }
     }
   };

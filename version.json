@@ -1,4 +1,4 @@
 {
- "version": "1.0.31",
- "notes": "Floating windows: icon-only buttons; the damage meter no longer overflows (and shows scrollbars) with long boss names. Confirmation dialogs (clear cube history, fights, pet souls, remove character) use the app's style. Updated screenshots."
+ "version": "1.0.32",
+ "notes": "Cube alert test sound plays in the window you click; alerts can sound in floating windows without a prior click. Volume slider no longer jumps back while dragging and stays in sync across windows; settings panels don't close when a drag ends outside them. Volume row fits in the floating minimap panel. Default volume 20%."
 }
