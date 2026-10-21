@@ -1,4 +1,4 @@
 {
- "version": "1.0.30",
- "notes": "App in English and Spanish (follows Windows, selector at the top right). Weekly maintenance on Home: starts 30 min before the weekly reset (~5-6 h) and the card shows 'Under maintenance'. Event countdowns in the list change color like the Home ones. The cube alert switches to the Cubes tab and flashes the background (also 'Test alert'). Field boss and event alerts translated. README and screenshots in English."
+ "version": "1.0.31",
+ "notes": "Floating windows: icon-only buttons; the damage meter no longer overflows (and shows scrollbars) with long boss names. Confirmation dialogs (clear cube history, fights, pet souls, remove character) use the app's style. Updated screenshots."
 }

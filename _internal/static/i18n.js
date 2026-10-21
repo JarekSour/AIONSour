@@ -86,7 +86,8 @@ const I18N = (() => {
     "Reinicio diario a las 07:00 UTC y semanal el miércoles a las 07:00 UTC (servidores Global).":
       "Daily reset at 07:00 UTC and weekly on Wednesday at 07:00 UTC (Global servers).",
     "Entra al juego con un personaje y aparecerá aquí.": "Log in with a character and it will show up here.",
-    "Borrar tarea": "Delete task", "Cancelar": "Cancel", "Aceptar": "OK",
+    "Borrar tarea": "Delete task", "Borrar combates": "Delete fights", "Quitar personaje": "Remove character",
+    "Quitar": "Remove", "Cancelar": "Cancel", "Aceptar": "OK",
     "Se quitará {0} de todos tus personajes, junto con lo que tengas marcado.":
       "{0} will be removed from all your characters, along with anything you've checked.",
     // Ventanas flotantes (su ⚙) y su barra de título

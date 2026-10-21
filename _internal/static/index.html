@@ -485,6 +485,8 @@
                 #c9d3e0 66% 73%, transparent 73% 87%, #c9d3e0 87% 94%, transparent 94%); }
   body.mini .grip:hover { opacity: 1; }
   body.mini .mapmsg { font-size: 12px; }
+  /* La columna no crece con el título (un jefe de nombre largo sacaba el % y el × de la ventana). */
+  body.mini { grid-template-columns: minmax(0, 1fr); }
   body.mini .minibar { display: flex; align-items: center; gap: 6px; padding: 0 4px 0 10px; height: 28px; font-size: 12px;
     background: var(--panel); border-bottom: 1px solid var(--border); user-select: none; }
   .minibar .t { cursor: move; }
@@ -492,7 +494,10 @@
     overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
   .minibar .t.live { color: var(--gold); font-weight: 600; }
   .minibar .t .dur { color: #2ec4c4; margin: 0 4px; }        /* calipso: duración del combate */
-  .minibar button { padding: 0 8px; font-size: 15px; line-height: 20px; }
+  /* Solo el icono: sin fondo ni borde; se aclara al pasar el ratón. */
+  .minibar button { padding: 0 6px; font-size: 15px; line-height: 20px; background: none; border: none;
+    box-shadow: none; color: var(--muted); }
+  .minibar button:hover { background: none; color: var(--text); }
   .minibar button[hidden] { display: none; }
   .floatpanel { display: none; }
   .cubecfg { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text); font-size: 13px; width: 260px; }
@@ -1187,8 +1192,10 @@ document.addEventListener("click", () => { $("dpsCfg").hidden = true; });
 $("dpsIdle").onchange = e => saveSettings({ dpsIdle: Math.max(1, Math.min(300, Math.round(+e.target.value) || 20)) });
 $("dpsDummy").onchange = e => saveSettings({ dpsDummy: Math.max(0, Math.min(1800, Math.round(+e.target.value) || 0)) });
 $("dpsBossHold").onchange = e => saveSettings({ dpsBossHold: e.target.checked });
-$("dpsClear").onclick = () => {
-  if (confirm("¿Borrar todos los combates guardados? No se puede deshacer.")) { viewing = null; post("/api/dps/clear"); }
+$("dpsClear").onclick = async () => {
+  if (await askConfirm("Borrar combates", esc("¿Borrar todos los combates guardados? No se puede deshacer."), "Borrar")) {
+    viewing = null; post("/api/dps/clear");
+  }
 };
 
 // ---------------- Jefes de campo y eventos ----------------
@@ -1390,11 +1397,12 @@ $("askDlg").addEventListener("click", e => {          // pulsar fuera de la vent
   const r = $("askDlg").getBoundingClientRect();
   if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) $("askDlg").close("no");
 });
-$("taskChars").addEventListener("click", e => {
+$("taskChars").addEventListener("click", async e => {
   const rm = e.target.closest("[data-remove]");
   if (rm) {
-    if (confirm(`¿Quitar a ${rm.dataset.remove} de la lista de tareas?`))
-      taskPost({ action: "removeCharacter", character: rm.dataset.remove });
+    const who = rm.dataset.remove;
+    if (await askConfirm("Quitar personaje", esc(`¿Quitar a ${who} de la lista de tareas?`), "Quitar"))
+      taskPost({ action: "removeCharacter", character: who });
     return;
   }
   const row = e.target.closest(".trow"); if (!row || row.classList.contains("auto")) return;
@@ -1646,7 +1654,9 @@ $("petList").addEventListener("click", e => {
   const c = e.target.closest("[data-pet]");
   if (c) openPetMap(+c.dataset.pet).catch(err => showErr(String(err)));
 });
-$("petClear").onclick = () => { if (confirm("¿Borrar el historial de almas de mascota?")) post("/api/pets/clear"); };
+$("petClear").onclick = async () => {
+  if (await askConfirm("Borrar historial", esc("¿Borrar el historial de almas de mascota?"), "Borrar")) post("/api/pets/clear");
+};
 setInterval(renderPets, 30000);             // «hace X min»
 
 // ---------------- Encargos ----------------
@@ -1921,8 +1931,9 @@ async function post(url, body) {
 $("cubeCfgBtn").onclick = e => { e.stopPropagation(); $("cubeCfg").hidden = !$("cubeCfg").hidden; };
 $("cubeCfg").addEventListener("click", e => e.stopPropagation());
 document.addEventListener("click", () => { $("cubeCfg").hidden = true; });
-$("btnReset").onclick = () => {
-  if (confirm("¿Borrar el cubo activo y todo el historial? No se puede deshacer.")) post("/api/cubes/clear");
+$("btnReset").onclick = async () => {
+  if (await askConfirm("Borrar historial", esc("¿Borrar el cubo activo y todo el historial? No se puede deshacer."), "Borrar"))
+    post("/api/cubes/clear");
 };
 $("btnTest").onclick = () => post("/api/cubes/test");      // llega a todas las ventanas como un cubo
 
