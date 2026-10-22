@@ -358,6 +358,8 @@
   .pmtabs { display: flex; gap: 4px; flex-wrap: wrap; margin-left: 8px; }
   .pmtabs button { padding: 3px 9px; font-size: 12px; }
   .pmtabs button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .petzones { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0 0 8px; font-size: 12px; color: var(--muted); }
+  .petzones button { padding: 3px 9px; font-size: 12px; }
   /* × centrado y del mismo alto que las pestañas de mapa */
   #petMapClose { flex: none; margin-left: auto; display: grid; place-items: center; width: 28px; height: 28px; padding: 0;
     border: 1px solid transparent; border-radius: 6px; background: none; color: var(--muted);
@@ -704,7 +706,10 @@
       <select id="petFilter" title="Qué mascotas mostrar"><option value="all">Todas</option>
         <option value="owned">Obtenidas</option><option value="missing">Sin obtener</option>
         <option value="dungeon">Solo en mazmorras</option><option value="other">Tienda, cofres y otros</option></select>
+      <select id="petZone" title="Zona donde aparece"><option value="">Todas las zonas</option></select>
       <input id="petSearch" type="search" placeholder="Buscar…"></h3>
+    <div class="petzones">Lo que te falta, en el mapa:
+      <button data-zone="1">Verteron</button><button data-zone="2">Altgard</button><button data-zone="3">Reshanta Inferior del Caos</button></div>
     <div id="petList"></div>
     <div class="histkey" id="petNote"></div>
     <div class="histkey">Clic en una mascota para ver en el mapa dónde aparecen los monstruos que la sueltan.</div>
@@ -1483,13 +1488,14 @@ setInterval(renderTasks, 30000);            // cuenta atrás de los reinicios
 // ---------------- Mapa de una mascota ----------------
 // Clic en una mascota: el mapa de cada zona donde aparecen los monstruos que la sueltan,
 // con un punto por aparición (datos de pet_spawns.json, en píxeles del atlas del mapa).
-const petMap = { open: false, data: null, mapId: null, view: null };
-const PET_FAMILY_RGB = { "Intelecto": "240,140,140", "Salvaje": "224,123,95", "Naturaleza": "143,207,111",
-  "Transformación": "210,140,255", "Especial": "255,158,158" };
+// Mapa de una mascota (data) o de todo lo que te falta en una zona (zone); hits: puntos dibujados.
+const petMap = { open: false, data: null, zone: null, mapId: null, view: null, hits: [] };
+const PET_FAMILY_RGB = { "Cogni": "110,170,255", "Fera": "224,123,95", "Natura": "143,207,111",
+  "Varian": "210,140,255", "Especial": "255,158,158" };
 async function openPetMap(id) {
   const data = await (await fetch(`/api/pets/where?id=${id}`)).json();
   if (!maps) maps = await (await fetch("/maps/maps.json")).json();
-  petMap.data = data; petMap.open = true;
+  petMap.data = data; petMap.zone = null; petMap.open = true;
   $("petMap").hidden = false;
   $("petMapIcon").innerHTML = petImg(data);
   $("petMapName").textContent = data.name;
@@ -1501,6 +1507,28 @@ async function openPetMap(id) {
     "Sin monstruos conocidos que la suelten (cofres, misiones o tienda).") + where;
   showPetMapTab(ids[0] || null);
 }
+// Todo lo que te falta (o no está al máximo) en Verteron, Altgard o Reshanta Inferior.
+const PET_ZONES = ["1", "2", "3"];
+async function openZoneMap(id) {
+  if (!maps) maps = await (await fetch("/maps/maps.json")).json();
+  petMap.zone = await (await fetch(`/api/pets/zone?map=${id}`)).json();
+  petMap.data = null; petMap.open = true;
+  $("petMap").hidden = false;
+  $("petMapIcon").innerHTML = "";
+  $("petMapName").textContent = "Lo que te falta";
+  $("petMapTabs").innerHTML = PET_ZONES.map(m => `<button data-zone="${m}">${esc(maps.maps.find(x => x.id === m)?.name || m)}</button>`).join("");
+  for (const b of $("petMapTabs").children) b.classList.toggle("on", b.dataset.zone === id);
+  const fams = new Map();
+  for (const p of petMap.zone.pets) fams.set(p.family, (fams.get(p.family) || 0) + 1);
+  $("petMapInfo").innerHTML = `<span>${petMap.zone.pets.length} mascotas</span> · ` + [...fams].map(([f, n]) =>
+    `<b style="color:rgb(${PET_FAMILY_RGB[f] || "255,209,102"})">●</b> ${esc(f)} ${n}`).join(" · ") +
+    " · <span>Pasa el ratón por un punto para ver qué mascota sale; clic para abrir su mapa.</span>";
+  petMap.mapId = id; petMap.view = null;
+  drawPetMap();
+}
+document.querySelector(".petzones").addEventListener("click", e => {
+  const b = e.target.closest("button[data-zone]"); if (b) openZoneMap(b.dataset.zone).catch(err => showErr(String(err)));
+});
 function showPetMapTab(id) {
   petMap.mapId = id; petMap.view = null;
   for (const b of $("petMapTabs").children) b.classList.toggle("on", b.dataset.map === id);
@@ -1513,10 +1541,15 @@ function drawPetMap() {
   if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
   g.setTransform(dpr, 0, 0, dpr, 0, 0);
   g.fillStyle = "#0b0e12"; g.fillRect(0, 0, w, h);
-  const m = maps?.maps.find(x => x.id === petMap.mapId), pts = petMap.data?.maps[petMap.mapId];
-  if (!m || !pts) {
+  // Capas: los puntos de la mascota, o los de cada mascota de la zona con el color de su familia.
+  const layers = petMap.zone ? petMap.zone.pets.map(p => ({ pts: p.points, rgb: PET_FAMILY_RGB[p.family], pet: p }))
+    : petMap.data?.maps[petMap.mapId] ? [{ pts: petMap.data.maps[petMap.mapId], rgb: PET_FAMILY_RGB[petMap.data.family] }] : [];
+  const m = maps?.maps.find(x => x.id === petMap.mapId), pts = layers.flatMap(l => l.pts);
+  petMap.hits = [];
+  if (!m || !pts.length) {
     g.fillStyle = "#8b95a3"; g.font = "13px system-ui"; g.textAlign = "center";
-    g.fillText(I18N.tr(petMap.data?.elsewhere.length ? "Solo aparece en mazmorras (ver abajo)." : "No hay posiciones conocidas."), w / 2, h / 2);
+    g.fillText(I18N.tr(petMap.zone ? "Ya tienes al máximo todas las mascotas de esta zona."
+      : petMap.data?.elsewhere.length ? "Solo aparece en mazmorras (ver abajo)." : "No hay posiciones conocidas."), w / 2, h / 2);
     g.textAlign = "start"; return;
   }
   if (!petMap.view) {                          // encuadre: todos los puntos con margen
@@ -1536,15 +1569,45 @@ function drawPetMap() {
     const img = tile(m, z, i, j);
     if (img.complete && img.naturalWidth) g.drawImage(img, sx(i * span), sy(j * span), span * sc + 0.6, span * sc + 0.6);
   }
-  const rgb = PET_FAMILY_RGB[petMap.data.family] || "255,209,102", r = Math.max(3, Math.min(6, 4 * sc));
-  g.lineWidth = 1.5; g.strokeStyle = "rgba(10,12,16,.9)"; g.fillStyle = `rgb(${rgb})`;
-  for (const [x, y] of pts) {
-    const X = sx(x), Y = sy(y);
-    if (X < -8 || Y < -8 || X > w + 8 || Y > h + 8) continue;
-    g.beginPath(); g.arc(X, Y, r, 0, Math.PI * 2); g.fill(); g.stroke();
+  const r = Math.max(3, Math.min(6, 4 * sc));
+  g.lineWidth = 1.5; g.strokeStyle = "rgba(10,12,16,.9)";
+  for (const l of layers) {
+    g.fillStyle = `rgb(${l.rgb || "255,209,102"})`;
+    for (const [x, y] of l.pts) {
+      const X = sx(x), Y = sy(y);
+      if (X < -8 || Y < -8 || X > w + 8 || Y > h + 8) continue;
+      g.beginPath(); g.arc(X, Y, r, 0, Math.PI * 2); g.fill(); g.stroke();
+      if (l.pet) petMap.hits.push({ X, Y, pet: l.pet });
+    }
   }
 }
-$("petMapTabs").addEventListener("click", e => { const b = e.target.closest("button[data-map]"); if (b) showPetMapTab(b.dataset.map); });
+$("petMapTabs").addEventListener("click", e => {
+  const z = e.target.closest("button[data-zone]");
+  if (z) return openZoneMap(z.dataset.zone).catch(err => showErr(String(err)));
+  const b = e.target.closest("button[data-map]"); if (b) showPetMapTab(b.dataset.map);
+});
+// Mapa de zona: qué mascotas salen bajo el ratón (pueden coincidir varias en el mismo punto).
+const petsAt = e => {
+  const r = e.currentTarget.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+  const seen = new Map();
+  for (const h of petMap.hits) if ((h.X - x) ** 2 + (h.Y - y) ** 2 <= 64) seen.set(h.pet.id, h.pet);
+  return [...seen.values()];
+};
+$("petMapCanvas").addEventListener("mousemove", e => {
+  if (!petMap.zone) { e.currentTarget.title = ""; e.currentTarget.style.cursor = ""; return; }
+  const ps = petsAt(e);
+  e.currentTarget.title = ps.map(p => `${p.name} · ${p.level ? `${I18N.tr(`Nv ${p.level}`)} · ${p.souls}/${p.needed}` : I18N.tr("No obtenida")}`).join("\n");
+  e.currentTarget.style.cursor = ps.length ? "pointer" : "";
+});
+{
+  let down = null;                          // clic sin arrastrar: abre el mapa de esa mascota
+  $("petMapCanvas").addEventListener("pointerdown", e => { down = { x: e.clientX, y: e.clientY }; });
+  $("petMapCanvas").addEventListener("click", e => {
+    if (!petMap.zone || !down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 4) return;
+    const [p] = petsAt(e);
+    if (p) openPetMap(p.id).catch(err => showErr(String(err)));
+  });
+}
 $("petMapClose").onclick = () => { petMap.open = false; $("petMap").hidden = true; };
 $("petMap").addEventListener("click", e => { if (e.target.id === "petMap") $("petMapClose").onclick(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && petMap.open) $("petMapClose").onclick(); });
@@ -1601,18 +1664,21 @@ $("classList").addEventListener("click", e => {
 
 // ---------------- Mascotas ----------------
 let pets = null;
-const PET_FAMILIES = ["Intelecto", "Salvaje", "Naturaleza", "Transformación", "Especial"];
+const PET_FAMILIES = ["Cogni", "Fera", "Natura", "Varian", "Especial"];   // como en el juego, sin traducir
 const PET_DUNGEON = "Solo en mazmorras", PET_OTHER = "Tienda, cofres y otros";
 const petImg = (p, cls = "") => p.icon
   ? `<img class="peticon ${cls}" src="/icons/${p.icon}.webp" alt="" loading="lazy">` : `<i class="peticon ${cls}"></i>`;
 // «Espíritu de piedra (2) 1/75»; nivel máximo: «(3) Máx.»; nivel aún desconocido: «(?) 4».
-const petCount = p => `(${p.level ?? "?"}) ${p.needed ? `${p.souls}/${p.needed}` : p.level ? "Máx." : p.souls}`;
+// Va junto al nombre (no es un texto suelto que traduzca i18n.js): «Máx.» se traduce aquí.
+const petCount = p => `(${p.level ?? "?"}) ${p.needed ? `${p.souls}/${p.needed}` : p.level ? I18N.tr("Máx.") : p.souls}`;
 function renderPets() {
   if (!pets || $("viewPets").hidden) return;
   const q = $("petSearch").value.trim().toLowerCase();
   const show = $("petFilter").value;
+  fillPetZones();
+  const zone = $("petZone").value;
   const list = pets.pets.filter(p => (show === "all" || (show === "dungeon" || show === "other"
-      ? p.source === show : (show === "owned") === p.owned)) &&
+      ? p.source === show : (show === "owned") === p.owned)) && (!zone || p.zones.includes(zone)) &&
     (!q || p.name.toLowerCase().includes(q) || (p.family || "").toLowerCase().includes(q)));
   const owned = pets.pets.filter(p => p.owned).length;
   $("petCount").textContent = pets.pets.length ? `· ${owned} / ${pets.pets.length}` : "";
@@ -1634,6 +1700,12 @@ function renderPets() {
     if (!families.has(f)) families.set(f, []);
     families.get(f).push(p);
   }
+  // Dentro de cada grupo: por completar (la más cerca del nivel máximo primero), completadas y
+  // sin obtener; en los dos últimos tramos, el orden del servidor (la última con novedades primero).
+  const stage = p => !p.owned ? 2 : p.level && !p.needed ? 1 : 0;
+  const left = p => p.toMax ?? Infinity;           // almas hasta el máximo (mascotas.py)
+  for (const ps of families.values())
+    ps.sort((a, b) => stage(a) - stage(b) || (stage(a) === 0 ? left(a) - left(b) : 0));
   for (const k of [PET_DUNGEON, PET_OTHER]) {          // siempre al final
     const ps = families.get(k);
     if (ps) { families.delete(k); families.set(k, ps); }
@@ -1682,6 +1754,14 @@ function renderPetShop() {
 setInterval(renderPetShop, 1000);
 $("petSearch").addEventListener("input", renderPets);
 $("petFilter").addEventListener("change", renderPets);
+$("petZone").addEventListener("change", renderPets);
+// Zonas del selector: los mapas (en el orden de maps.json) donde aparece alguna mascota.
+function fillPetZones() {
+  const sel = $("petZone");
+  if (sel.options.length > 1 || !maps || !pets) return;
+  const used = new Set(pets.pets.flatMap(p => p.zones));
+  for (const m of maps.maps) if (used.has(m.id)) sel.add(new Option(m.name, m.id));
+}
 // Desplazamiento de los nombres cortados (solo si de verdad no caben).
 document.addEventListener("mouseover", e => {
   const host = e.target.closest(".pet, .phist"); if (!host) return;

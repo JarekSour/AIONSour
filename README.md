@@ -82,13 +82,17 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 
 ![Pets](capturas/mascotas.png)
 
-- Every pet in the game, by attribute, with its level and soul progress; the ones you don't have yet are dimmed.
+- Every pet in the game, by family (Cogni, Fera, Natura, Varian and Special), with its level and soul progress. Within each family: the ones to complete first (closest to max level at the top), then the maxed ones, and the ones you don't have yet, dimmed.
 - **For sale**: the pets in the game's shops that you're missing or haven't maxed yet, with your level and souls, the normal price and the discounted one; what you buy shows as sold out. Read when you open the shop, until it refreshes (every hour).
 - Latest souls obtained (the last 5 pets), with automatic level-ups.
-- Filter by source: field, dungeons only, or shop/other. Search by name.
+- Filter by source (field, dungeons only, or shop/other) and by the zone where it appears. Search by name.
 - Click a pet to see the **map with the spots where the monsters that drop it spawn**, by zone:
 
 ![Where a pet drops](capturas/mascota-mapa.jpg)
+
+- **What you're missing, on the map**: in Verteron, Altgard and Chaotic Lower Reshanta, the spawn points of every pet you don't have or haven't maxed, colored by family. Hover a point to see which pets drop there, click it to open that pet's map:
+
+![What you're missing in a zone](capturas/mascotas-zona.jpg)
 
 ### Duty missions
 

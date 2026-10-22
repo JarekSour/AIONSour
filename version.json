@@ -1,4 +1,4 @@
 {
- "version": "1.0.33",
- "notes": "Pets: new 'For sale' section with the pets in the game's shops that you're missing or haven't maxed, with your level and souls, normal and discounted price; bought ones show as sold out (read from the shop list itself) and offers expire when the shop refreshes. Recently obtained shows the last 5 pets."
+ "version": "1.0.34",
+ "notes": "Pets: families named as in the game (Cogni, Fera, Natura, Varian); within each family, the ones closest to max level first, then maxed, then not obtained; zone filter; new map of what you're missing in Verteron, Altgard and Chaotic Lower Reshanta (hover a point to see the pets, click to open its map). Fixed pet map colors and an untranslated 'Max'."
 }
