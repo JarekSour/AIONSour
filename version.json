@@ -1,4 +1,4 @@
 {
- "version": "1.0.34",
- "notes": "Pets: families named as in the game (Cogni, Fera, Natura, Varian); within each family, the ones closest to max level first, then maxed, then not obtained; zone filter; new map of what you're missing in Verteron, Altgard and Chaotic Lower Reshanta (hover a point to see the pets, click to open its map). Fixed pet map colors and an untranslated 'Max'."
+ "version": "1.0.35",
+ "notes": "Pets for sale: shows whose shop it is; opening it with another character replaces the previous list; the card shrinks when empty. Aberrant Odyle Spider gets the spawn points (they were assigned to the mutated one). Event and boss alerts grow to fit long names and several alerts at once (the second one could be cut off)."
 }

@@ -74,7 +74,7 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 
 - Status of the field bosses in Verteron, Altgard and Chaotic Lower Reshanta: alive, or time until they respawn.
 - Upcoming events for the Global version with countdowns: Dimensional Invasion, Spacetime Rift, Shugo Festival and the daily and weekly resets.
-- Mark the ones you care about (☆ on bosses, checkbox on events) and you'll get an alert a few minutes before and when they start:
+- Mark the ones you care about (☆ on bosses, checkbox on events) and you'll get an alert a few minutes before and when they start (it grows to fit long names and several alerts at once):
 
   ![Alert](capturas/aviso.png)
 
@@ -83,7 +83,7 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 ![Pets](capturas/mascotas.png)
 
 - Every pet in the game, by family (Cogni, Fera, Natura, Varian and Special), with its level and soul progress. Within each family: the ones to complete first (closest to max level at the top), then the maxed ones, and the ones you don't have yet, dimmed.
-- **For sale**: the pets in the game's shops that you're missing or haven't maxed yet, with your level and souls, the normal price and the discounted one; what you buy shows as sold out. Read when you open the shop, until it refreshes (every hour).
+- **For sale**: the pets in the game's shops that you're missing or haven't maxed yet, with your level and souls, the normal price and the discounted one; what you buy shows as sold out. Read when you open the shop, until it refreshes (every hour); it shows whose shop it is, and opening it with another character replaces it.
 - Latest souls obtained (the last 5 pets), with automatic level-ups.
 - Filter by source (field, dungeons only, or shop/other) and by the zone where it appears. Search by name.
 - Click a pet to see the **map with the spots where the monsters that drop it spawn**, by zone:

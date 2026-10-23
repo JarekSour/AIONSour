@@ -270,6 +270,7 @@
   .phist .gain { color: var(--ok); font-weight: 600; font-variant-numeric: tabular-nums; }
   /* Tienda: las mascotas a la venta que te faltan; precio normal tachado y el rebajado. */
   .petsview .side { grid-template-rows: minmax(0, 1fr) auto; }   /* la tienda crece; el historial son 5 */
+  .petsview .side.shopempty { grid-template-rows: auto minmax(0, 1fr); }   /* sin ofertas: solo su aviso */
   .phist .price { text-align: right; font-variant-numeric: tabular-nums; line-height: 1.25; }
   .phist .price s { color: var(--muted); font-size: 11px; display: block; }
   .phist .price b { color: var(--gold); }
@@ -716,7 +717,7 @@
   </div>
   <div class="side">
     <div class="card petshop">
-      <h3>A la venta <span class="muted" id="petShopAt"></span></h3>
+      <h3>A la venta <span class="muted" id="petShopWho"></span><span class="muted" id="petShopAt"></span></h3>
       <div id="petShop"></div>
     </div>
     <div class="card">
@@ -1742,6 +1743,7 @@ function renderPetShop() {
   const now = Date.now() / 1000, shop = pets.shop || { offers: [] };
   const offers = shop.offers.filter(o => !o.until || o.until > now);
   const until = offers.length ? Math.min(...offers.map(o => o.until || Infinity)) : null;
+  $("petShopWho").textContent = offers.length && shop.character ? `· ${shop.character} ` : "";   // de quién es la tienda
   $("petShopAt").textContent = until && until !== Infinity ? `· se renueva en ${untilText(until)}` : "";
   const html = offers.map(o =>
     `<div class="phist${o.sold ? " sold" : ""}" data-pet="${o.id}" title="Clic: dónde aparece">${petImg(o, "sm")}` +
@@ -1750,6 +1752,7 @@ function renderPetShop() {
     || empty(shop.offers.length ? "La tienda se renovó: vuelve a abrirla para ver lo que vende ahora."
       : shop.seenAt ? "Ya tienes al máximo todas las mascotas a la venta." : "Abre una tienda de mascotas en el juego para verlas aquí.");
   if ($("petShop").dataset.html !== html) { $("petShop").innerHTML = html; $("petShop").dataset.html = html; }
+  $("petShop").closest(".side").classList.toggle("shopempty", !offers.length);
 }
 setInterval(renderPetShop, 1000);
 $("petSearch").addEventListener("input", renderPets);
