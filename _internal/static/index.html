@@ -313,6 +313,9 @@
   @keyframes tn-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   .trow .tc { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
   .tgroup { padding: 3px 4px 0 27px; }                     /* encabezado de «Grupo: parte» */
+  /* Grado de la categoría (órdenes del abismo): blanco, verde, azul y amarillo. */
+  .tn .g-common { color: #e3e7ed; } .tn .g-rare { color: #19df48; }
+  .tn .g-epic { color: #5aa9ff; } .tn .g-legend { color: #f5c542; }
   .trow.sub .tn { padding-left: 14px; }
   /* Nombre en su propia fila; debajo ciclo, veces, alcance y Añadir. */
   .taskadd { display: grid; grid-template-columns: minmax(0, 1fr) 52px minmax(0, 1fr) auto; gap: 6px; margin-top: 8px; }
@@ -1353,6 +1356,11 @@ function renderTasks() {
     `semanal en ${span(Math.max(0, Math.round(tasks.nextWeekly - now)))} · ` +
     `batalla en ${span(Math.max(0, Math.round(tasks.nextBattle - now)))}`;
   const defs = new Map(tasks.tasks.map(t => [t.id, t]));
+  // La categoría de la tarea (p. ej. «veterano» en «Abismo veterano») con el color de su grado.
+  const gradeLabel = (label, g) => {
+    const i = g ? label.toLowerCase().lastIndexOf(g.text) : -1;
+    return i < 0 ? esc(label) : esc(label.slice(0, i)) + `<span class="g-${g.tier}">${esc(label.slice(i))}</span>`;
+  };
   const sections = (c, owner) => ["daily", "weekly", "battle"].map(cycle => {     // las llaves, en Inicio
       // Tareas seguidas con el mismo «Grupo: parte» (Campo de batalla: participación / victorias)
       // van bajo un encabezado con el grupo, y cada una solo con su parte.
@@ -1368,7 +1376,7 @@ function renderTasks() {
         const live = t.auto && !t.noData;                        // con datos del juego: se marca sola
         return head + `<div class="trow${t.done ? " done" : ""}${t.auto ? " auto" : ""}${t.auto && !live ? " nodata" : ""}${cycle === "keys" ? " key" : ""}${grouped ? " sub" : ""}" data-char="${esc(owner)}" ` +
           `data-task="${t.id}">` +
-          `<span class="box">${t.done ? "✓" : ""}</span><span class="tn">${esc(label)}</span>` +
+          `<span class="box">${t.done ? "✓" : ""}</span><span class="tn">${gradeLabel(label, d.grade)}</span>` +
           `<span class="tc">${t.auto ? withExtra(t.text || "") : d.times > 1 ? `${t.count}/${d.times}` : ""}</span></div>`;
       }).join("");
       return rows ? `<div class="tsub">${CYCLE[cycle]}</div>${rows}` : "";

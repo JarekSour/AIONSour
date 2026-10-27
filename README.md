@@ -36,7 +36,7 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 - Extra entries («0 left (+2) / 3») are shown apart and don't leave the task pending.
 - **Combat power** of each character on its card, abbreviated as in the game, and up to date when you change gear or character.
 - **Per battle** section: the Abyss corridors open for your account and which ones each character did; they reset with each artifact battle.
-- **Account** card at the top (🌐), with what all your characters share: duty missions (5 a day per account), attendance rewards, Unknown Fissure entries (14 a week), order purchases (12 a week) and crafting Od Energy.
+- **Account** card at the top (🌐), with what all your characters share: duty missions (5 a day per account), attendance rewards, Unknown Fissure entries (14 a week), order purchases (city: 12 a week; Abyss: common, uncommon, rare and epic, 5 a week each, colored by grade) and crafting Od Energy.
 - Each character's Od Energy bar.
 - **Your own tasks**: name, daily, weekly or per battle, number of times, and per character or per account. Click to add, right-click to subtract. The ones you created appear under «New task», with a button to delete them.
 - Automatic daily and weekly reset at server time.

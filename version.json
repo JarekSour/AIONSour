@@ -1,4 +1,4 @@
 {
- "version": "1.0.35",
- "notes": "Pets for sale: shows whose shop it is; opening it with another character replaces the previous list; the card shrinks when empty. Aberrant Odyle Spider gets the spawn points (they were assigned to the mutated one). Event and boss alerts grow to fit long names and several alerts at once (the second one could be cut off)."
+ "version": "1.0.36",
+ "notes": "Tasks: 'Buy orders' group on the account card with City (12 a week) and the 4 Abyss orders (common, uncommon, rare, epic; 5 a week each, colored by grade). Opening an orders shop sets what you haven't bought to 0 (the app learns which shop sells what)."
 }
