@@ -1,4 +1,4 @@
 {
- "version": "1.0.36",
- "notes": "Tasks: 'Buy orders' group on the account card with City (12 a week) and the 4 Abyss orders (common, uncommon, rare, epic; 5 a week each, colored by grade). Opening an orders shop sets what you haven't bought to 0 (the app learns which shop sells what)."
+ "version": "1.0.37",
+ "notes": "Nueva pestaña Set: el set de cada personaje para PvP solo, cooperativo, Campo de batalla y mundo abierto, con un aviso rojo si entras con otro. Inicio se adapta a ventanas pequeñas."
 }

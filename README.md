@@ -1,6 +1,6 @@
 # AIONSour
 
-Portable companion for **AION 2** (Windows): a home screen with upcoming events, keys and currencies, hidden cubes, a damage meter, field bosses and events, pets, daily and weekly tasks, duty missions with their rewards, and every class's skills. It reads the game's traffic on your PC; it doesn't modify the game or send your data anywhere.
+Portable companion for **AION 2** (Windows): a home screen with upcoming events, keys and currencies, hidden cubes, a damage meter, field bosses and events, pets, daily and weekly tasks, a reminder to wear the right set in each content, duty missions with their rewards, and every class's skills. It reads the game's traffic on your PC; it doesn't modify the game or send your data anywhere.
 
 Available in **English and Spanish**: it follows your Windows language the first time, and you can switch it at any time from the selector at the top right.
 
@@ -93,6 +93,17 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 - **What you're missing, on the map**: in Verteron, Altgard and Chaotic Lower Reshanta, the spawn points of every pet you don't have or haven't maxed, colored by family. Hover a point to see which pets drop there, click it to open that pet's map:
 
 ![What you're missing in a zone](capturas/mascotas-zona.jpg)
+
+### Set
+
+![Set](capturas/sets.png)
+
+- Pick, for each character, the set to use in each content: **Solo PvP**, **Co-op PvP**, **Battlefield** and **open world** (Verteron and Altgard).
+- If a PvP match starts, or you enter or teleport in the open world, with another set on, you get a red notification over the game, with its own sound:
+
+  ![Set reminder](capturas/aviso-set.png)
+
+- Each card shows the set the character has on, read from the game when you switch sets. Its ⚙ **Settings** has the volume, screen and position of the notification (shared with the boss and event alerts) and a test button.
 
 ### Duty missions
 

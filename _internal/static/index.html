@@ -156,8 +156,12 @@
   /* Jefes de campo y eventos */
   /* auto-fill: las columnas no se ensanchan aunque sobre sitio, así el reinicio semanal va solo en la
      primera fila con el mismo ancho que las demás tarjetas. */
-  .homeview { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); align-content: start; }
-  .homeview .hcard:nth-child(5) { grid-column-start: 1; }   /* reinicio y los 3 eventos en la primera fila */
+  /* Filas a la altura de su contenido (si no, con la ventana baja se aplastan y el texto se sale)
+     y, si no caben, la pestaña se desplaza. */
+  .homeview { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); align-content: start;
+    grid-auto-rows: max-content; overflow-y: auto; }
+  /* Reinicio y los 3 eventos en la primera fila; solo con 4 columnas o más (con 3 dejaría huecos). */
+  @media (min-width: 1150px) { .homeview .hcard:nth-child(5) { grid-column-start: 1; } }
   .hcard h3 .hico { width: 18px; height: 18px; flex: none; object-fit: contain; }
   .hcard .hbig { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; margin: 4px 0 2px; }
   .hcard .hbig.live { color: var(--ok); }
@@ -442,6 +446,19 @@
   .duty.marked.accepted { box-shadow: inset 3px 0 0 var(--ok), inset 0 0 0 1px var(--gold); }
   .drw.mark .tile { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
   .classesview .card { overflow: auto; }
+  .setsview { grid-template-columns: 1fr; }
+  .setsview .card { overflow: auto; }
+  .setgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; margin-top: 10px; }
+  .setchar { background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .setchar.me { border-color: var(--accent); }
+  .setchar header { all: unset; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .setchar header .clsicon { width: 26px; height: 26px; }
+  .setchar .now { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+  .setchar .now b { color: var(--text); }
+  .setrow { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
+  .setrow span { flex: 1; }
+  .setrow select { padding: 3px 6px; }
+
   .classlist { display: flex; flex-direction: column; gap: 4px; }
   .classlist button { display: flex; align-items: center; gap: 10px; padding: 6px 10px; text-align: left;
     border-radius: 8px; font-size: 14px; }
@@ -558,6 +575,7 @@
     <button data-view="pets">🐾 Mascotas</button>
     <button data-view="duty">📜 Encargos</button>
     <button data-view="classes">⛨ Clases</button>
+    <button data-view="sets">◈ Set</button>
   </nav>
   <span class="spacer"></span>
   <button class="floatBtn" data-kind="mini" title="Abre o cierra el minimapa flotante (se configura en su ⚙)">🗺 Minimapa</button>
@@ -633,7 +651,7 @@
   <div class="side">
     <div class="card">
       <h3>Historial <span class="grow"></span><button id="btnReset" title="Borra el cubo activo y todo el historial">Borrar historial</button>
-        <span class="menu"><button id="cubeCfgBtn" title="Configuración de los avisos de cubos">⚙</button>
+        <span class="menu"><button id="cubeCfgBtn" title="Configuración de los avisos de cubos">⚙ <span>Configuración</span></button>
           <span class="panel cubecfg" id="cubeCfg" hidden>
             <span class="h">Avisos de cubos</span>
             <label class="chk"><input type="checkbox" id="sound" checked>Sonido al encontrar un cubo</label>
@@ -653,7 +671,7 @@
       <div><div class="dpstarget" id="dpsTarget">Sin combates todavía</div><div class="dpsmeta" id="dpsMeta"></div></div>
       <button id="dpsBack" hidden>⟵ Combate actual</button>
       <button id="dpsReset" title="Termina el combate y deja vacíos este medidor y el flotante hasta tu próximo golpe">⟲ Reiniciar</button>
-      <span class="menu"><button id="dpsCfgBtn" title="Cuándo termina un combate">⚙</button>
+      <span class="menu"><button id="dpsCfgBtn" title="Cuándo termina un combate">⚙ <span>Configuración</span></button>
         <span class="panel timerscfg" id="dpsCfg" hidden>
           <span class="h">Fin del combate</span>
           <span class="row"><span>Sin golpes durante</span><input type="number" id="dpsIdle" min="1" max="300"><span>s</span></span>
@@ -679,15 +697,15 @@
 <main id="viewTimers" class="timersview" hidden>
   <div class="card">
     <h3>Jefes de campo <span class="grow"></span>
-      <span class="menu"><button id="timersCfgBtn" title="Avisos, zona horaria y volumen">⚙</button>
+      <span class="menu"><button id="timersCfgBtn" title="Avisos, zona horaria y volumen">⚙ <span>Configuración</span></button>
         <span class="panel timerscfg" id="timersCfg" hidden>
           <span class="h">Jefes y eventos</span>
           <span class="row"><span>Zona horaria del servidor</span><select id="tzSel"></select><span></span></span>
           <span class="row"><span>Aviso de jefes ★</span><input type="number" id="bossLead" min="1" max="60"><span>min antes</span></span>
           <span class="row"><span>Aviso de eventos</span><input type="number" id="eventLead" min="1" max="60"><span>min antes</span></span>
           <span class="row"><span>Volumen</span><input type="range" class="volRange" min="0" max="100" step="5"><span class="volV"></span></span>
-          <span class="row"><span>Pantalla</span><select id="popupMon"></select><span></span></span>
-          <span class="row"><span>Posición del aviso</span><select id="popupPos">
+          <span class="row"><span>Pantalla</span><select class="popupMon"></select><span></span></span>
+          <span class="row"><span>Posición del aviso</span><select class="popupPos">
             <option value="tl">Arriba a la izquierda</option><option value="tc">Arriba al centro</option>
             <option value="tr">Arriba a la derecha</option><option value="c">Centro de la pantalla</option>
             <option value="bl">Abajo a la izquierda</option><option value="bc">Abajo al centro</option>
@@ -774,6 +792,27 @@
   <p id="askText"></p>
   <div class="askbtns"><button id="askNo">Cancelar</button><button id="askYes" class="danger"></button></div>
 </dialog>
+
+<main id="viewSets" class="setsview" hidden>
+  <div class="card">
+    <h3>Set para cada contenido<span class="grow"></span>
+      <span class="menu"><button id="setCfgBtn" title="Configurar notificación">⚙ <span>Configuración</span></button>
+        <span class="panel timerscfg" id="setCfg" hidden>
+          <span class="h">Recordatorio de set</span>
+          <span class="row"><span>Volumen</span><input type="range" class="volRange" min="0" max="100" step="5"><span class="volV"></span></span>
+          <span class="row"><span>Pantalla</span><select class="popupMon" data-test="/api/sets"></select><span></span></span>
+          <span class="row"><span>Posición del aviso</span><select class="popupPos" data-test="/api/sets">
+            <option value="tl">Arriba a la izquierda</option><option value="tc">Arriba al centro</option>
+            <option value="tr">Arriba a la derecha</option><option value="c">Centro de la pantalla</option>
+            <option value="bl">Abajo a la izquierda</option><option value="bc">Abajo al centro</option>
+            <option value="br">Abajo a la derecha</option></select><span></span></span>
+          <button id="setTest">Probar notificación</button>
+          <small>Sale en la misma ventana que los avisos de jefes y eventos: el volumen, la pantalla y la posición son los mismos.</small>
+        </span></span></h3>
+    <div class="histkey">Elige el set de cada personaje. Si empiezas una partida de PvP o entras al mundo abierto (Verteron o Altgard) con otro set puesto, se mostrará una notificación.</div>
+    <div class="setgrid" id="setList"></div>
+  </div>
+</main>
 
 <main id="viewClasses" class="classesview" hidden>
   <div class="card">
@@ -1299,15 +1338,21 @@ $("tzSel").innerHTML = Array.from({ length: 27 }, (_, i) => i - 12)
   .map(h => `<option value="${h * 60}">UTC${h >= 0 ? "+" : "−"}${Math.abs(h)}</option>`).join("");
 $("tzSel").onchange = e => saveSettings({ regionOffset: +e.target.value });
 // Al cambiar la posición se lanza un aviso de prueba para verla.
-$("popupPos").onchange = async e => { await saveSettings({ toast: { position: e.target.value } }); post("/api/alert/test"); };
-$("popupMon").onchange = async e => { await saveSettings({ toast: { monitor: +e.target.value } }); post("/api/alert/test"); };
+// El de la pestaña Set prueba el recordatorio de set (data-test).
+const testAlert = el => el.dataset.test ? post(el.dataset.test, { action: "test" }) : post("/api/alert/test");
+document.querySelectorAll(".popupPos").forEach(el => el.onchange = async e => {
+  await saveSettings({ toast: { position: e.target.value } }); testAlert(e.target); });
+document.querySelectorAll(".popupMon").forEach(el => el.onchange = async e => {
+  await saveSettings({ toast: { monitor: +e.target.value } }); testAlert(e.target); });
 // Pantallas disponibles: se consultan al abrir ⚙ (pueden conectarse o desconectarse).
 async function loadMonitors() {
   try {
     const list = await (await fetch("/api/monitors")).json();
-    $("popupMon").innerHTML = list.map(m => `<option value="${m.index}">Pantalla ${m.index + 1}` +
-      `${m.primary ? " (principal)" : ""} · ${m.size[0]}×${m.size[1]}</option>`).join("");
-    if (settings) $("popupMon").value = Math.min(settings.toast.monitor, list.length - 1);
+    for (const sel of document.querySelectorAll(".popupMon")) {
+      sel.innerHTML = list.map(m => `<option value="${m.index}">Pantalla ${m.index + 1}` +
+        `${m.primary ? " (principal)" : ""} · ${m.size[0]}×${m.size[1]}</option>`).join("");
+      if (settings) sel.value = Math.min(settings.toast.monitor, list.length - 1);
+    }
   } catch { }
 }
 $("bossLead").onchange = e => saveSettings({ bossLead: Math.max(1, Math.min(60, +e.target.value || 5)) });
@@ -1670,6 +1715,35 @@ $("classList").addEventListener("click", e => {
   try { localStorage.setItem("classSel", classSel); } catch { }
   renderClasses();
 });
+
+// ---------------- Sets ----------------
+// Set de cada personaje para cada modo de PvP (sets.py). Al empezar una partida con otro set,
+// el recordatorio sale en la ventana de avisos (avisos.py), no en la app.
+let sets = null;
+const PVP_MODES = { 1: "PvP solo", 2: "PvP cooperativo", 3: "Campo de batalla", 4: "Mundo abierto" };
+async function loadSets() { sets = await (await fetch("/api/sets")).json(); renderSets(); }
+function renderSets() {
+  if (!sets || MINI || $("viewSets").hidden) return;
+  $("setList").innerHTML = sets.characters.map(c => {
+    return `<div class="setchar${c.name === sets.current ? " me" : ""}">` +
+      `<header>${c.cls ? clsIcon(c) : ""}${esc(c.name)}</header>` +
+      `<div class="now"><span>Set actual:</span> ${c.set ? `<b>${c.set}</b>` : "<span>cámbialo en el juego para que lo vea</span>"}</div>` +
+      sets.modes.map(m => `<div class="setrow"><span>${PVP_MODES[m]}</span>` +
+        `<select data-char="${esc(c.name)}" data-mode="${m}"><option value="">—</option>` +
+        sets.sets.map(n => `<option value="${n}"${c.rules[m] === n ? " selected" : ""}>Set ${n}</option>`).join("") +
+        `</select></div>`).join("") + `</div>`;
+  }).join("") || empty("Entra al juego con tus personajes para configurar sus sets.");
+}
+$("setList").addEventListener("change", e => {
+  const s = e.target.closest("select[data-char]"); if (!s) return;
+  post("/api/sets", { action: "rule", character: s.dataset.char, mode: +s.dataset.mode, set: s.value ? +s.value : null });
+});
+$("setTest").addEventListener("click", () => post("/api/sets", { action: "test" }));
+$("setCfgBtn").onclick = e => {
+  e.stopPropagation(); $("setCfg").hidden = !$("setCfg").hidden;
+  if (!$("setCfg").hidden) loadMonitors();
+};
+closeOnOutsideClick($("setCfg"));
 
 // ---------------- Mascotas ----------------
 let pets = null;
@@ -2038,16 +2112,17 @@ function showView(view) {
   $("viewTimers").hidden = view !== "timers"; $("viewPets").hidden = view !== "pets";
   $("viewTasks").hidden = view !== "tasks"; $("viewClasses").hidden = view !== "classes";
   $("viewDuty").hidden = view !== "duty"; $("viewHome").hidden = view !== "home";
+  $("viewSets").hidden = view !== "sets";
   try { localStorage.setItem("view", view); } catch { }
   if (view === "cubes") requestDraw(); else if (view === "dps") renderDps();
   else if (view === "pets") renderPets(); else if (view === "tasks") renderTasks();
   else if (view === "classes") renderClasses(); else if (view === "duty") loadDuty();
-  else if (view === "home") loadHome(); else renderTimers();
+  else if (view === "home") loadHome(); else if (view === "sets") renderSets(); else renderTimers();
 }
 $("tabs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) showView(b.dataset.view); });
 let savedView = new URLSearchParams(location.search).get("view");   // ?view=dps abre esa pestaña
 try { savedView = savedView || localStorage.getItem("view"); } catch { }
-savedView = ["cubes", "dps", "timers", "pets", "tasks", "duty", "classes"].includes(savedView) ? savedView : "home";
+savedView = ["cubes", "dps", "timers", "pets", "tasks", "duty", "classes", "sets"].includes(savedView) ? savedView : "home";
 showView(savedView);
 
 // ---------------- Captura ----------------
@@ -2139,8 +2214,8 @@ function applySettings(m) {
   }
   $("dpsIdle").value = settings.dpsIdle; $("dpsDummy").value = settings.dpsDummy; $("dpsBossHold").checked = settings.dpsBossHold;
   $("tzSel").value = settings.regionOffset; $("bossLead").value = settings.bossLead; $("eventLead").value = settings.eventLead;
-  $("popupPos").value = settings.toast.position;
-  if ($("popupMon").options.length) $("popupMon").value = settings.toast.monitor;
+  for (const sel of document.querySelectorAll(".popupPos")) sel.value = settings.toast.position;
+  for (const sel of document.querySelectorAll(".popupMon")) if (sel.options.length) sel.value = settings.toast.monitor;
   for (const b of document.querySelectorAll(".floatBtn")) b.classList.toggle("on", !!floatsRunning[b.dataset.kind]);
   if (MINI) {
     const s = settings[MINI_KIND], q = c => $("floatPanel").querySelector(c);
@@ -2253,10 +2328,12 @@ function connect() {
       else if (m.type === "settings") applySettings(m);
       else if (m.type === "timers") { timers = m; renderTimers(); }
       else if (m.type === "pets") { pets = m.state; renderPets(); }
+      else if (m.type === "sets") { sets = m.state; renderSets(); }
       else if (m.type === "tasks") {
         tasks = m.state; renderTasks();
         if (!$("viewDuty").hidden) loadDuty();
         if (!$("viewHome").hidden) loadHome();                 // llaves
+        if (!$("viewSets").hidden) loadSets().catch(() => { });   // personajes nuevos
       }
       else if (m.type === "names") { if (!$("viewDuty").hidden) loadDuty(); }
       else if (m.type === "home") { if (!$("viewHome").hidden) loadHome(); }
@@ -2283,6 +2360,7 @@ function connect() {
 setInterval(render, 1000);   // refresca los "hace X s"
 loadMaps().catch(e => showErr("No se pudieron cargar los mapas: " + e + " (¿ejecutaste importar_datos.py?)"));
 if (!MINI) checkNpcap().catch(() => { });
+if (!MINI) loadSets().catch(() => { });
 connect();
 </script>
 </body>

@@ -107,6 +107,14 @@ const I18N = (() => {
     "Fabricar Energía de Od": "Craft Od Energy", "Comprar Energía de Od": "Buy Od Energy",
     "Comprar Piedras de grieta": "Buy Rift Stones", "Pesadilla": "Nightmare", "Prueba de ascenso": "Ascension Trial",
     "Tiempo en el Abismo": "Abyss time", "Corredores del Abismo": "Abyss corridors",
+    "Set": "Set", "Configuración": "Settings", "Configurar notificación": "Notification settings", "Recordatorio de set": "Set reminder",
+    "Sale en la misma ventana que los avisos de jefes y eventos: el volumen, la pantalla y la posición son los mismos.":
+      "It shows in the same window as the boss and event alerts: volume, screen and position are shared.",
+"Set para cada contenido": "Set for each content", "Mundo abierto": "Open world", "Set actual:": "Current set:",
+    "Elige el set de cada personaje. Si empiezas una partida de PvP o entras al mundo abierto (Verteron o Altgard) con otro set puesto, se mostrará una notificación.":
+      "Pick each character's set. If you start a PvP match or enter the open world (Verteron or Altgard) with another set on, a notification will show up.",
+    "cámbialo en el juego para que lo vea": "switch it in the game so the app sees it", "no sé qué set llevas": "current set unknown",
+    "Entra al juego con tus personajes para configurar sus sets.": "Log in with your characters to set up their sets.",
     "PvP solo": "Solo PvP", "PvP cooperativo": "Co-op PvP", "Victorias": "Wins", "Participación": "Participation",
     "entra al juego": "log in", "abre la ventana de PvP": "open the PvP window", "reclamada": "claimed", "pendiente": "pending",
     "hecho": "done", "ninguno": "none", "agotado": "used up",
@@ -145,7 +153,7 @@ const I18N = (() => {
     [/^Vivo \(visto hace (.+)\)$/, "Alive (seen $1 ago)"], [/^abierto por otro tras (.+)$/, "opened by another after $1"],
     [/^abierto por ti tras (.+)$/, "opened by you after $1"], [/^reemplazado tras (.+)$/, "replaced after $1"],
     [/^fuera de rango tras (.+)$/, "out of range after $1"], [/^Misión (\d+)$/, "Mission $1"], [/^Artefacto (\d+)$/, "Artifact $1"],
-    [/^Nv (\d+)$/, "Lv $1"], [/^(\d+) mascotas$/, "$1 pets"], [/^(\d+)\/(\d+) almas$/, "$1/$2 souls"], [/^mundo (\d+)$/, "world $1"], [/^(\d+) veces$/, "$1 times"], [/^1 vez$/, "1 time"],
+    [/^Nv (\d+)$/, "Lv $1"], [/^Usa el set (\d+)$/, "Use set $1"], [/^llevas el set (\d+)$/, "you have set $1"], [/^Set (\d+)$/, "Set $1"], [/^(\d+) mascotas$/, "$1 pets"], [/^(\d+)\/(\d+) almas$/, "$1/$2 souls"], [/^mundo (\d+)$/, "world $1"], [/^(\d+) veces$/, "$1 times"], [/^1 vez$/, "1 time"],
     [/^última (.+)$/, "last $1"], [/^Abre en (.+)$/, "Opens in $1"], [/^tablón de ([^·]+?)( · .+)?$/, (m, who, rest) => `${tr(who)}'s board${rest || ""}`],
     [/^Aceptadas$/, "Accepted"], [/^Disponibles$/, "Available"],
     [/^Un combate termina tras (.+) sin golpes, o contra un jefe al morir o desaparecer\. Solo cuenta el daño de jugadores y sus invocaciones\.$/,
