@@ -12,6 +12,10 @@
     "ownEntityOpcodes: tramas de tu propio personaje; su primer campo (varint) es tu entity.",
     "En 3 h de tramas reales, 100 % de las veces era el jugador local (coincide con LocalId de la companion).",
     "worldEnter: 2 bytes, u32 LE ID de mundo (1010 = Verteron, 1110 = Altgard). Visto en una sola trama real.",
+    "positionOpcodes: varint entity … marca + X/Y/Z float32 LE (los 12 últimos bytes); opcode -> byte de marca.",
+    "0x2B38 (marca 02): ~1 por segundo mientras te mueves. 0x2A38 (marca 00): al empezar, girar o pararte.",
+    "Llegan para ti y para jugadores cercanos; la tuya es la del entity de ownEntityOpcodes. Al recolectar",
+    "estás a 2,1 m (mediana, 158 usos); 0x2A38 queda a 3,2 m de la 0x2B38 anterior (mediana, 4726). 2026-10-28.",
     "Verificado con tramas reales registradas el 2026-10-16 (EU, puerto 13328)."
   ],
   "serverPorts": [13328],
@@ -24,6 +28,7 @@
     "envState": 13622,
     "useComplete": 14902
   },
+  "positionOpcodes": {"11064": 2, "10808": 0},
   "ownEntityOpcodes": [17463, 17975, 18998, 653, 909, 16695, 16951],
   "envStateOpened": [4, 3],
   "cubeEnvIds": [

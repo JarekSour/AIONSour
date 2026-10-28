@@ -1,4 +1,4 @@
 {
- "version": "1.0.37",
- "notes": "Nueva pestaña Set: el set de cada personaje para PvP solo, cooperativo, Campo de batalla y mundo abierto, con un aviso rojo si entras con otro. Inicio se adapta a ventanas pequeñas."
+ "version": "1.0.38",
+ "notes": "Tu personaje aparece en el mapa de cubos y en el minimapa como una flecha. Tareas: nuevo límite de recolección diario y compra de Odyle (16 a la semana por cuenta, 4 por personaje); se quita fabricar Energía de Od. Arreglo: los puntos de Abismo no se leían desde el parche del juego."
 }

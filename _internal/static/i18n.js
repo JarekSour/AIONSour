@@ -104,7 +104,7 @@ const I18N = (() => {
     "Misiones de encargo": "Duty missions", "Recompensas de asistencia": "Attendance rewards", "Tope de kinah": "Kinah cap",
     "Suministros: urgentes": "Supplies: urgent", "Suministros: semanales": "Supplies: weekly",
     "Mazmorra diaria: Fisura desconocida": "Daily dungeon: Unknown Fissure", "Comprar órdenes": "Buy orders", "Ciudad": "City", "Abismo": "Abyss", "común": "common", "poco común": "uncommon", "raro": "rare", "épico": "epic",
-    "Fabricar Energía de Od": "Craft Od Energy", "Comprar Energía de Od": "Buy Od Energy",
+    "Comprar Odyle": "Buy Odyle", "Límite de recolección": "Gathering limit",
     "Comprar Piedras de grieta": "Buy Rift Stones", "Pesadilla": "Nightmare", "Prueba de ascenso": "Ascension Trial",
     "Tiempo en el Abismo": "Abyss time", "Corredores del Abismo": "Abyss corridors",
     "Set": "Set", "Configuración": "Settings", "Configurar notificación": "Notification settings", "Recordatorio de set": "Set reminder",

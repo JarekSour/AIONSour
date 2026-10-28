@@ -1,6 +1,6 @@
 # AIONSour
 
-Portable companion for **AION 2** (Windows): a home screen with upcoming events, keys and currencies, hidden cubes, a damage meter, field bosses and events, pets, daily and weekly tasks, a reminder to wear the right set in each content, duty missions with their rewards, and every class's skills. It reads the game's traffic on your PC; it doesn't modify the game or send your data anywhere.
+Portable companion for **AION 2** (Windows): a home screen with upcoming events, keys and currencies, hidden cubes with your position on the map, a damage meter, field bosses and events, pets, daily and weekly tasks, a reminder to wear the right set in each content, duty missions with their rewards, and every class's skills. It reads the game's traffic on your PC; it doesn't modify the game or send your data anywhere.
 
 Available in **English and Spanish**: it follows your Windows language the first time, and you can switch it at any time from the selector at the top right.
 
@@ -31,13 +31,13 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 ![Tasks](capturas/tareas.png)
 
 - Daily and weekly to-do list **per character**; characters are added on their own when you log in with them.
-- **Automatic** tasks checked off from game data: kinah cap, supplies (urgent and weekly), Od Energy and Rift Stone purchases, Nightmare, Ascension Trial, Abyss time and points… Until there's game data they say «log in to the game» and can't be ticked by hand.
+- **Automatic** tasks checked off from game data: kinah cap, supplies (urgent and weekly), Odyle and Rift Stone purchases, Nightmare, Ascension Trial, Abyss time and points… Until there's game data they say «log in to the game» and can't be ticked by hand.
 - **Solo PvP, Co-op PvP and Battlefield**: the week's wins and participation (30 and 10; 3 and 3 on the Battlefield). They update on their own when you win or lose each match and when you open the game's PvP window.
 - Extra entries («0 left (+2) / 3») are shown apart and don't leave the task pending.
 - **Combat power** of each character on its card, abbreviated as in the game, and up to date when you change gear or character.
 - **Per battle** section: the Abyss corridors open for your account and which ones each character did; they reset with each artifact battle.
-- **Account** card at the top (🌐), with what all your characters share: duty missions (5 a day per account), attendance rewards, Unknown Fissure entries (14 a week), order purchases (city: 12 a week; Abyss: common, uncommon, rare and epic, 5 a week each, colored by grade) and crafting Od Energy.
-- Each character's Od Energy bar.
+- **Account** card at the top (🌐), with what all your characters share: duty missions (5 a day per account), attendance rewards, the daily gathering limit (1000 a day), Unknown Fissure entries (14 a week), order purchases (city: 12 a week; Abyss: common, uncommon, rare and epic, 5 a week each, colored by grade) and the weekly Odyle purchase (16 a week).
+- Each character's Od Energy bar and its Odyle purchase (4 a week).
 - **Your own tasks**: name, daily, weekly or per battle, number of times, and per character or per account. Click to add, right-click to subtract. The ones you created appear under «New task», with a button to delete them.
 - Automatic daily and weekly reset at server time.
 
@@ -48,6 +48,7 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 - Detects hidden cubes as they appear and marks them on the zone map (Verteron or Altgard), with all the possible spots where they can show up.
 - History with the time and outcome of each one: **green** if you opened it, **red** if another player did, or replaced by a new one.
 - Alert with sound when a cube appears: the app switches to the Cubes tab and flashes (configurable).
+- **Your character** shows on the map as an arrow pointing the way you're moving, updated about once a second while you move. It's read from the game's traffic, like everything else: nothing is sent to the game.
 
 ### Damage meter
 
@@ -65,7 +66,7 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 | --- | --- |
 | ![Floating minimap](capturas/minimapa.jpg) | ![Floating meter](capturas/medidor.png) |
 
-- **Minimap** with the active cube and a compact **damage meter**, always on top of the game.
+- **Minimap** with the active cube and your position, and a compact **damage meter**, always on top of the game.
 - Each one has its ⚙: opacity, size and position. Open them with the buttons at the top right.
 
 ### Field bosses and events

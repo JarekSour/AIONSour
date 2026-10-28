@@ -999,6 +999,35 @@ function draw() {
     const [px, py] = toPx(m, c.x, c.y);
     pin(sx(px), sy(py), "Cubo oculto");
   }
+
+  // Tu personaje: flecha en la dirección en la que te mueves (punto si aún no se sabe).
+  const me = state?.position;
+  if (me && mapFor(me.world) === m) {
+    const [px, py] = toPx(m, me.x, me.y), x = sx(px), y = sy(py);
+    ctx.fillStyle = "rgba(255,255,255,.25)"; ctx.beginPath(); ctx.arc(x, y, 16, 0, Math.PI * 2); ctx.fill();
+    ctx.save(); ctx.translate(x, y);
+    ctx.fillStyle = "#fff"; ctx.strokeStyle = "#0b3a7a"; ctx.lineWidth = 2.5;
+    if (heading == null) { ctx.beginPath(); ctx.arc(0, 0, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+    else {
+      ctx.rotate(heading); ctx.beginPath();
+      ctx.moveTo(11, 0); ctx.lineTo(-8, 8); ctx.lineTo(-4, 0); ctx.lineTo(-8, -8); ctx.closePath();
+      ctx.fill(); ctx.stroke();
+    }
+    ctx.restore();
+  }
+}
+
+// Dirección del movimiento: de la última posición distinta (más de 1 m) a la actual.
+let heading = null, lastPos = null;
+function onPosition(p) {
+  if (!state) return;
+  const m = mapFor(p.world);
+  if (lastPos && lastPos.world === p.world && m) {
+    const dx = p.x - lastPos.x, dy = p.y - lastPos.y;
+    if (Math.hypot(dx, dy) > 100) { heading = Math.atan2(dy * m.ay, dx * m.ax); lastPos = p; }
+  } else { heading = null; lastPos = p; }
+  state.position = p;
+  requestDraw();
 }
 
 function pin(x, y, label, color = "#ffd166") {
@@ -2349,6 +2378,7 @@ function connect() {
         if (m.event === "spawn" || m.event === "return" || m.event === "init") focusCube(state.active[0]);
         if (m.event === "spawn" && firstAlert(m.key)) alertCube();
       }
+      else if (m.type === "pos") onPosition(m.position);
       else if (m.type === "cubetest") {                       // «Probar aviso» desde cualquier ventana
         alertCube(true);                                      // el sonido ya sonó en la que lo pidió
       }
