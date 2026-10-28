@@ -1,4 +1,4 @@
 {
- "version": "1.0.38",
- "notes": "Tu personaje aparece en el mapa de cubos y en el minimapa como una flecha. Tareas: nuevo límite de recolección diario y compra de Odyle (16 a la semana por cuenta, 4 por personaje); se quita fabricar Energía de Od. Arreglo: los puntos de Abismo no se leían desde el parche del juego."
+ "version": "1.0.39",
+ "notes": "La etiqueta del cubo en el mapa y el minimapa muestra la distancia hasta tu personaje en metros, con una flecha si el cubo está más arriba o más abajo."
 }

@@ -48,7 +48,7 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 - Detects hidden cubes as they appear and marks them on the zone map (Verteron or Altgard), with all the possible spots where they can show up.
 - History with the time and outcome of each one: **green** if you opened it, **red** if another player did, or replaced by a new one.
 - Alert with sound when a cube appears: the app switches to the Cubes tab and flashes (configurable).
-- **Your character** shows on the map as an arrow pointing the way you're moving, updated about once a second while you move. It's read from the game's traffic, like everything else: nothing is sent to the game.
+- **Your character** shows on the map as an arrow pointing the way you're moving, updated about once a second while you move, and the active cube's label shows how far away it is in meters, with ▲ or ▼ when it's higher or lower than you. It's read from the game's traffic, like everything else: nothing is sent to the game.
 
 ### Damage meter
 

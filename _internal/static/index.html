@@ -864,10 +864,31 @@ function render() {
     `<small>${h.goneAt ? (h.opened ? openedBy(h) : h.replaced ? "reemplazado" : "fuera de rango") + " tras " + Math.round(h.goneAt - h.at) + " s"
       : h.lost ? "fin desconocido" : "activo"}</small></div>`).join("")
     : empty("Aún no has visto ningún cubo.");
+  updateMiniTitle();
+}
+
+function updateMiniTitle() {
+  if (MINI_DPS || !state) return;
   const c = state.active[0];
-  if (!MINI_DPS) $("miniTitle").className = "t pywebview-drag-region" + (c ? " live" : "");
-  if (!MINI_DPS) $("miniTitle").textContent = c ? `◆ Cubo oculto · ${mapName(c.world)} · ${ago(c.at)}`
+  $("miniTitle").className = "t pywebview-drag-region" + (c ? " live" : "");
+  $("miniTitle").textContent = c ? `◆ Cubo oculto · ${mapName(c.world)} · ${ago(c.at)}`
     : `Sin cubo · ${mapName(state.world)}`;
+}
+
+// Distancia en metros (las coordenadas van en centímetros) entre tu personaje y un cubo;
+// null si no se conoce tu posición o está en otro mundo.
+function cubeDistance(c) {
+  const me = state?.position;
+  if (!c || !me || me.world !== c.world) return null;
+  return Math.round(Math.hypot(me.x - c.x, me.y - c.y, (me.z ?? c.z ?? 0) - (c.z ?? me.z ?? 0)) / 100);
+}
+
+// "42 m", con ▲ si el cubo está más arriba que tú y ▼ si está más abajo (más de 3 m de diferencia).
+function cubeDistanceText(c) {
+  const d = cubeDistance(c);
+  if (d == null) return null;
+  const dz = c.z != null && state.position.z != null ? (c.z - state.position.z) / 100 : 0;
+  return `${d} m${dz > 3 ? " ▲" : dz < -3 ? " ▼" : ""}`;
 }
 
 function openedBy(h) {
@@ -997,7 +1018,7 @@ function draw() {
   // Cubo activo.
   for (const c of state?.active || []) {
     const [px, py] = toPx(m, c.x, c.y);
-    pin(sx(px), sy(py), "Cubo oculto");
+    pin(sx(px), sy(py), cubeDistanceText(c) ?? "Cubo oculto");
   }
 
   // Tu personaje: flecha en la dirección en la que te mueves (punto si aún no se sabe).
