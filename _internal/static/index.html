@@ -138,9 +138,16 @@
   #oreDetail .coords { color: var(--muted); font-size: 12px; font-family: var(--mono); margin-top: 2px; }
   #oreDetail .acts { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
   #oreDetail .acts button { padding: 3px 9px; font-size: 12px; }
-  .tabs { display: flex; gap: 2px; background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 2px; }
-  .tabs button { border: 0; background: none; padding: 5px 6px; border-radius: 6px; color: var(--muted); white-space: nowrap; }
-  .tabs button.on { background: var(--accent); color: #fff; }
+  .tabs { display: flex; gap: 2px; background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 2px;
+    position: relative; }
+  .tabs button { position: relative; z-index: 1; border: 0; background: none; padding: 5px 6px; border-radius: 6px; color: var(--muted);
+    white-space: nowrap; transition: color .25s; }
+  .tabs button.on { color: #fff; }
+  /* El fondo de la pestaña elegida se desliza hasta la nueva (moveTabPill). */
+  .tabs::before { content: ""; position: absolute; top: 2px; bottom: 2px; left: 0; width: var(--pill-w, 0);
+    transform: translateX(var(--pill-x, 0)); background: var(--accent); border-radius: 6px; z-index: 0; }
+  .tabs.slide::before { transition: transform .3s cubic-bezier(.3, .8, .3, 1), width .3s cubic-bezier(.3, .8, .3, 1); }
+  @media (prefers-reduced-motion: reduce) { .tabs.slide::before { transition: none; } }
   .tabs .live { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--danger);
     margin-left: 6px; vertical-align: middle; animation: pulse 1.2s infinite; }
   body.mini .tabs { display: none; }
@@ -625,7 +632,7 @@
   <span class="spacer"></span>
   <button class="floatBtn" data-kind="mini" title="Abre o cierra el minimapa flotante (se configura en su ⚙)">🗺 Minimapa</button>
   <button class="floatBtn" data-kind="dps" title="Abre o cierra el medidor de daño flotante (se configura en su ⚙)">⚔ Medidor</button>
-  <select id="langSel" class="langsel" title="Idioma" data-noi18n><option value="es">ES</option><option value="en">EN</option></select>
+  <select id="langSel" class="langsel" title="Idioma" data-noi18n><option value="en">EN</option><option value="es">ES</option></select>
   <div id="err"></div>
   <div id="updateBar" hidden>
     <span class="upmsg" id="updateMsg"></span>
@@ -939,9 +946,10 @@ const clock = t => new Date(t * 1000).toLocaleTimeString([], { hour: "2-digit", 
 const empty = text => `<div class="empty">${text}</div>`;
 
 // ---------------- Listas ----------------
+const HISTORY_SHOWN = 10;      // historiales de cubos y de combates: solo los últimos (el resto sigue guardado)
 function render() {
   if (!state) return;
-  $("history").innerHTML = state.history.length ? state.history.map((h, i) => `<div class="cube ${h.goneAt || h.lost ? "gone" : "live"}` +
+  $("history").innerHTML = state.history.length ? state.history.slice(0, HISTORY_SHOWN).map((h, i) => `<div class="cube ${h.goneAt || h.lost ? "gone" : "live"}` +
     `${h.opened && h.mine === true ? " mine" : h.opened && h.mine === false ? " other" : ""}` +
     `${cubeKey(h) === selCube ? " sel" : ""}" data-src="history" data-i="${i}">` +
     `<span class="icon">◆</span><span><b>${clock(h.at)}</b><small>${esc(mapName(h.world))}</small></span>` +
@@ -1141,11 +1149,14 @@ function onPosition(p) {
 }
 // Minimapa con «Seguir mi posición» (su ⚙): se centra en ti con cada posición nueva.
 const miniFollows = () => MINI && !MINI_DPS && !!settings?.mini?.follow;
+// Al empezar a seguirte acerca el zoom como al centrar un cubo; después respeta el que elijas.
+let followZoomed = false;
 function followMe() {
   const p = state?.position, m = p && mapFor(p.world);
   if (!m) return;
   if (m !== currentMap()) setMapSel("auto");
   [view.cx, view.cy] = toPx(m, p.x, p.y);
+  if (!followZoomed) { view.scale = Math.max(view.scale, CUBE_SCALE); followZoomed = true; }
   requestDraw();
 }
 
@@ -1220,7 +1231,7 @@ function updateAutoLabel() {
 // ---------------- Oricalco ----------------
 // Vetas guardadas y la ruta más corta por ellas (vetas.py). Solo se leen del tráfico: la app
 // no mueve al personaje. Clic en una veta: entra o sale de la ruta.
-let ores = null, oreSel = null, oreFitted = null, oreFollow = false, oreHits = [], oreDrawPending = false;
+let ores = null, oreSel = null, oreFitted = null, oreRouteChanged = false, oreFollow = false, oreHits = [], oreDrawPending = false;
 const oreView = { cx: 2048, cy: 2048, scale: 0.5 };
 const oreCanvas = $("oreMap"), oreCtx = oreCanvas.getContext("2d");
 const oreMeters = m => m >= 1000 ? `${(m / 1000).toFixed(1)} km` : `${m} m`;
@@ -1365,7 +1376,8 @@ function drawOre() {
 
 function fitOre() {
   const m = oreMap(); if (!m) return;
-  const pts = [...oreRoute(m).veins.values()].map(v => toPx(m, v.x, v.y));
+  const { r, veins } = oreRoute(m);       // la ruta elegida; si no tiene vetas en este mapa, todas
+  const pts = (r.order.length ? r.order.map(k => veins.get(k)).filter(Boolean) : [...veins.values()]).map(v => toPx(m, v.x, v.y));
   if (!pts.length) { Object.assign(oreView, { cx: 2048, cy: 2048, scale: 0.25 }); return requestOreDraw(); }
   const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
   const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
@@ -1406,6 +1418,11 @@ function renderOre() {
     `<option value="${esc(r.id)}">${esc(r.name)} (${r.count})</option>`).join("") : `<option value="">Sin rutas</option>`;
   sel.value = ores.selected ?? ""; sel.disabled = !ores.routeList.length;
   $("oreRouteDel").disabled = !ores.selected;
+  if (oreRouteChanged) {                  // ruta recién elegida: a su mapa (si no está en este) y encuadrada
+    oreRouteChanged = false; oreFitted = null;
+    const here = oreMap(), w = Object.keys(ores.routes).find(w => ores.routes[w].order.length);
+    if (here && w && !ores.routes[oreWorld(here)]?.order.length && maps.worlds[w]) $("oreMapSel").value = maps.worlds[w];
+  }
   const m = oreMap();
   if (!m) return requestOreDraw();
   if (oreFitted !== m.id && !$("viewOre").hidden) { oreFitted = m.id; fitOre(); }
@@ -1465,7 +1482,7 @@ $("oreDetail").addEventListener("click", async e => {
   postOre({ action: b.dataset.a, key: oreSel });
 });
 $("oreNext").onclick = () => { const m = oreMap(); if (m) selectOre(oreRoute(m).r.next); };
-$("oreRouteSel").onchange = e => postOre({ action: "routeSelect", route: e.target.value });
+$("oreRouteSel").onchange = e => { oreRouteChanged = true; postOre({ action: "routeSelect", route: e.target.value }); };
 $("oreRouteNew").onclick = () => {
   askText("Nueva ruta", esc(I18N.tr("Escribe el nombre de la ruta. Empieza vacía: añádele vetas con un clic.")), "Crear")
     .then(name => { if (name) postOre({ action: "routeCreate", name }); });
@@ -1648,7 +1665,7 @@ function renderDps() {
       `<span class="num">${sk.hits ? Math.round(sk.crits * 100 / sk.hits) : 0} %</span><span class="num">${pct(sk.share)}</span></div>`).join("") : "";
   }
   if (MINI_DPS) renderDpsMini();
-  $("dpsHistory").innerHTML = dps.history.map((h, i) => `<div class="fight${i === viewing ? " sel" : ""}" data-i="${i}">` +
+  $("dpsHistory").innerHTML = dps.history.slice(0, HISTORY_SHOWN).map((h, i) => `<div class="fight${i === viewing ? " sel" : ""}" data-i="${i}">` +
     `<b>${esc(h.target || "Combate")}</b><span class="num"><b>${kfmt(h.dps)}</b> <small>DPS</small></span>` +
     `<small>${hhmm(h.start)} · ${secs(h.duration)} · ${h.players.length} jug.</small><small class="num">${fmt(h.damage)}</small></div>`).join("")
     || empty("Aún no hay combates terminados.");
@@ -2579,6 +2596,7 @@ setInterval(renderHome, 1000);
 function showView(view) {
   if (MINI) view = "cubes";
   for (const b of $("tabs").children) b.classList.toggle("on", b.dataset.view === view);
+  moveTabPill();
   $("viewCubes").hidden = view !== "cubes"; $("viewDps").hidden = view !== "dps";
   $("viewTimers").hidden = view !== "timers"; $("viewPets").hidden = view !== "pets";
   $("viewTasks").hidden = view !== "tasks"; $("viewClasses").hidden = view !== "classes";
@@ -2590,6 +2608,17 @@ function showView(view) {
   else if (view === "classes") renderClasses(); else if (view === "duty") loadDuty();
   else if (view === "home") loadHome(); else if (view === "sets") renderSets(); else renderTimers();
 }
+// Fondo de la pestaña elegida: se coloca bajo ella y se desliza al cambiar (la primera vez, sin animación).
+function moveTabPill() {
+  const nav = $("tabs"), b = nav.querySelector("button.on");
+  if (!b || !b.offsetWidth) return;
+  nav.style.setProperty("--pill-x", b.offsetLeft + "px");
+  nav.style.setProperty("--pill-w", b.offsetWidth + "px");
+  if (!nav.classList.contains("slide")) requestAnimationFrame(() => requestAnimationFrame(() => nav.classList.add("slide")));
+}
+// El ancho de las pestañas cambia con el idioma, la fuente o la ventana.
+new ResizeObserver(moveTabPill).observe($("tabs"));
+for (const b of $("tabs").children) new ResizeObserver(moveTabPill).observe(b);
 $("tabs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) showView(b.dataset.view); });
 let savedView = new URLSearchParams(location.search).get("view");   // ?view=dps abre esa pestaña
 try { savedView = savedView || localStorage.getItem("view"); } catch { }
@@ -2697,7 +2726,7 @@ function applySettings(m) {
     q(".fOpacity").value = Math.round(s.opacity * 100); q(".fOpacityV").textContent = Math.round(s.opacity * 100) + " %";
     q(".fTop").checked = s.onTop;
     if (!MINI_DPS) { q(".fSound").checked = settings.sound; q(".fRoute").checked = !!s.route; q(".fFollow").checked = !!s.follow;
-      if (s.follow) followMe(); requestDraw(); }
+      if (s.follow) followMe(); else followZoomed = false; requestDraw(); }
     applyWindow();
   }
 }

@@ -1,4 +1,4 @@
 {
- "version": "1.0.40",
- "notes": "Nueva pestaña Recolección: vetas de oricalco, rubí, zafiro y diamante que recolectas, si están disponibles o agotadas, la más cercana y rutas con nombre. El minimapa puede mostrar la ruta y seguir tu posición."
+ "version": "1.0.41",
+ "notes": "Las pestañas resaltan la elegida con un efecto deslizante; al elegir una ruta de recolección el mapa se centra en ella; los historiales de cubos y combates muestran los 10 últimos; el minimapa se acerca al seguir tu posición; inglés primero en el selector de idioma. README y capturas actualizados."
 }
