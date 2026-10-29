@@ -1,6 +1,6 @@
 # AIONSour
 
-Portable companion for **AION 2** (Windows): a home screen with upcoming events, keys and currencies, hidden cubes with your position on the map, a damage meter, field bosses and events, pets, daily and weekly tasks, a reminder to wear the right set in each content, duty missions with their rewards, and every class's skills. It reads the game's traffic on your PC; it doesn't modify the game or send your data anywhere.
+Portable companion for **AION 2** (Windows): a home screen with upcoming events, keys and currencies, hidden cubes with your position on the map, gathering veins and routes, a damage meter, field bosses and events, pets, daily and weekly tasks, a reminder to wear the right set in each content, duty missions with their rewards, and every class's skills. It reads the game's traffic on your PC; it doesn't modify the game or send your data anywhere.
 
 Available in **English and Spanish**: it follows your Windows language the first time, and you can switch it at any time from the selector at the top right.
 
@@ -12,7 +12,7 @@ Available in **English and Spanish**: it follows your Windows language the first
 2. [Download the ZIP](https://github.com/JarekSour/AIONSour/archive/refs/heads/main.zip) and extract it anywhere.
 3. Open `AIONSour.exe`. Capture starts on its own: it listens on all your network adapters (wired, Wi-Fi, VPN…), so there's nothing to choose.
 
-It's a portable folder: nothing else gets installed, and your data (history, tasks, pets, settings) is stored inside it.
+It's a portable folder: nothing else gets installed, and your data (history, tasks, pets, veins and routes, settings) is stored inside it.
 
 ## Features
 
@@ -50,6 +50,16 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 - Alert with sound when a cube appears: the app switches to the Cubes tab and flashes (configurable).
 - **Your character** shows on the map as an arrow pointing the way you're moving, updated about once a second while you move, and the active cube's label shows how far away it is in meters, with ▲ or ▼ when it's higher or lower than you. It's read from the game's traffic, like everything else: nothing is sent to the game.
 
+### Gathering
+
+![Gathering](capturas/recoleccion.jpg)
+
+- Every **orichalcum, ruby, sapphire and diamond** vein you gather is saved on its own, with its spot on the map. The vein's border shows its type: brown, red, blue or purple. Only the veins you interact with are saved, not the ones you just see.
+- **Available or depleted**: a vein is available while it's in view, if you saw it in the last 3 minutes, or if you're in its range and the game shows it. Otherwise it shows as depleted for now.
+- **Named routes**: create as many as you want, choose one, and click a vein on the map or in the list to add it or take it out. New veins go into the list but not into any route. The route is drawn as the shortest loop through its veins, with its length and the vein to start from.
+- **Next**: the nearest available vein, with its distance and a dotted line from you to it.
+- Click a vein to see its type, when you last saw it and how many times you gathered it, or to delete it.
+
 ### Damage meter
 
 ![Damage meter](capturas/dano.png)
@@ -68,6 +78,7 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 
 - **Minimap** with the active cube and your position, and a compact **damage meter**, always on top of the game.
 - Each one has its ⚙: opacity, size and position. Open them with the buttons at the top right.
+- The minimap's ⚙ can also show the **gathering route** you chose and **follow your position**, keeping you centered as you move. The active cube's pin always stays on top.
 
 ### Field bosses and events
 

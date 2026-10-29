@@ -9,7 +9,7 @@
   :root {
     --bg: #0f1216; --panel: #171b21; --panel2: #1e232b; --border: #2a313b;
     --text: #e3e7ed; --muted: #8b95a3; --accent: #4f9cf9; --danger: #f2555a; --ok: #3ccf8e;
-    --gold: #ffd166; --extra: #34b3ce; --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --gold: #ffd166; --extra: #34b3ce; --ore: #f0a04b; --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
   }
   * { box-sizing: border-box; }
   /* Barras de desplazamiento finas, del color de los bordes; se iluminan al pasar el ratón. */
@@ -25,7 +25,7 @@
 
   header { display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
     padding: 10px 14px; background: var(--panel); border-bottom: 1px solid var(--border); }
-  header h1 { font-size: 15px; margin: 0 10px 0 0; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  header h1 { font-size: 15px; margin: 0 4px 0 0; font-weight: 600; display: flex; align-items: center; gap: 8px; }
   .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); }
   .dot.on { background: var(--ok); box-shadow: 0 0 8px var(--ok); animation: pulse 1.2s infinite; }
   @keyframes pulse { 50% { opacity: .4; } }
@@ -45,6 +45,9 @@
   dialog.ask p { margin: 0 0 16px; color: var(--muted); font-size: 13px; line-height: 1.45; }
   dialog.ask p b { color: var(--text); font-weight: 600; }
   dialog.ask .askbtns { display: flex; justify-content: flex-end; gap: 8px; }
+  dialog.ask input { width: 100%; margin: -6px 0 16px; padding: 7px 9px; font: inherit; color: var(--text);
+    background: var(--panel2); border: 1px solid var(--border); border-radius: 6px; }
+  dialog.ask input:focus { outline: none; border-color: var(--accent); }
   .spacer { flex: 1; }
   label.chk { display: flex; gap: 5px; align-items: center; color: var(--muted); }
   #err { color: var(--danger); width: 100%; display: none; }
@@ -94,8 +97,49 @@
   .legend { position: absolute; bottom: 8px; left: 10px; font-size: 11px; color: var(--muted);
     background: rgba(23,27,33,.85); border-radius: 6px; padding: 3px 8px; }
   main[hidden] { display: none; }
+
+  /* Oricalco */
+  #oreMap { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+  #oreMap.drag { cursor: grabbing; }
+  .orelegend { display: flex; gap: 4px 10px; flex-wrap: wrap; max-width: calc(100% - 20px); }
+  .orelegend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
+  .orelegend i.skip { border: 2px solid #5b6472; background: rgba(15,18,22,.7); width: 7px; height: 7px; }
+  .orelegend i.ring { border: 3px solid; width: 6px; height: 6px; }
+  .oretip { position: absolute; pointer-events: none; background: rgba(23,27,33,.95); border: 1px solid var(--border);
+    border-radius: 6px; padding: 5px 8px; font-size: 12px; white-space: nowrap; display: none; }
+  .oreside { display: flex; flex-direction: column; }
+  .oreside > .card:last-child { flex: 1; }
+  .oreside > .card[hidden] { display: none; }
+  .oreroutes { display: flex; gap: 6px; margin-bottom: 10px; }
+  .oreroutes select { flex: 1; min-width: 0; }
+  .orestats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .orestats b { display: block; font-size: 18px; color: var(--ore); font-variant-numeric: tabular-nums; }
+  .orestats small { color: var(--muted); }
+  .orenext { margin-top: 10px; padding: 7px 10px; border-radius: 6px; background: rgba(60,207,142,.1);
+    border: 1px solid rgba(60,207,142,.4); cursor: pointer; }
+  .orenext b { color: var(--ok); }
+  .orerow { display: grid; grid-template-columns: 18px 26px 1fr auto; gap: 8px; align-items: center; padding: 5px 8px;
+    border-radius: 6px; background: var(--panel2); cursor: pointer; }
+  .orerow:hover { outline: 1px solid var(--accent); }
+  .orerow.sel { box-shadow: inset 3px 0 0 var(--accent), 0 0 0 1px var(--accent); }
+  .orerow input { margin: 0; width: 14px; height: 14px; accent-color: var(--ore); cursor: pointer; }
+  .orenum { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-weight: 700;
+    border: 3px solid transparent;
+    font-size: 11px; background: var(--ore); color: #2b1600; }
+  .orerow.dep .orenum { background: #4a5260; color: #c9d0da; }
+  .orerow.next .orenum { background: var(--ok); color: #05301d; }
+  .orerow.mine .orenum { background: var(--accent); color: #fff; }
+  .orerow.skip .orenum { background: transparent; color: var(--muted); }
+  .orerow .st { color: var(--muted); font-size: 12px; }
+  .orerow.dep .st { color: #c08a8c; }
+  .orerow.mine .st { color: #8fbdf9; }
+  .orerow .leg { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; text-align: right; }
+  .oresub { padding: 6px 2px 0; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+  #oreDetail .coords { color: var(--muted); font-size: 12px; font-family: var(--mono); margin-top: 2px; }
+  #oreDetail .acts { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  #oreDetail .acts button { padding: 3px 9px; font-size: 12px; }
   .tabs { display: flex; gap: 2px; background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 2px; }
-  .tabs button { border: 0; background: none; padding: 5px 10px; border-radius: 6px; color: var(--muted); }
+  .tabs button { border: 0; background: none; padding: 5px 6px; border-radius: 6px; color: var(--muted); white-space: nowrap; }
   .tabs button.on { background: var(--accent); color: #fff; }
   .tabs .live { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--danger);
     margin-left: 6px; vertical-align: middle; animation: pulse 1.2s infinite; }
@@ -570,6 +614,7 @@
     <button data-view="home" class="on">🏠 Inicio</button>
     <button data-view="tasks">✓ Tareas</button>
     <button data-view="cubes">◆ Cubos</button>
+    <button data-view="ore">⛏ Recolección</button>
     <button data-view="dps">⚔ Daño<span class="live" id="dpsLive" hidden></span></button>
     <button data-view="timers">♛ Jefes y eventos</button>
     <button data-view="pets">🐾 Mascotas</button>
@@ -662,6 +707,44 @@
       <div class="list" id="history"></div>
       <div class="histkey"><b style="color:var(--ok)">Verde</b>: lo abriste tú · <b style="color:var(--danger)">Rojo</b>: lo abrió otro jugador</div>
     </div>
+  </div>
+</main>
+
+<main id="viewOre" hidden>
+  <div class="card mapcard">
+    <canvas id="oreMap"></canvas>
+    <div class="mapmsg" id="oreMsg"></div>
+    <div class="maptools">
+      <select id="oreMapSel" title="Mapa"></select>
+      <button id="oreFit" title="Encuadra todas las vetas del mapa">⤢ Ver la ruta</button>
+      <button id="oreFollow" title="El mapa te sigue mientras te mueves">◎ Seguirme</button>
+      <button id="oreZoomIn" title="Acercar">+</button>
+      <button id="oreZoomOut" title="Alejar">−</button>
+    </div>
+    <div class="legend orelegend"><span><i style="background:var(--ore)"></i>Disponible</span>
+      <span><i style="background:var(--ok)"></i>Siguiente</span> <span><i style="background:var(--accent)"></i>Recolectando</span>
+      <span><i style="background:#4a5260"></i>Agotada por ahora</span> <span><i class="skip"></i>Fuera de la ruta</span>
+      <span>Borde:</span> <span><i class="ring" style="border-color:#9a6430"></i>Oricalco</span>
+      <span><i class="ring" style="border-color:#e5484d"></i>Rubí</span> <span><i class="ring" style="border-color:#3b82f6"></i>Zafiro</span>
+      <span><i class="ring" style="border-color:#a855f7"></i>Diamante</span></div>
+    <div class="oretip" id="oreTip"></div>
+  </div>
+  <div class="side oreside">
+    <div class="card">
+      <h3>Ruta de recolección</h3>
+      <div class="oreroutes"><select id="oreRouteSel" title="Ruta"></select>
+        <button id="oreRouteNew" title="Nueva ruta: se crea vacía con el nombre que escribas">＋</button>
+        <button id="oreRouteDel" title="Borrar ruta (sus vetas siguen en la lista)">🗑</button></div>
+      <div class="orestats">
+        <div><b id="oreCount">–</b><small>vetas</small></div>
+        <div><b id="oreTotal">–</b><small>recorrido</small></div>
+        <div><b id="oreDep">–</b><small>agotadas</small></div>
+      </div>
+      <div class="orenext" id="oreNext" hidden></div>
+    </div>
+    <div class="card" id="oreDetail" hidden></div>
+    <div class="card"><div class="list" id="oreList"></div>
+      <div class="histkey">Clic en una veta (en el mapa o aquí) para añadirla o quitarla de la ruta.</div></div>
   </div>
 </main>
 
@@ -790,6 +873,7 @@
 <dialog class="ask" id="askDlg">
   <h3 id="askTitle"></h3>
   <p id="askText"></p>
+  <input id="askInput" maxlength="60" hidden>
   <div class="askbtns"><button id="askNo">Cancelar</button><button id="askYes" class="danger"></button></div>
 </dialog>
 
@@ -930,7 +1014,7 @@ const toPx = (m, x, y) => [m.ax * x + m.bx, m.ay * y + m.by];
 
 // Centra el mapa en un cubo con zoom; cambia al mapa del cubo si se conoce.
 function focusCube(c) {
-  if (!c || !maps) return;
+  if (!c || !maps || miniFollows()) return;        // siguiéndote: el cubo se ve con su distancia
   const m = mapFor(c.world);
   if (m && m !== currentMap()) setMapSel(m.id);
   const target = m || currentMap(); if (!target) return;
@@ -950,7 +1034,7 @@ function tile(m, z, x, y) {
     return img;
   }
   img = new Image();
-  img.onload = () => { tileFails.delete(key); requestDraw(); if (petMap.open) drawPetMap(); };
+  img.onload = () => { tileFails.delete(key); requestDraw(); requestOreDraw(); if (petMap.open) drawPetMap(); };
   img.onerror = () => {
     const n = (tileFails.get(key) || 0) + 1;
     tileFails.set(key, n);
@@ -1007,18 +1091,15 @@ function draw() {
     }
   }
 
+  // Minimapa: la ruta de recolección elegida, si está activada en su ⚙.
+  if (MINI && settings?.mini?.route && ores && maps) drawGatherRoute(ctx, m, sx, sy, w, h, { onlyRoute: true });
+
   // Cubo del historial elegido (si es de este mapa y no es el activo).
   const sel = selectedCube();
   if (sel && mapFor(sel.world) === m && !(state.active || []).some(a => a.x === sel.x && a.y === sel.y)) {
     const [px, py] = toPx(m, sel.x, sel.y);
     const color = sel.opened && sel.mine === true ? "#3ccf8e" : sel.opened && sel.mine === false ? "#ff6b6b" : "#9aa4b2";
     pin(sx(px), sy(py), null, color);
-  }
-
-  // Cubo activo.
-  for (const c of state?.active || []) {
-    const [px, py] = toPx(m, c.x, c.y);
-    pin(sx(px), sy(py), cubeDistanceText(c) ?? "Cubo oculto");
   }
 
   // Tu personaje: flecha en la dirección en la que te mueves (punto si aún no se sabe).
@@ -1036,6 +1117,12 @@ function draw() {
     }
     ctx.restore();
   }
+
+  // Cubo activo: por encima de todo (ruta, cubos del historial y tu personaje).
+  for (const c of state?.active || []) {
+    const [px, py] = toPx(m, c.x, c.y);
+    pin(sx(px), sy(py), cubeDistanceText(c) ?? "Cubo oculto");
+  }
 }
 
 // Dirección del movimiento: de la última posición distinta (más de 1 m) a la actual.
@@ -1048,6 +1135,17 @@ function onPosition(p) {
     if (Math.hypot(dx, dy) > 100) { heading = Math.atan2(dy * m.ay, dx * m.ax); lastPos = p; }
   } else { heading = null; lastPos = p; }
   state.position = p;
+  if (miniFollows()) followMe();
+  requestDraw();
+  if (!MINI) onOrePosition(p);
+}
+// Minimapa con «Seguir mi posición» (su ⚙): se centra en ti con cada posición nueva.
+const miniFollows = () => MINI && !MINI_DPS && !!settings?.mini?.follow;
+function followMe() {
+  const p = state?.position, m = p && mapFor(p.world);
+  if (!m) return;
+  if (m !== currentMap()) setMapSel("auto");
+  [view.cx, view.cy] = toPx(m, p.x, p.y);
   requestDraw();
 }
 
@@ -1110,13 +1208,323 @@ async function loadMaps() {
     cubeMaps.map(m => `<option value="${esc(m.id)}">${esc(m.name)}</option>`).join("");
   if (mapSel !== "auto" && !cubeMaps.some(m => m.id === mapSel)) mapSel = "auto";
   $("mapSel").value = mapSel;
-  updateAutoLabel(); render(); focusCube(state?.active[0]); requestDraw();
+  $("oreMapSel").innerHTML = $("mapSel").innerHTML; $("oreMapSel").value = "auto";
+  updateAutoLabel(); render(); focusCube(state?.active[0]); requestDraw(); renderOre();
 }
 function updateAutoLabel() {
   if (!maps) return;
   const m = mapFor(state?.world);
   $("mapSel").options[0].text = "Automático" + (m ? ` (${m.name})` : state?.world != null ? ` (mundo ${state.world}?)` : "");
 }
+
+// ---------------- Oricalco ----------------
+// Vetas guardadas y la ruta más corta por ellas (vetas.py). Solo se leen del tráfico: la app
+// no mueve al personaje. Clic en una veta: entra o sale de la ruta.
+let ores = null, oreSel = null, oreFitted = null, oreFollow = false, oreHits = [], oreDrawPending = false;
+const oreView = { cx: 2048, cy: 2048, scale: 0.5 };
+const oreCanvas = $("oreMap"), oreCtx = oreCanvas.getContext("2d");
+const oreMeters = m => m >= 1000 ? `${(m / 1000).toFixed(1)} km` : `${m} m`;
+const oreAgo = t => { const s = Math.max(0, Math.round(Date.now() / 1000 - t));
+  return s < 60 ? `hace ${s} s` : s < 3600 ? `hace ${Math.floor(s / 60)} min`
+    : s < 86400 ? `hace ${Math.floor(s / 3600)} h ${Math.floor(s % 3600 / 60)} min` : `hace ${Math.floor(s / 86400)} d`; };
+
+// Automático: el mapa en el que estás; fuera de Verteron y Altgard, el que tiene más vetas.
+function oreMap() {
+  if (!maps || !ores) return null;
+  const sel = $("oreMapSel").value;
+  if (sel && sel !== "auto") return maps.maps.find(m => m.id === sel) || null;
+  const here = mapFor(ores.world ?? state?.world);
+  if (here) return here;
+  const count = w => ores.veins.filter(v => String(v.world) === w).length;
+  const best = Object.keys(maps.worlds).sort((a, b) => count(b) - count(a))[0];
+  return maps.maps.find(m => m.id === maps.worlds[best]) || null;
+}
+const oreWorld = m => Object.keys(maps.worlds).find(w => maps.worlds[w] === m.id);
+function oreRoute(m) {
+  const w = oreWorld(m);
+  return { w, r: ores.routes[w] || { order: [], legs: [], skip: [], total: 0, next: null, start: null },
+           veins: new Map(ores.veins.filter(v => String(v.world) === w).map(v => [v.key, v])) };
+}
+// Tipo de veta (vetas.py, KINDS): color del borde y nombre.
+const ORE_KINDS = { orichalcum: ["#9a6430", "Oricalco"], ruby: ["#e5484d", "Rubí"], sapphire: ["#3b82f6", "Zafiro"],
+                    diamond: ["#a855f7", "Diamante"] };
+const oreKind = v => ORE_KINDS[v.kind] || ORE_KINDS.orichalcum;
+// La que estás recolectando: empezada por ti, sin agotar y todavía a la vista.
+const oreGathering = v => !!(v.usedAt && !v.depletedAt && v.visible);
+function oreStatus(v) {
+  if (oreGathering(v)) return `<span>recolectando ahora</span>`;
+  if (v.depletedAt) return `<span>agotada</span> <span>${oreAgo(v.depletedAt)}</span>${v.depletedByMe ? " <span>(por ti)</span>" : ""}`;
+  // Sin verla en los últimos 3 min ni tenerla a la vista: se da por agotada (vetas.py, AVAILABLE_FOR).
+  if (!v.available) return `<span>agotada</span>` + (v.lastSeen ? ` · <span>vista ${oreAgo(v.lastSeen)}</span>` : "");
+  return v.visible ? `<span>disponible</span> · <span>a la vista</span>` : `<span>disponible</span> · <span>vista ${oreAgo(v.lastSeen)}</span>`;
+}
+
+// Ruta de recolección elegida sobre un mapa: tramos con flechas, línea punteada de ti a la siguiente
+// y vetas numeradas (borde = tipo). La usan la pestaña Recolección y el minimapa (solo la ruta).
+// Devuelve el mundo del mapa.
+function drawGatherRoute(g, m, sx, sy, w, h, { hits = null, sel = null, onlyRoute = false } = {}) {
+  const { w: world, r, veins } = oreRoute(m);
+  if (onlyRoute) for (const k of [...veins.keys()]) if (!r.order.includes(k)) veins.delete(k);
+  const P = k => { const [px, py] = toPx(m, veins.get(k).x, veins.get(k).y); return [sx(px), sy(py)]; };
+
+  // Ruta cerrada con flechas a mitad de cada tramo.
+  if (r.order.length > 1) {
+    g.lineWidth = 3; g.strokeStyle = "rgba(255,209,102,.85)";
+    g.beginPath();
+    r.order.forEach((k, i) => { const [x, y] = P(k); i ? g.lineTo(x, y) : g.moveTo(x, y); });
+    g.closePath(); g.shadowColor = "rgba(0,0,0,.8)"; g.shadowBlur = 4; g.stroke(); g.shadowBlur = 0;
+    g.fillStyle = "rgba(255,209,102,.95)";
+    r.order.forEach((k, i) => {
+      const [x1, y1] = P(k), [x2, y2] = P(r.order[(i + 1) % r.order.length]);
+      if (Math.hypot(x2 - x1, y2 - y1) < 40) return;
+      const a = Math.atan2(y2 - y1, x2 - x1), mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      g.beginPath(); g.moveTo(mx + 7 * Math.cos(a), my + 7 * Math.sin(a));
+      g.lineTo(mx + 6 * Math.cos(a + 2.5), my + 6 * Math.sin(a + 2.5));
+      g.lineTo(mx + 6 * Math.cos(a - 2.5), my + 6 * Math.sin(a - 2.5)); g.fill();
+    });
+  }
+  // Línea punteada desde ti hasta la siguiente veta.
+  const me = state?.position, meHere = me && String(me.world) === world;
+  let mx, my;
+  if (meHere) { const [px, py] = toPx(m, me.x, me.y); mx = sx(px); my = sy(py); }
+  if (meHere && r.next && veins.get(r.next)) {
+    const [nx, ny] = P(r.next);
+    g.setLineDash([6, 5]); g.lineWidth = 2; g.strokeStyle = "rgba(60,207,142,.9)";
+    g.beginPath(); g.moveTo(mx, my); g.lineTo(nx, ny); g.stroke(); g.setLineDash([]);
+  }
+  // Vetas, numeradas en el orden de la ruta.
+  const num = new Map(r.order.map((k, i) => [k, i + 1]));
+  g.textAlign = "center"; g.textBaseline = "middle"; g.font = "700 11px system-ui";
+  for (const [k, v] of veins) {
+    const [x, y] = P(k);
+    if (x < -20 || y < -20 || x > w + 20 || y > h + 20) continue;
+    hits?.push([x, y, k]);
+    const now = oreGathering(v), isNext = r.next === k && !now, rad = 11;
+    if (k === sel || isNext) {
+      g.fillStyle = k === sel ? "rgba(79,156,249,.35)" : "rgba(60,207,142,.35)";
+      g.beginPath(); g.arc(x, y, rad + 8, 0, Math.PI * 2); g.fill();
+    }
+    g.beginPath(); g.arc(x, y, rad, 0, Math.PI * 2);
+    const kind = oreKind(v)[0];                       // el borde dice el tipo de veta
+    if (!num.has(k)) {
+      g.lineWidth = 3; g.strokeStyle = kind; g.fillStyle = "rgba(15,18,22,.7)";
+      g.fill(); g.stroke();
+    } else {
+      g.fillStyle = now ? "#4f9cf9" : isNext ? "#3ccf8e" : !v.available ? "#4a5260" : "#f0a04b";
+      g.strokeStyle = kind; g.lineWidth = 3.5; g.fill(); g.stroke();
+      g.fillStyle = now ? "#fff" : isNext ? "#05301d" : !v.available ? "#c9d0da" : "#2b1600";
+      g.fillText(num.get(k), x, y + 0.5);
+    }
+  }
+  g.textAlign = "start"; g.textBaseline = "alphabetic";
+  return world;
+}
+
+function requestOreDraw() { if (!oreDrawPending) { oreDrawPending = true; requestAnimationFrame(drawOre); } }
+function drawOre() {
+  oreDrawPending = false;
+  if ($("viewOre").hidden) return;
+  const dpr = devicePixelRatio || 1, w = oreCanvas.clientWidth, h = oreCanvas.clientHeight, g = oreCtx;
+  if (oreCanvas.width !== Math.round(w * dpr) || oreCanvas.height !== Math.round(h * dpr)) {
+    oreCanvas.width = Math.round(w * dpr); oreCanvas.height = Math.round(h * dpr);
+  }
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.fillStyle = "#0b0e12"; g.fillRect(0, 0, w, h);
+  const m = oreMap(); oreHits = [];
+  $("oreMsg").textContent = !maps || !ores ? "Cargando mapas…" : "";
+  if (!m) return;
+  const s = oreView.scale, A = maps.atlasSize;
+  const sx = px => (px - oreView.cx) * s + w / 2, sy = py => (py - oreView.cy) * s + h / 2;
+  const z = m.zooms.filter(z => (A >> z) * s <= maps.tileSize * 1.5).sort((a, b) => a - b)[0] ?? Math.max(...m.zooms);
+  const n = 1 << z, span = A / n;
+  const i0 = Math.max(0, Math.floor((oreView.cx - w / 2 / s) / span)), i1 = Math.min(n - 1, Math.floor((oreView.cx + w / 2 / s) / span));
+  const j0 = Math.max(0, Math.floor((oreView.cy - h / 2 / s) / span)), j1 = Math.min(n - 1, Math.floor((oreView.cy + h / 2 / s) / span));
+  g.imageSmoothingQuality = "high";
+  for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) {
+    const img = tile(m, z, i, j);
+    if (img.complete && img.naturalWidth) g.drawImage(img, sx(i * span), sy(j * span), span * s + 0.6, span * s + 0.6);
+  }
+  const world = drawGatherRoute(g, m, sx, sy, w, h, { hits: oreHits, sel: oreSel });
+  const me = state?.position, meHere = me && String(me.world) === world;
+  let mx, my;
+  if (meHere) { const [px, py] = toPx(m, me.x, me.y); mx = sx(px); my = sy(py); }
+  // Tu personaje, como en el mapa de cubos.
+  if (meHere) {
+    g.fillStyle = "rgba(255,255,255,.25)"; g.beginPath(); g.arc(mx, my, 16, 0, Math.PI * 2); g.fill();
+    g.save(); g.translate(mx, my);
+    g.fillStyle = "#fff"; g.strokeStyle = "#0b3a7a"; g.lineWidth = 2.5;
+    if (heading == null) { g.beginPath(); g.arc(0, 0, 7, 0, Math.PI * 2); g.fill(); g.stroke(); }
+    else {
+      g.rotate(heading); g.beginPath();
+      g.moveTo(11, 0); g.lineTo(-8, 8); g.lineTo(-4, 0); g.lineTo(-8, -8); g.closePath();
+      g.fill(); g.stroke();
+    }
+    g.restore();
+  }
+}
+
+function fitOre() {
+  const m = oreMap(); if (!m) return;
+  const pts = [...oreRoute(m).veins.values()].map(v => toPx(m, v.x, v.y));
+  if (!pts.length) { Object.assign(oreView, { cx: 2048, cy: 2048, scale: 0.25 }); return requestOreDraw(); }
+  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const w = oreCanvas.clientWidth || 800, h = oreCanvas.clientHeight || 600;
+  oreView.cx = (x0 + x1) / 2; oreView.cy = (y0 + y1) / 2;
+  oreView.scale = Math.min(2, Math.max(MIN_SCALE, Math.min(w / (x1 - x0 + 120), h / (y1 - y0 + 120))));
+  requestOreDraw();
+}
+function selectOre(k) {
+  oreSel = k;
+  const v = ores.veins.find(v => v.key === k);
+  if (v) {
+    if (oreWorld(oreMap()) !== String(v.world) && maps.worlds[v.world]) $("oreMapSel").value = oreFitted = maps.worlds[v.world];
+    [oreView.cx, oreView.cy] = toPx(oreMap(), v.x, v.y);
+    oreView.scale = Math.max(oreView.scale, 1);
+  }
+  renderOre();
+}
+function toggleOre(k) {
+  postOre({ action: oreRoute(oreMap()).r.order.includes(k) ? "skip" : "include", key: k });
+}
+async function postOre(body) {
+  try {
+    const r = await fetch("/api/veins", { method: "POST", body: JSON.stringify(body) });
+    if (!r.ok) throw new Error((await r.json()).error);
+  } catch (e) { showErr("Error: " + e.message); }
+}
+function onOrePosition(p) {
+  const m = oreMap();
+  if (oreFollow && m && String(p.world) === oreWorld(m)) [oreView.cx, oreView.cy] = toPx(m, p.x, p.y);
+  renderOreNext(); requestOreDraw();
+}
+
+function renderOre() {
+  if (!ores || MINI) return;
+  const sel = $("oreRouteSel");
+  sel.innerHTML = ores.routeList.length ? ores.routeList.map(r =>
+    `<option value="${esc(r.id)}">${esc(r.name)} (${r.count})</option>`).join("") : `<option value="">Sin rutas</option>`;
+  sel.value = ores.selected ?? ""; sel.disabled = !ores.routeList.length;
+  $("oreRouteDel").disabled = !ores.selected;
+  const m = oreMap();
+  if (!m) return requestOreDraw();
+  if (oreFitted !== m.id && !$("viewOre").hidden) { oreFitted = m.id; fitOre(); }
+  const { r, veins } = oreRoute(m);
+  $("oreCount").textContent = r.order.length;
+  $("oreTotal").textContent = r.order.length > 1 ? oreMeters(r.total) : "–";
+  $("oreDep").textContent = r.order.filter(k => !veins.get(k).available).length;
+  renderOreNext();
+  if (!veins.size) {
+    $("oreList").innerHTML = empty(`Todavía no hay vetas en ${esc(m.name)}. Cada veta (oricalco, rubí, zafiro o diamante) se guarda al recolectarla.`);
+  } else {
+    const row = (k, i) => {
+      const v = veins.get(k), cls = i < 0 ? "skip" : oreGathering(v) ? "mine" : r.next === k ? "next" : !v.available ? "dep" : "";
+      return `<div class="orerow ${cls}${k === oreSel ? " sel" : ""}" data-k="${esc(k)}">` +
+        `<input type="checkbox" title="En la ruta" ${i >= 0 ? "checked" : ""}>` +
+        `<span class="orenum" style="border-color:${oreKind(v)[0]}" title="${oreKind(v)[1]}">${i < 0 ? "–" : i + 1}</span>` +
+        `<span class="st">${oreStatus(v)}</span>` +
+        `<span class="leg">${i >= 0 && r.order.length > 1 ? "+" + oreMeters(r.legs[i]) : ""}</span></div>`;
+    };
+    const skipped = [...veins.keys()].filter(k => !r.order.includes(k));
+    $("oreList").innerHTML = r.order.map(row).join("") +
+      (skipped.length ? `<div class="oresub">Fuera de la ruta</div>` + skipped.map(k => row(k, -1)).join("") : "");
+  }
+  const v = oreSel && veins.get(oreSel), i = r.order.indexOf(oreSel);
+  $("oreDetail").hidden = !v;
+  if (v) $("oreDetail").innerHTML = `<h3>${i >= 0 ? `Veta ${i + 1}` : "Veta fuera de la ruta"}</h3>` +
+    `<div><b style="color:${oreKind(v)[0]}">${oreKind(v)[1]}</b> · ${oreStatus(v)}</div>` +
+    `<div class="coords">${esc(m.name)} · x ${v.x}, y ${v.y}, z ${v.z}</div>` +
+    (v.gathered ? `<div class="coords">Recolectada por ti: ${v.gathered}</div>` : "") +
+    `<div class="acts">` +
+    (i >= 0 ? `<button data-a="start" ${r.start === oreSel ? "disabled" : ""}>Empezar aquí</button><button data-a="skip">Quitar de la ruta</button>`
+            : `<button data-a="include">Añadir a la ruta</button>`) +
+    `<button data-a="delete" class="danger" title="La borra de la lista. Solo vuelve si la recolectas otra vez. Para dejarla fuera solo de la ruta, usa «Quitar de la ruta»">Borrar</button></div>`;
+  requestOreDraw();
+}
+// «Siguiente»: a cuánto está de ti (si se conoce tu posición en este mapa) o de la veta anterior.
+function renderOreNext() {
+  const m = ores && oreMap(); if (!m) return;
+  const { w, r, veins } = oreRoute(m), me = state?.position, ni = r.order.indexOf(r.next);
+  $("oreNext").hidden = !r.next;
+  if (!r.next) return;
+  const v = veins.get(r.next);
+  $("oreNext").innerHTML = `<span>Siguiente:</span> <b>Veta ${ni + 1}</b> · ` + (me && String(me.world) === w
+    ? `<b>${oreMeters(Math.round(Math.hypot(me.x - v.x, me.y - v.y) / 100))}</b> <span>de ti</span>`
+    : `<span>${oreMeters(r.legs[ni])}</span> <span>de la anterior</span>`);
+}
+
+$("oreList").addEventListener("click", e => {
+  const row = e.target.closest(".orerow"); if (!row) return;
+  selectOre(row.dataset.k);
+  if (e.target.matches("input")) toggleOre(row.dataset.k);
+});
+$("oreDetail").addEventListener("click", async e => {
+  const b = e.target.closest("button[data-a]"); if (!b) return;
+  if (b.dataset.a === "delete" && !await askConfirm("Borrar veta",
+    esc(I18N.tr("Se quitará de la lista y de todas las rutas. Vuelve si la recolectas otra vez.")), "Borrar")) return;
+  postOre({ action: b.dataset.a, key: oreSel });
+});
+$("oreNext").onclick = () => { const m = oreMap(); if (m) selectOre(oreRoute(m).r.next); };
+$("oreRouteSel").onchange = e => postOre({ action: "routeSelect", route: e.target.value });
+$("oreRouteNew").onclick = () => {
+  askText("Nueva ruta", esc(I18N.tr("Escribe el nombre de la ruta. Empieza vacía: añádele vetas con un clic.")), "Crear")
+    .then(name => { if (name) postOre({ action: "routeCreate", name }); });
+};
+$("oreRouteDel").onclick = () => {
+  const r = ores?.routeList.find(r => r.id === ores.selected);
+  if (!r) return;
+  const text = esc(I18N.tr("Se borrará la ruta {0}. Sus vetas siguen en la lista.")).replace("{0}", `<b>${esc(r.name)}</b>`);
+  askConfirm("Borrar ruta", text, "Borrar").then(ok => { if (ok) postOre({ action: "routeDelete", route: r.id }); });
+};
+$("oreMapSel").onchange = () => { oreFitted = null; renderOre(); };
+$("oreFit").onclick = fitOre;
+$("oreFollow").onclick = () => {
+  oreFollow = !oreFollow; $("oreFollow").classList.toggle("primary", oreFollow);
+  if (oreFollow && state?.position) onOrePosition(state.position);
+};
+function zoomOre(f, ox, oy) {
+  const ns = Math.min(MAX_SCALE, Math.max(MIN_SCALE, oreView.scale * f));
+  if (ox != null) {
+    oreView.cx += (ox - oreCanvas.clientWidth / 2) * (1 / oreView.scale - 1 / ns);
+    oreView.cy += (oy - oreCanvas.clientHeight / 2) * (1 / oreView.scale - 1 / ns);
+  }
+  oreView.scale = ns; requestOreDraw();
+}
+$("oreZoomIn").onclick = () => zoomOre(1.25);
+$("oreZoomOut").onclick = () => zoomOre(0.8);
+const orePick = (x, y) => oreHits.filter(([px, py]) => Math.hypot(px - x, py - y) <= 14)
+  .sort((a, b) => Math.hypot(a[0] - x, a[1] - y) - Math.hypot(b[0] - x, b[1] - y))[0]?.[2] ?? null;
+{
+  let drag = null;
+  oreCanvas.addEventListener("wheel", e => { e.preventDefault(); zoomOre(e.deltaY < 0 ? 1.25 : 0.8, e.offsetX, e.offsetY); }, { passive: false });
+  oreCanvas.addEventListener("pointerdown", e => { drag = { x: e.clientX, y: e.clientY, moved: 0 }; oreCanvas.setPointerCapture(e.pointerId); });
+  oreCanvas.addEventListener("pointermove", e => {
+    const tip = $("oreTip");
+    if (drag) {
+      drag.moved += Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y);
+      if (drag.moved > 4) {
+        oreCanvas.classList.add("drag");
+        if (oreFollow) { oreFollow = false; $("oreFollow").classList.remove("primary"); }   // al arrastrar deja de seguirte
+      }
+      oreView.cx -= (e.clientX - drag.x) / oreView.scale; oreView.cy -= (e.clientY - drag.y) / oreView.scale;
+      drag.x = e.clientX; drag.y = e.clientY; requestOreDraw(); tip.style.display = "none"; return;
+    }
+    const k = orePick(e.offsetX, e.offsetY);
+    oreCanvas.style.cursor = k ? "pointer" : "";
+    if (!k) { tip.style.display = "none"; return; }
+    const { r, veins } = oreRoute(oreMap()), i = r.order.indexOf(k);
+    tip.innerHTML = `<b>${i >= 0 ? `Veta ${i + 1}` : "Fuera de la ruta"}</b> · ${oreStatus(veins.get(k))}`;
+    tip.style.display = "block"; tip.style.left = `${e.offsetX + 14}px`; tip.style.top = `${e.offsetY + 10}px`;
+  });
+  oreCanvas.addEventListener("pointerup", e => {
+    const click = drag && drag.moved <= 4; drag = null; oreCanvas.classList.remove("drag");
+    const k = click && orePick(e.offsetX, e.offsetY);
+    if (k) { selectOre(k); toggleOre(k); }
+  });
+  oreCanvas.addEventListener("pointerleave", () => { $("oreTip").style.display = "none"; });
+  new ResizeObserver(requestOreDraw).observe(oreCanvas);
+}
+setInterval(() => { if (!$("viewOre").hidden) renderOre(); }, 15000);   // «hace X min» al día
 
 // ---------------- Avisos ----------------
 // Notas con el volumen de los avisos (settings.volume, 0..1).
@@ -1519,12 +1927,25 @@ $("myTasks").addEventListener("click", async e => {
 function askConfirm(title, html, ok = "Aceptar") {
   const d = $("askDlg");
   $("askTitle").textContent = title; $("askText").innerHTML = html; $("askYes").textContent = ok;
+  $("askYes").className = "danger"; $("askInput").hidden = true;
   d.returnValue = "";
   return new Promise(resolve => {
     d.onclose = () => resolve(d.returnValue === "yes");
     d.showModal(); $("askNo").focus();
   });
 }
+// La misma ventana con un campo de texto: resuelve el texto (sin espacios a los lados) o null.
+function askText(title, html, ok = "Aceptar", value = "") {
+  const d = $("askDlg"), input = $("askInput");
+  $("askTitle").textContent = title; $("askText").innerHTML = html; $("askYes").textContent = ok;
+  $("askYes").className = "primary"; input.hidden = false; input.value = value;
+  d.returnValue = "";
+  return new Promise(resolve => {
+    d.onclose = () => { input.hidden = true; resolve(d.returnValue === "yes" && input.value.trim() ? input.value.trim() : null); };
+    d.showModal(); input.focus();
+  });
+}
+$("askInput").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); $("askDlg").close("yes"); } });
 $("askYes").onclick = () => $("askDlg").close("yes");
 $("askNo").onclick = () => $("askDlg").close("no");
 $("askDlg").addEventListener("click", e => {          // pulsar fuera de la ventana: cancelar
@@ -2162,9 +2583,9 @@ function showView(view) {
   $("viewTimers").hidden = view !== "timers"; $("viewPets").hidden = view !== "pets";
   $("viewTasks").hidden = view !== "tasks"; $("viewClasses").hidden = view !== "classes";
   $("viewDuty").hidden = view !== "duty"; $("viewHome").hidden = view !== "home";
-  $("viewSets").hidden = view !== "sets";
+  $("viewSets").hidden = view !== "sets"; $("viewOre").hidden = view !== "ore";
   try { localStorage.setItem("view", view); } catch { }
-  if (view === "cubes") requestDraw(); else if (view === "dps") renderDps();
+  if (view === "cubes") requestDraw(); else if (view === "dps") renderDps(); else if (view === "ore") renderOre();
   else if (view === "pets") renderPets(); else if (view === "tasks") renderTasks();
   else if (view === "classes") renderClasses(); else if (view === "duty") loadDuty();
   else if (view === "home") loadHome(); else if (view === "sets") renderSets(); else renderTimers();
@@ -2172,7 +2593,7 @@ function showView(view) {
 $("tabs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) showView(b.dataset.view); });
 let savedView = new URLSearchParams(location.search).get("view");   // ?view=dps abre esa pestaña
 try { savedView = savedView || localStorage.getItem("view"); } catch { }
-savedView = ["cubes", "dps", "timers", "pets", "tasks", "duty", "classes", "sets"].includes(savedView) ? savedView : "home";
+savedView = ["cubes", "ore", "dps", "timers", "pets", "tasks", "duty", "classes", "sets"].includes(savedView) ? savedView : "home";
 showView(savedView);
 
 // ---------------- Captura ----------------
@@ -2225,10 +2646,14 @@ if (MINI) {
     <label class="chk"><input type="checkbox" class="fTop">Siempre encima</label>
     ${MINI_DPS ? "" : `<div class="row"><span>Volumen</span><input type="range" class="volRange" min="0" max="100" step="5"><span class="volV"></span></div>
     <label class="chk"><input type="checkbox" class="fSound">Sonido al encontrar un cubo</label>
+    <label class="chk"><input type="checkbox" class="fRoute">Ver la ruta de recolección</label>
+    <label class="chk"><input type="checkbox" class="fFollow">Seguir mi posición</label>
     <button class="fTest">Probar aviso</button>`}
     <small class="fErr" style="color:var(--danger)"></small>`;
   if (!MINI_DPS) {
     q(".fSound").onchange = e => saveSettings({ sound: e.target.checked });
+    q(".fRoute").onchange = e => saveSettings({ mini: { route: e.target.checked } });
+    q(".fFollow").onchange = e => saveSettings({ mini: { follow: e.target.checked } });
     q(".fTest").onclick = testCube;
   }
   $("miniCfg").hidden = false;
@@ -2271,7 +2696,8 @@ function applySettings(m) {
     const s = settings[MINI_KIND], q = c => $("floatPanel").querySelector(c);
     q(".fOpacity").value = Math.round(s.opacity * 100); q(".fOpacityV").textContent = Math.round(s.opacity * 100) + " %";
     q(".fTop").checked = s.onTop;
-    if (!MINI_DPS) q(".fSound").checked = settings.sound;
+    if (!MINI_DPS) { q(".fSound").checked = settings.sound; q(".fRoute").checked = !!s.route; q(".fFollow").checked = !!s.follow;
+      if (s.follow) followMe(); requestDraw(); }
     applyWindow();
   }
 }
@@ -2400,6 +2826,7 @@ function connect() {
         if (m.event === "spawn" && firstAlert(m.key)) alertCube();
       }
       else if (m.type === "pos") onPosition(m.position);
+      else if (m.type === "veins") { ores = m.state; renderOre(); if (MINI) requestDraw(); }
       else if (m.type === "cubetest") {                       // «Probar aviso» desde cualquier ventana
         alertCube(true);                                      // el sonido ya sonó en la que lo pidió
       }

@@ -16,6 +16,11 @@
     "0x2B38 (marca 02): ~1 por segundo mientras te mueves. 0x2A38 (marca 00): al empezar, girar o pararte.",
     "Llegan para ti y para jugadores cercanos; la tuya es la del entity de ownEntityOpcodes. Al recolectar",
     "estás a 2,1 m (mediana, 158 usos); 0x2A38 queda a 3,2 m de la 0x2B38 anterior (mediana, 4726). 2026-10-28.",
+    "veinEnvIds: vetas que se recolectan (vetas.py), EnvId -> tipo. Por el objeto que llega tras tus usos",
+    "(tramas reales del 2026-10-27/28): 1500004 y 1550004 (Altgard) Orichalcum Ore 610620013/14,",
+    "1500020 Sapphire Gemstone 610660025/28, 1500021 Diamond 610660026/29, 1500022 Ruby 610660027/30.",
+    "Recolectarla: 3 × useComplete; al 3.º, entityDestroyed y envState 04 03 00 (envStateOpened, como un cubo).",
+    "Reaparece en el mismo punto exacto con otro entity (visto a los 6,5 y 9,7 min). 2026-10-27.",
     "Verificado con tramas reales registradas el 2026-10-16 (EU, puerto 13328)."
   ],
   "serverPorts": [13328],
@@ -31,6 +36,8 @@
   "positionOpcodes": {"11064": 2, "10808": 0},
   "ownEntityOpcodes": [17463, 17975, 18998, 653, 909, 16695, 16951],
   "envStateOpened": [4, 3],
+  "veinEnvIds": {"1500004": "orichalcum", "1550004": "orichalcum", "1500020": "sapphire",
+                 "1500021": "diamond", "1500022": "ruby"},
   "cubeEnvIds": [
     1200036, 1200037, 1200038, 1200039, 1200040, 1200041, 1200667, 1200707,
     1201502, 1201503, 1201504, 1201505, 1300081, 1300082, 1300083, 1300754,

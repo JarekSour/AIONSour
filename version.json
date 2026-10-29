@@ -1,4 +1,4 @@
 {
- "version": "1.0.39",
- "notes": "La etiqueta del cubo en el mapa y el minimapa muestra la distancia hasta tu personaje en metros, con una flecha si el cubo está más arriba o más abajo."
+ "version": "1.0.40",
+ "notes": "Nueva pestaña Recolección: vetas de oricalco, rubí, zafiro y diamante que recolectas, si están disponibles o agotadas, la más cercana y rutas con nombre. El minimapa puede mostrar la ruta y seguir tu posición."
 }
