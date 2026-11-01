@@ -34,7 +34,7 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 - **Automatic** tasks checked off from game data: kinah cap, supplies (urgent and weekly), Odyle and Rift Stone purchases, Nightmare, Ascension Trial, Abyss time and points… Until there's game data they say «log in to the game» and can't be ticked by hand.
 - **Solo PvP, Co-op PvP and Battlefield**: the week's wins and participation (30 and 10; 3 and 3 on the Battlefield). They update on their own when you win or lose each match and when you open the game's PvP window.
 - Extra entries («0 left (+2) / 3») are shown apart and don't leave the task pending.
-- **Combat power** of each character on its card, abbreviated as in the game, and up to date when you change gear or character.
+- **Combat power** of each character on its card, shortened to thousands (69.18k; hover for the full number), and up to date when you change gear or character.
 - **Per battle** section: the Abyss corridors open for your account and which ones each character did; they reset with each artifact battle.
 - **Account** card at the top (🌐), with what all your characters share: duty missions (5 a day per account), attendance rewards, the daily gathering limit (1000 a day), Unknown Fissure entries (14 a week), order purchases (city: 12 a week; Abyss: common, uncommon, rare and epic, 5 a week each, colored by grade) and the weekly Odyle purchase (16 a week).
 - Each character's Od Energy bar and its Odyle purchase (4 a week).
@@ -64,10 +64,11 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 
 ![Damage meter](capturas/dano.png)
 
-- Total damage, DPS and share of each group member, with their class, and the fight's deaths.
+- Total damage, DPS and share of each group member, with their class, **combat power** (CP) and the fight's deaths.
 - Click a player for the per-skill breakdown: damage, hits and crits.
 - History of the last 10 fights with the boss or monster name, duration and number of players.
 - Only damage from players and their summons counts; the fight ends when the boss dies or after a time without hits (configurable).
+- Other players' CP arrives when they come into your range, so a player you haven't met yet shows none. A value the game sends identically for several players isn't shown.
 - Animated bars: they grow smoothly and, when a player overtakes another, their row slides up above it.
 
 ### Floating windows
@@ -76,9 +77,10 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 | --- | --- |
 | ![Floating minimap](capturas/minimapa.jpg) | ![Floating meter](capturas/medidor.png) |
 
-- **Minimap** with the active cube and your position, and a compact **damage meter**, always on top of the game.
+- **Minimap** with the active cube and your position, and a compact **damage meter** with each player's CP in its own column, always on top of the game.
 - Each one has its ⚙: opacity, size and position. Open them with the buttons at the top right.
 - The minimap's ⚙ can also show the **gathering route** you chose and **follow your position**, keeping you centered as you move. The active cube's pin always stays on top.
+- The meter's ⚙ adds **Size** (70–200 %), which scales the rows, text, class icons and the window, and **Show column headers** (Player, CP, deaths, DPS, %).
 - When a cube appears, the minimap zooms so that **you and the cube's pin** both fit, and it adjusts again if either one leaves the view.
 
 ### Field bosses and events

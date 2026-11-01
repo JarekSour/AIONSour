@@ -44,7 +44,7 @@ const I18N = (() => {
     "Se borrará la ruta {0}. Sus vetas siguen en la lista.": "The route {0} will be deleted. Its veins stay in the list.", "Nueva ruta: se crea vacía con el nombre que escribas": "New route: it starts empty, with the name you type",
     "Borrar ruta (sus vetas siguen en la lista)": "Delete route (its veins stay in the list)",
     "la ruta necesita un nombre": "the route needs a name", "crea o elige una ruta": "create or choose a route",
-    "Rubí": "Ruby", "Zafiro": "Sapphire", "Diamante": "Diamond", "Borde:": "Border:", "⤢ Ver la ruta": "⤢ Show route",
+    "Rubí": "Ruby", "Zafiro": "Sapphire", "Diamante": "Diamond", "Borde:": "Border:", "Poder de combate": "Combat power", "⤢ Ver la ruta": "⤢ Show route",
     "Encuadra todas las vetas del mapa": "Fits every vein on the map", "◎ Seguirme": "◎ Follow me",
     "El mapa te sigue mientras te mueves": "The map follows you while you move", "Disponible": "Available",
     "Siguiente": "Next", "Recolectando": "Gathering", "Agotada por ahora": "Depleted for now", "Fuera de la ruta": "Off the route",
@@ -120,7 +120,7 @@ const I18N = (() => {
     "Se quitará {0} de todos tus personajes, junto con lo que tengas marcado.":
       "{0} will be removed from all your characters, along with anything you've checked.",
     // Ventanas flotantes (su ⚙) y su barra de título
-    "Opacidad": "Opacity", "Siempre encima": "Always on top", "Medidor de daño": "Damage meter",
+    "Opacidad": "Opacity", "Tamaño": "Size", "Ver cabeceras de columnas": "Show column headers", "Siempre encima": "Always on top", "Medidor de daño": "Damage meter",
     "Ningún cubo a la vista.": "No cube in sight.", "Aún no has visto ningún cubo.": "You haven't seen any cube yet.", "Energía de Od": "Od Energy",
     "diaria": "daily", "semanal": "weekly", "por batalla": "per battle", "cuenta": "account", "personaje": "character",
     // Tareas automáticas (nombres) y estados
@@ -195,7 +195,7 @@ const I18N = (() => {
     [/^¿Quitar a (.+) de la lista de tareas\?$/, "Remove $1 from the task list?"],
     [/^\+(\d+) en (.+)$/, "+$1 in $2"], [/^Personaje (.+)$/, "Character $1"], [/^Jugador (\d+)$/, "Player $1"],
     [/^Entidad (\d+)$/, "Entity $1"], [/^Sin cubo$/, "No cube"],
-    [/^Veta (\d+)$/, "Vein $1"], [/^¿Borrar la ruta «(.+)»\? Sus vetas siguen en la lista\.$/, "Delete the route “$1”? Its veins stay in the list."],
+    [/^Veta (\d+)$/, "Vein $1"], [/^(.*)· curación (.+)$/, "$1· healing $2"], [/^¿Borrar la ruta «(.+)»\? Sus vetas siguen en la lista\.$/, "Delete the route “$1”? Its veins stay in the list."],
     [/^ya hay una ruta «(.+)»$/, "there is already a route “$1”"], [/^vista hace (.+)$/, "seen $1 ago"], [/^Recolectada por ti: (\d+)$/, "Gathered by you: $1"],
     [/^Todavía no hay vetas en (.+)\. Cada veta \(oricalco, rubí, zafiro o diamante\) se guarda al recolectarla\.$/,
      "No veins in $1 yet. Each vein (orichalcum, ruby, sapphire or diamond) is saved when you gather it."],    [/^Nombre del objeto (\d+), como sale en el juego \(vacío: quitarlo\):$/, "Name of item $1, as shown in the game (empty: remove it):"],

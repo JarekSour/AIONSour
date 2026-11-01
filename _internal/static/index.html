@@ -9,7 +9,7 @@
   :root {
     --bg: #0f1216; --panel: #171b21; --panel2: #1e232b; --border: #2a313b;
     --text: #e3e7ed; --muted: #8b95a3; --accent: #4f9cf9; --danger: #f2555a; --ok: #3ccf8e;
-    --gold: #ffd166; --extra: #34b3ce; --ore: #f0a04b; --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --gold: #ffd166; --extra: #34b3ce; --ore: #f0a04b; --ms: 1; --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
   }
   * { box-sizing: border-box; }
   /* Barras de desplazamiento finas, del color de los bordes; se iluminan al pasar el ratón. */
@@ -184,12 +184,20 @@
   .clsicon { flex: none; box-sizing: border-box; width: 30px; height: 30px; padding: 4px; object-fit: contain;
     border-radius: 50%; background: #3b414b; }
   .clsicon.none { display: inline-block; }
-  .mrow .n { display: flex; align-items: center; gap: 6px; }
+  .mrow .n { display: flex; align-items: center; gap: calc(6px * var(--ms)); }
+  .mrow .n > :last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   .deaths { color: var(--danger); font-weight: 600; font-size: .92em; white-space: nowrap;
     display: inline-flex; align-items: center; gap: 3px; }
   .skull { width: 1.05em; height: 1.05em; vertical-align: -2px; }
   .phead .skull { color: var(--muted); }
-  .mrow .clsicon { width: 16px; height: 16px; padding: 2px; }
+  .pcp { display: inline-flex; align-items: center; gap: 3px; color: var(--gold); font-size: 11px; font-weight: 600;
+    white-space: nowrap; font-variant-numeric: tabular-nums; vertical-align: -1px; }
+  .pcp img { width: 13px; height: 13px; }
+  .mrow .clsicon { width: calc(16px * var(--ms)); height: calc(16px * var(--ms)); padding: calc(2px * var(--ms)); }
+  .mcp { display: flex; align-items: center; justify-self: end; gap: .25em; padding: 0 .6em; border-radius: 999px;
+    background: #0c1119; color: var(--gold); white-space: nowrap; }
+  .mcp:empty { background: none; }
+  .mcp img { flex: none; width: 1.2em; height: 1.2em; }
   .prow .who small, .srow small { color: var(--muted); font-size: 11px; }
   .num { text-align: right; }
   .rank { color: var(--muted); text-align: center; }
@@ -349,7 +357,7 @@
   .tchar header .pend.ok { color: var(--ok); }
   .tchar header .cp { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700;
     color: var(--gold); white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .tchar header .cp svg { width: 14px; height: 14px; }
+  .tchar header .cp img { width: 16px; height: 16px; }
   .tchar header .x { border: 0; background: none; color: var(--muted); padding: 0 2px; font-size: 14px; }
   .tchar .clsicon { width: 26px; height: 26px; padding: 3px; }
   .tsub { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 6px 0 3px; }
@@ -540,14 +548,17 @@
   body.mini-dps .dpsmini { display: block; overflow: auto; padding: 3px; min-height: 0; }
   /* Sin hueco para el asa: queda pequeña y tenue sobre la esquina, visible al pasar el ratón. */
   body.mini-dps .grip { width: 11px; height: 11px; opacity: .35; }
-  .mrow { position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1fr) 30px 48px 46px;
-    gap: 6px; align-items: center; padding: 1px 6px; margin-bottom: 2px; border-radius: 4px;
-    background: var(--panel2); font-size: 10.5px; line-height: 1.3; font-variant-numeric: tabular-nums; }
+  /* --ms: «Tamaño» del ⚙ del medidor flotante (settings.dps.scale). */
+  .mrow { position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1fr) calc(68px * var(--ms))
+      calc(30px * var(--ms)) calc(48px * var(--ms)) calc(46px * var(--ms));
+    gap: calc(6px * var(--ms)); align-items: center; padding: calc(1px * var(--ms)) calc(6px * var(--ms));
+    margin-bottom: calc(2px * var(--ms)); border-radius: 4px;
+    background: var(--panel2); font-size: calc(10.5px * var(--ms)); line-height: 1.3; font-variant-numeric: tabular-nums; }
   .mrow > * { position: relative; z-index: 1; }
   .mrow .fill { position: absolute; inset: 0 auto 0 0; z-index: 0; background: rgba(79,156,249,.18); }
   .mrow.self { outline: 1px solid var(--ok); }
   .mrow .n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .mrow.head { background: none; color: var(--muted); font-size: 10px; text-transform: uppercase; padding-top: 0; padding-bottom: 0; }
+  .mrow.head { background: none; color: var(--muted); font-size: calc(10px * var(--ms)); text-transform: uppercase; padding-top: 0; padding-bottom: 0; }
   .dpsmini .empty { padding: 16px 8px; font-size: 12px; }
   .panel { position: absolute; right: 0; top: calc(100% + 6px); z-index: 10; width: 300px; background: var(--panel);
     border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; box-shadow: 0 8px 24px rgba(0,0,0,.45);
@@ -1691,7 +1702,7 @@ function renderDps() {
       `<div class="prow${p.self ? " self" : ""}${p === sel ? " sel" : ""}" data-id="${p.id}">` +
       `<span class="fill" style="width:${(p.damage / top * 100).toFixed(1)}%;${barStyle(p)}"></span><span class="rank">${i + 1}</span>` +
       `<span class="who">${clsIcon(p)}<span><b>${esc(p.name)}</b>` +
-      `<small>${esc(p.cls || "clase desconocida")}${p.heal ? " · curación " + fmt(p.heal) : ""}</small></span></span>` +
+      `<small>${esc(p.cls || "clase desconocida")}${p.cp ? " · " : ""}${cpMark(p.cp)}${p.heal ? " · curación " + fmt(p.heal) : ""}</small></span></span>` +
       `<span class="num">${deathMark(p)}</span>` +
       `<span class="num">${fmt(p.damage)}</span><span class="num">${kfmt(p.dps)}</span><span class="num">${pct(p.share)}</span></div>`).join("")
       || empty("Sin daño de jugadores en este combate."));
@@ -1728,6 +1739,12 @@ const deathMark = p => p.deaths ? `<span class="deaths" title="Muertes en este c
 const short = (text, max) => text.length > max ? text.slice(0, max - 1).trimEnd() + "…" : text;
 
 // Medidor flotante: el combate en curso o el último, salvo que se haya limpiado con ⟲.
+// Poder de combate: abreviado a la vista y completo al pasar el ratón.
+const fullCp = cp => cp.toLocaleString(I18N.locale());
+// En miles con 2 decimales y sin redondear: 69189 → 69.18k.
+const shortCp = cp => `${(Math.floor(cp / 10) / 100).toFixed(2)}k`;
+const cpMark = cp => cp ? `<span class="pcp" title="${fullCp(cp)}">${CP_ICON}${shortCp(cp)}</span>` : "";
+
 function renderDpsMini() {
   const last = dps.history[0], live = !!dps.current;
   const f = dps.current || (last && last.end > dps.clearedAt ? last : null);
@@ -1735,10 +1752,13 @@ function renderDpsMini() {
   $("miniTitle").innerHTML = !f ? "⚔ Sin combates" :
     `⚔ ${esc(short(f.target || "Combate", 16))} · <span class="dur">${secs(f.duration)}</span> · ${kfmt(f.dps)} DPS`;
   const top = f?.players[0]?.damage || 1;
+  const head = settings?.dps.headers ? `<div class="mrow head"><span>Jugador</span><span class="num" title="Poder de combate">CP</span>` +
+    `<span class="num" title="Muertes">${SKULL}</span><span class="num">DPS</span><span class="num">%</span></div>` : "";
   animateRows($("dpsMini"), !f ? empty(running ? "Ataca a algo y aparecerá aquí." : "La captura está detenida.") :
-    f.players.map(p => `<div class="mrow${p.self ? " self" : ""}" data-id="${p.id}"><span class="fill" style="width:${(p.damage / top * 100).toFixed(1)}%;` +
+    head + f.players.map(p => `<div class="mrow${p.self ? " self" : ""}" data-id="${p.id}"><span class="fill" style="width:${(p.damage / top * 100).toFixed(1)}%;` +
       `${barStyle(p)}"></span>` +
       `<span class="n">${clsIcon(p)}<span>${esc(p.name)}</span></span>` +
+      `<span class="mcp"${p.cp ? ` title="${fullCp(p.cp)}"` : ""}>${p.cp ? CP_ICON + shortCp(p.cp) : ""}</span>` +
       `<span class="num">${deathMark(p)}</span>` +
       `<span class="num">${kfmt(p.dps)}</span><span class="num">${pct(p.share)}</span></div>`).join(""));
 }
@@ -1903,7 +1923,7 @@ $("updateLater").onclick = () => {
 
 // ---------------- Tareas ----------------
 let tasks = null;
-const CP_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M2 1.5 7.2 6.7 6 7.9 .8 2.7 .5 .5zM14 1.5 8.8 6.7 10 7.9l5.2-5.2.3-2.2zM4.4 9.6l2 2-1.3 1.3 1 1-1 1-1-1-1.6 1.6-1-1L3 12.9l-1-1 1-1 1 1zM11.6 9.6l-2 2 1.3 1.3-1 1 1 1 1-1 1.6 1.6 1-1-1.6-1.6 1-1-1-1-1 1zM8 8.6 5.4 11.2 4.8 10.6 7.4 8z"/></svg>';
+const CP_ICON = '<img src="/icons/poder_combate.png" alt="">';
 const CYCLE = { daily: "Diarias", weekly: "Semanales", battle: "Por batalla", keys: "Llaves y entradas" };
 // Grupo de una tarea: su ciclo, o «Llaves y entradas» (solo informan, sin casilla).
 const taskGroup = d => d?.section === "keys" ? "keys" : d?.cycle;
@@ -1940,8 +1960,8 @@ function renderTasks() {
       }).join("");
       return rows ? `<div class="tsub">${CYCLE[cycle]}</div>${rows}` : "";
     }).join("");
-  // Poder de combate (de la trama del personaje), como lo abrevia el juego (112,0A).
-  const cpBadge = cp => cp ? `<span class="cp">${CP_ICON}${gameQty(cp)}</span>` : "";
+  // Poder de combate (de la trama del personaje).
+  const cpBadge = cp => cp ? `<span class="cp" title="${fullCp(cp)}">${CP_ICON}${shortCp(cp)}</span>` : "";
   const pend = n => `<span class="pend${n ? "" : " ok"}">${n ? `${n} pendiente${n === 1 ? "" : "s"}` : "Todo hecho"}</span>`;
   // De cuenta: una sola tarjeta, compartida por todos tus personajes.
   const account = tasks.account?.tasks.length ? `<div class="tchar account"><header><span class="accicon">🌐</span>` +
@@ -2723,8 +2743,9 @@ if (MINI) {
   const panel = $("floatPanel"), q = c => panel.querySelector(c), kind = MINI_KIND;
   panel.innerHTML = `<h4>${MINI_DPS ? "Medidor de daño" : "Minimapa"}</h4>
     <div class="row"><span>Opacidad</span><input type="range" class="fOpacity" min="20" max="100" step="5"><span class="fOpacityV"></span></div>
+    ${MINI_DPS ? `<div class="row"><span>Tamaño</span><input type="range" class="fScale" min="70" max="200" step="10"><span class="fScaleV"></span></div>` : ""}
     <label class="chk"><input type="checkbox" class="fTop">Siempre encima</label>
-    ${MINI_DPS ? "" : `<div class="row"><span>Volumen</span><input type="range" class="volRange" min="0" max="100" step="5"><span class="volV"></span></div>
+    ${MINI_DPS ? `<label class="chk"><input type="checkbox" class="fHeaders">Ver cabeceras de columnas</label>` : `<div class="row"><span>Volumen</span><input type="range" class="volRange" min="0" max="100" step="5"><span class="volV"></span></div>
     <label class="chk"><input type="checkbox" class="fSound">Sonido al encontrar un cubo</label>
     <label class="chk"><input type="checkbox" class="fRoute">Ver la ruta de recolección</label>
     <label class="chk"><input type="checkbox" class="fFollow">Seguir mi posición</label>
@@ -2748,6 +2769,23 @@ if (MINI) {
     clearTimeout(t); t = setTimeout(() => saveSettings({ [kind]: { opacity: e.target.value / 100 } }), 150);
   });
   $("miniReset").onclick = () => post("/api/dps/reset");
+  if (MINI_DPS) q(".fHeaders").onchange = e => saveSettings({ dps: { headers: e.target.checked } });
+  if (MINI_DPS) {        // tamaño: textos e iconos al arrastrar; la ventana crece en la misma proporción
+    let st = null;
+    q(".fScale").addEventListener("input", e => {
+      const scale = e.target.value / 100;
+      q(".fScaleV").textContent = e.target.value + " %";
+      setMiniScale(scale);
+      clearTimeout(st);
+      st = setTimeout(() => {
+        const s = settings.dps, f = scale / s.scale;
+        const width = Math.min(1600, Math.max(180, Math.round(s.width * f)));
+        const height = Math.min(1600, Math.max(40, Math.round(s.height * f)));
+        if (panelSize) panelSize = { width: Math.max(panelSize.width, width), height: Math.max(panelSize.height, height) };
+        saveSettings({ dps: { scale, width, height } });
+      }, 150);
+    });
+  }
 }
 
 function applySettings(m) {
@@ -2777,11 +2815,15 @@ function applySettings(m) {
     const s = settings[MINI_KIND], q = c => $("floatPanel").querySelector(c);
     q(".fOpacity").value = Math.round(s.opacity * 100); q(".fOpacityV").textContent = Math.round(s.opacity * 100) + " %";
     q(".fTop").checked = s.onTop;
+    if (MINI_DPS) { setMiniScale(s.scale); q(".fScale").value = Math.round(s.scale * 100); q(".fScaleV").textContent = Math.round(s.scale * 100) + " %";
+      q(".fHeaders").checked = !!s.headers; if (dps) renderDpsMini(); }
     if (!MINI_DPS) { q(".fSound").checked = settings.sound; q(".fRoute").checked = !!s.route; q(".fFollow").checked = !!s.follow;
       if (s.follow) followMe(); else followZoomed = false; requestDraw(); }
     applyWindow();
   }
 }
+
+const setMiniScale = scale => document.documentElement.style.setProperty("--ms", scale);
 
 // Dentro de una ventana flotante: minimapa.py aplica opacidad, encima y clics.
 function applyWindow() {
@@ -2817,7 +2859,7 @@ $("miniClose").onclick = () => window.pywebview?.api.close();
 // el minimapa, 180 px.
 function minWindowHeight() {
   if (!MINI_DPS) return 180;
-  const row = document.querySelector(".mrow"), bar = document.querySelector(".minibar");
+  const row = document.querySelector(".mrow:not(.head)"), bar = document.querySelector(".minibar");
   const rowH = row ? row.offsetHeight + parseFloat(getComputedStyle(row).marginBottom) : 20;
   const pad = $("dpsMini"), cs = getComputedStyle(pad);
   return Math.ceil(bar.offsetHeight + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + 5 * rowH);

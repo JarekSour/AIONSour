@@ -1,4 +1,4 @@
 {
- "version": "1.0.42",
- "notes": "En Clases puedes marcar habilidades, pasivas y estigmas como prioridad; nuevo filtro de mascotas Por completar; el minimapa ajusta el zoom para mostrar tu posicion y el cubo; las vetas recolectadas justo despues de abrir la app ya se guardan. README y capturas actualizados."
+ "version": "1.0.43",
+ "notes": "Poder de combate (CP) de cada jugador en el medidor de daño y en el mini, con formato corto e icono del juego también en Tareas. El mini gana opciones de tamaño y de cabeceras de columnas. README y capturas actualizados."
 }
