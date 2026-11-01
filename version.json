@@ -1,4 +1,4 @@
 {
- "version": "1.0.41",
- "notes": "Las pestañas resaltan la elegida con un efecto deslizante; al elegir una ruta de recolección el mapa se centra en ella; los historiales de cubos y combates muestran los 10 últimos; el minimapa se acerca al seguir tu posición; inglés primero en el selector de idioma. README y capturas actualizados."
+ "version": "1.0.42",
+ "notes": "En Clases puedes marcar habilidades, pasivas y estigmas como prioridad; nuevo filtro de mascotas Por completar; el minimapa ajusta el zoom para mostrar tu posicion y el cubo; las vetas recolectadas justo despues de abrir la app ya se guardan. README y capturas actualizados."
 }

@@ -94,7 +94,7 @@ const I18N = (() => {
     "Debería haber reaparecido": "Should have respawned", "Fijo": "Fixed", "Prueba de notificación": "Test notification",
     "Evento · Comienza ahora": "Event · Starting now", "Comienza ahora": "Starting now",
     // Mascotas
-    "Mis mascotas": "My pets", "Todas": "All", "Obtenidas": "Obtained", "Sin obtener": "Not obtained",
+    "Mis mascotas": "My pets", "Todas": "All", "Obtenidas": "Obtained", "Sin obtener": "Not obtained", "Por completar": "Not completed",
     "Solo en mazmorras": "Dungeons only", "Tienda, cofres y otros": "Shop, chests and others",
     "Clic en una mascota para ver en el mapa dónde aparecen los monstruos que la sueltan.":
       "Click a pet to see on the map where the monsters that drop it spawn.", "Últimas obtenidas": "Recently obtained",
@@ -150,7 +150,7 @@ const I18N = (() => {
     "En curso…": "In progress…",
     // Clases
     "Elige una clase": "Choose a class", "Activas": "Active", "Pasivas": "Passive", "Estigmas": "Stigmas",
-    "Habilidades activas": "Active skills", "Habilidades pasivas": "Passive skills",
+    "Habilidades activas": "Active skills", "Clic en una habilidad para marcarla como prioridad.": "Click a skill to mark it as a priority.", "Habilidades pasivas": "Passive skills",
     "Gladiador": "Gladiator", "Templario": "Templar", "Asesino": "Assassin", "Arquero": "Ranger", "Hechicero": "Sorcerer",
     "Invocador": "Spiritmaster", "Clérigo": "Cleric", "Cantor": "Chanter", "Luchador": "Fighter",
     // Mascotas: familias y fichas

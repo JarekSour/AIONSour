@@ -54,7 +54,7 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 
 ![Gathering](capturas/recoleccion.jpg)
 
-- Every **orichalcum, ruby, sapphire and diamond** vein you gather is saved on its own, with its spot on the map. The vein's border shows its type: brown, red, blue or purple. Only the veins you interact with are saved, not the ones you just see.
+- Every **orichalcum, ruby, sapphire and diamond** vein you gather is saved on its own, with its spot on the map. The vein's border shows its type: brown, red, blue or purple. Only the veins you interact with are saved, not the ones you just see. Veins you gather right after opening the app are saved too, once it recognizes your character.
 - **Available or depleted**: a vein is available while it's in view, if you saw it in the last 3 minutes, or if you're in its range and the game shows it. Otherwise it shows as depleted for now.
 - **Named routes**: create as many as you want, choose one (the map centers on it), and click a vein on the map or in the list to add it or take it out. New veins go into the list but not into any route. The route is drawn as the shortest loop through its veins, with its length and the vein to start from.
 - **Next**: the nearest available vein, with its distance and a dotted line from you to it.
@@ -79,6 +79,7 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 - **Minimap** with the active cube and your position, and a compact **damage meter**, always on top of the game.
 - Each one has its ⚙: opacity, size and position. Open them with the buttons at the top right.
 - The minimap's ⚙ can also show the **gathering route** you chose and **follow your position**, keeping you centered as you move. The active cube's pin always stays on top.
+- When a cube appears, the minimap zooms so that **you and the cube's pin** both fit, and it adjusts again if either one leaves the view.
 
 ### Field bosses and events
 
@@ -97,7 +98,7 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 - Every pet in the game, by family (Cogni, Fera, Natura, Varian and Special), with its level and soul progress. Within each family: the ones to complete first (closest to max level at the top), then the maxed ones, and the ones you don't have yet, dimmed.
 - **For sale**: the pets in the game's shops that you're missing or haven't maxed yet, with your level and souls, the normal price and the discounted one; what you buy shows as sold out. Read when you open the shop, until it refreshes (every hour); it shows whose shop it is, and opening it with another character replaces it.
 - Latest souls obtained (the last 5 pets), with automatic level-ups.
-- Filter by source (field, dungeons only, or shop/other) and by the zone where it appears. Search by name.
+- Filter by the ones you own, don't have or **haven't completed** (owned but not at max level), by source (dungeons only, or shop, chests and other) and by the zone where it appears. Search by name.
 - Click a pet to see the **map with the spots where the monsters that drop it spawn**, by zone:
 
 ![Where a pet drops](capturas/mascota-mapa.jpg)
@@ -132,6 +133,7 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 ![Classes](capturas/clases.png)
 
 - All 9 classes with their active and passive skills and stigmas, with icons and names in your language.
+- **Mark your priorities**: click a skill, passive or stigma to star it, and click again to remove it. Each section counts how many you've marked, and your marks are saved per class.
 
 ### Updates
 

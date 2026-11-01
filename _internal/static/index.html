@@ -520,7 +520,11 @@
   .sksec:first-child { margin-top: 0; }
   .sksec span { font-weight: 400; }
   .skgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; }
-  .skill { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; background: var(--panel2); }
+  .skill { display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 8px; border: 1px solid transparent; border-radius: 6px;
+    background: var(--panel2); color: inherit; font: inherit; text-align: left; cursor: pointer; }
+  .skill.mark { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
+  .skill .skstar { flex: none; margin-left: auto; color: var(--muted); font-weight: 400; }
+  .skill.mark .skstar { color: var(--gold); }
   .skill img, .skill i { flex: none; width: 36px; height: 36px; border-radius: 6px; background: #11151b; }
   .skill.stigma img { box-shadow: 0 0 0 2px rgba(210,140,255,.75); }
   .skill.passive img { border-radius: 50%; }
@@ -816,7 +820,7 @@
   <div class="card">
     <h3>Mis mascotas <span class="muted" id="petCount"></span><span class="grow"></span>
       <select id="petFilter" title="Qué mascotas mostrar"><option value="all">Todas</option>
-        <option value="owned">Obtenidas</option><option value="missing">Sin obtener</option>
+        <option value="owned">Obtenidas</option><option value="missing">Sin obtener</option><option value="progress">Por completar</option>
         <option value="dungeon">Solo en mazmorras</option><option value="other">Tienda, cofres y otros</option></select>
       <select id="petZone" title="Zona donde aparece"><option value="">Todas las zonas</option></select>
       <input id="petSearch" type="search" placeholder="Buscar…"></h3>
@@ -1022,7 +1026,9 @@ const toPx = (m, x, y) => [m.ax * x + m.bx, m.ay * y + m.by];
 
 // Centra el mapa en un cubo con zoom; cambia al mapa del cubo si se conoce.
 function focusCube(c) {
-  if (!c || !maps || miniFollows()) return;        // siguiéndote: el cubo se ve con su distancia
+  if (!c || !maps) return;
+  if (MINI && fitMeAndCube(true)) return;          // minimapa: tú y el cubo a la vista
+  if (miniFollows()) return;                       // siguiéndote: el cubo se ve con su distancia
   const m = mapFor(c.world);
   if (m && m !== currentMap()) setMapSel(m.id);
   const target = m || currentMap(); if (!target) return;
@@ -1144,6 +1150,7 @@ function onPosition(p) {
   } else { heading = null; lastPos = p; }
   state.position = p;
   if (miniFollows()) followMe();
+  if (MINI) fitMeAndCube(false);
   requestDraw();
   if (!MINI) onOrePosition(p);
 }
@@ -1158,6 +1165,38 @@ function followMe() {
   [view.cx, view.cy] = toPx(m, p.x, p.y);
   if (!followZoomed) { view.scale = Math.max(view.scale, CUBE_SCALE); followZoomed = true; }
   requestDraw();
+}
+
+// Minimapa con un cubo activo en tu mapa: zoom (y centro, si no te sigue) para verte a ti y al pin
+// del cubo con su etiqueta. Al aparecer el cubo (force) siempre; después solo si uno de los dos se
+// sale de la vista, así el zoom que elijas se respeta mientras ambos se vean. Devuelve si encuadró.
+const FIT_PAD = { side: 36, top: 64, bottom: 44 };   // px: el pin y su etiqueta van encima; abajo, los botones
+function fitMeAndCube(force) {
+  if (!MINI || MINI_DPS || !maps) return false;
+  const c = state?.active?.[0], p = state?.position, m = c && mapFor(c.world);
+  if (!m || !p || mapFor(p.world) !== m) return false;
+  const w = canvas.clientWidth, h = canvas.clientHeight; if (!w || !h) return false;
+  const [cx, cy] = toPx(m, c.x, c.y), [mx, my] = toPx(m, p.x, p.y), { side, top, bottom } = FIT_PAD;
+  const inView = (x, y, t, b) => { const sx = (x - view.cx) * view.scale + w / 2, sy = (y - view.cy) * view.scale + h / 2;
+    return sx >= side && sx <= w - side && sy >= t && sy <= h - b; };
+  if (!force && m === currentMap() && inView(cx, cy, top, bottom) && inView(mx, my, 20, 20)) return false;
+  if (m !== currentMap()) setMapSel(miniFollows() ? "auto" : m.id);
+  let scale;
+  if (miniFollows()) {                               // centrado en ti: hasta donde llega el cubo
+    const dx = Math.abs(cx - mx), dy = cy - my;
+    scale = Math.min(dx ? (w / 2 - side) / dx : Infinity, dy < 0 ? (h / 2 - top) / -dy : dy > 0 ? (h / 2 - bottom) / dy : Infinity);
+    [view.cx, view.cy] = [mx, my];
+  } else {                                           // los dos, con el hueco del pin arriba y de los botones abajo
+    const x0 = Math.min(cx, mx), x1 = Math.max(cx, mx), y0 = Math.min(cy, my), y1 = Math.max(cy, my);
+    scale = Math.min(x1 > x0 ? (w - 2 * side) / (x1 - x0) : Infinity, y1 > y0 ? (h - top - bottom) / (y1 - y0) : Infinity);
+  }
+  view.scale = Math.max(MIN_SCALE, Math.min(CUBE_SCALE, scale));
+  if (!miniFollows()) {
+    view.cx = (Math.min(cx, mx) + Math.max(cx, mx)) / 2;
+    view.cy = (Math.min(cy, my) + Math.max(cy, my)) / 2 - (top - bottom) / 2 / view.scale;
+  }
+  requestDraw();
+  return true;
 }
 
 function pin(x, y, label, color = "#ffd166") {
@@ -2179,6 +2218,7 @@ window.addEventListener("resize", drawPetMap);
 // ---------------- Clases ----------------
 // Cada clase con sus habilidades activas, estigmas y pasivas (data/class_skills.json).
 let classes = null, classSel = null;
+let skillMarks = new Set();                   // habilidades marcadas (se guardan en los ajustes)
 const SKILL_KIND = [["active", "Habilidades activas"], ["passive", "Pasivas"], ["stigma", "Estigmas"]];
 async function renderClasses() {
   if ($("viewClasses").hidden) return;
@@ -2191,16 +2231,25 @@ async function renderClasses() {
   $("classTitle").textContent = c ? c.name : "Elige una clase";
   $("classSkills").innerHTML = !c ? "" : SKILL_KIND.map(([kind, title]) => {
     const list = c.skills.filter(s => s.type === kind);
-    return `<div class="sksec">${title} <span>· ${list.length}</span></div><div class="skgrid">` +
-      list.map(s => `<div class="skill ${kind}" title="${esc(s.name)}">` +
+    const marked = list.filter(s => skillMarks.has(s.id)).length;
+    return `<div class="sksec">${title} <span>· ${marked ? `★ ${marked} / ` : ""}${list.length}</span></div><div class="skgrid">` +
+      list.map(s => { const on = skillMarks.has(s.id); return `<button class="skill ${kind}${on ? " mark" : ""}" data-skill="${s.id}" title="${esc(s.name)}" aria-pressed="${on}">` +
         (s.icon ? `<img src="/icons/${encodeURIComponent(s.icon)}.png" alt="" loading="lazy">` : "<i></i>") +
-        `<span>${esc(s.name)}</span></div>`).join("") + "</div>";
-  }).join("") + (c.partial ? `<div class="histkey">Luchador: aún no se conocen todos sus estigmas; los que faltan aparecen como activas.</div>` : "");
+        `<span>${esc(s.name)}</span><b class="skstar">${on ? "★" : "☆"}</b></button>`; }).join("") + "</div>";
+  }).join("") + `<div class="histkey">Clic en una habilidad para marcarla como prioridad.</div>` + (c.partial ? `<div class="histkey">Luchador: aún no se conocen todos sus estigmas; los que faltan aparecen como activas.</div>` : "");
 }
 $("classList").addEventListener("click", e => {
   const b = e.target.closest("button[data-cls]"); if (!b) return;
   classSel = b.dataset.cls;
   try { localStorage.setItem("classSel", classSel); } catch { }
+  renderClasses();
+});
+
+$("classSkills").addEventListener("click", e => {
+  const b = e.target.closest("button[data-skill]"); if (!b) return;
+  const id = +b.dataset.skill;
+  if (!skillMarks.delete(id)) skillMarks.add(id);
+  saveSettings({ skillMarks: [...skillMarks] });
   renderClasses();
 });
 
@@ -2248,8 +2297,10 @@ function renderPets() {
   const show = $("petFilter").value;
   fillPetZones();
   const zone = $("petZone").value;
-  const list = pets.pets.filter(p => (show === "all" || (show === "dungeon" || show === "other"
-      ? p.source === show : (show === "owned") === p.owned)) && (!zone || p.zones.includes(zone)) &&
+  // «Por completar»: las que ya tienes y aún no llegan al nivel máximo.
+  const shown = p => show === "all" || (show === "dungeon" || show === "other" ? p.source === show
+    : show === "progress" ? p.owned && !(p.level && !p.needed) : (show === "owned") === p.owned);
+  const list = pets.pets.filter(p => shown(p) && (!zone || p.zones.includes(zone)) &&
     (!q || p.name.toLowerCase().includes(q) || (p.family || "").toLowerCase().includes(q)));
   const owned = pets.pets.filter(p => p.owned).length;
   $("petCount").textContent = pets.pets.length ? `· ${owned} / ${pets.pets.length}` : "";
@@ -2709,6 +2760,7 @@ function applySettings(m) {
   }
   $("langSel").value = I18N.lang;
   dutyMarks = new Set(settings.dutyMarks || []); renderDuty();
+  skillMarks = new Set(settings.skillMarks || []); renderClasses();
   if (settings.map !== mapSel) setMapSel(settings.map);
   $("sound").checked = settings.sound;
   for (const r of document.querySelectorAll(".volRange")) {
