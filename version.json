@@ -1,4 +1,4 @@
 {
- "version": "1.0.43",
- "notes": "Poder de combate (CP) de cada jugador en el medidor de daño y en el mini, con formato corto e icono del juego también en Tareas. El mini gana opciones de tamaño y de cabeceras de columnas. README y capturas actualizados."
+ "version": "1.0.44",
+ "notes": "Modo grupo en el mini: al unirte a un grupo de expedición muestra quién está, su CP y si dio en listo. Cabecera fija al hacer scroll, alto mínimo para 5 jugadores y asa más pequeña. Iconos de habilidades, pasivas y estigmas en mayor resolución. README y capturas actualizados."
 }

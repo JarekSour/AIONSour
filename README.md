@@ -73,14 +73,15 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 
 ### Floating windows
 
-| Minimap | Meter |
-| --- | --- |
-| ![Floating minimap](capturas/minimapa.jpg) | ![Floating meter](capturas/medidor.png) |
+| Minimap | Meter | Expedition group |
+| --- | --- | --- |
+| ![Floating minimap](capturas/minimapa.jpg) | ![Floating meter](capturas/medidor.png) | ![Expedition group in the meter](capturas/grupo.png) |
 
 - **Minimap** with the active cube and your position, and a compact **damage meter** with each player's CP in its own column, always on top of the game.
 - Each one has its ⚙: opacity, size and position. Open them with the buttons at the top right.
 - The minimap's ⚙ can also show the **gathering route** you chose and **follow your position**, keeping you centered as you move. The active cube's pin always stays on top.
-- The meter's ⚙ adds **Size** (70–200 %), which scales the rows, text, class icons and the window, and **Show column headers** (Player, CP, deaths, DPS, %).
+- The meter's ⚙ adds **Size** (70–200 %), which scales the rows, text and class icons along with the window, and **Show column headers** (Player, CP, deaths, DPS, %). The headers stay in place when you scroll, and the window always keeps room for at least 5 players.
+- **Expedition group**: when you join one, the meter resets and shows who's in it, each one's CP and whether they're ready (✓ ready, ⏳ pending, ♛ leader), with no damage data. It goes back to normal when you enter the dungeon.
 - When a cube appears, the minimap zooms so that **you and the cube's pin** both fit, and it adjusts again if either one leaves the view.
 
 ### Field bosses and events
@@ -134,7 +135,7 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 
 ![Classes](capturas/clases.png)
 
-- All 9 classes with their active and passive skills and stigmas, with icons and names in your language.
+- All 9 classes with their active and passive skills and stigmas, with high-resolution icons from the game and names in your language.
 - **Mark your priorities**: click a skill, passive or stigma to star it, and click again to remove it. Each section counts how many you've marked, and your marks are saved per class.
 
 ### Updates

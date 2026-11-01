@@ -120,7 +120,7 @@ const I18N = (() => {
     "Se quitará {0} de todos tus personajes, junto con lo que tengas marcado.":
       "{0} will be removed from all your characters, along with anything you've checked.",
     // Ventanas flotantes (su ⚙) y su barra de título
-    "Opacidad": "Opacity", "Tamaño": "Size", "Ver cabeceras de columnas": "Show column headers", "Siempre encima": "Always on top", "Medidor de daño": "Damage meter",
+    "Opacidad": "Opacity", "Tamaño": "Size", "Listo": "Ready", "Pendiente": "Pending", "Líder": "Leader", "Ver cabeceras de columnas": "Show column headers", "Siempre encima": "Always on top", "Medidor de daño": "Damage meter",
     "Ningún cubo a la vista.": "No cube in sight.", "Aún no has visto ningún cubo.": "You haven't seen any cube yet.", "Energía de Od": "Od Energy",
     "diaria": "daily", "semanal": "weekly", "por batalla": "per battle", "cuenta": "account", "personaje": "character",
     // Tareas automáticas (nombres) y estados

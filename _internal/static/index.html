@@ -197,6 +197,8 @@
   .mcp { display: flex; align-items: center; justify-self: end; gap: .25em; padding: 0 .6em; border-radius: 999px;
     background: #0c1119; color: var(--gold); white-space: nowrap; }
   .mcp:empty { background: none; }
+  .pst { grid-column: 3 / -1; text-align: right; }
+  .pst.ok { color: var(--ok); font-weight: 700; } .pst.lead { color: var(--gold); }
   .mcp img { flex: none; width: 1.2em; height: 1.2em; }
   .prow .who small, .srow small { color: var(--muted); font-size: 11px; }
   .num { text-align: right; }
@@ -546,8 +548,8 @@
   .dpsmini { display: none; }
   body.mini-dps main { display: none !important; }
   body.mini-dps .dpsmini { display: block; overflow: auto; padding: 3px; min-height: 0; }
-  /* Sin hueco para el asa: queda pequeña y tenue sobre la esquina, visible al pasar el ratón. */
-  body.mini-dps .grip { width: 11px; height: 11px; opacity: .35; }
+  /* Sin hueco para el asa: dibujo más pequeño sobre la esquina, con la misma zona para agarrar. */
+  body.mini.mini-dps .grip { background-size: 9px 9px; }
   /* --ms: «Tamaño» del ⚙ del medidor flotante (settings.dps.scale). */
   .mrow { position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1fr) calc(68px * var(--ms))
       calc(30px * var(--ms)) calc(48px * var(--ms)) calc(46px * var(--ms));
@@ -558,7 +560,10 @@
   .mrow .fill { position: absolute; inset: 0 auto 0 0; z-index: 0; background: rgba(79,156,249,.18); }
   .mrow.self { outline: 1px solid var(--ok); }
   .mrow .n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .mrow.head { background: none; color: var(--muted); font-size: calc(10px * var(--ms)); text-transform: uppercase; padding-top: 0; padding-bottom: 0; }
+  /* Fija al hacer scroll, pegada al borde (-3px: el padding de .dpsmini): fondo opaco y por encima
+     de las filas (animateRows les sube el z-index a 2). */
+  .mrow.head { position: sticky; top: -3px; z-index: 3; background: var(--bg); color: var(--muted); font-size: calc(10px * var(--ms)); text-transform: uppercase;
+    padding-top: 0; padding-bottom: calc(2px * var(--ms)); margin-bottom: 0; border-radius: 0; overflow: visible; }
   .dpsmini .empty { padding: 16px 8px; font-size: 12px; }
   .panel { position: absolute; right: 0; top: calc(100% + 6px); z-index: 10; width: 300px; background: var(--panel);
     border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; box-shadow: 0 8px 24px rgba(0,0,0,.45);
@@ -582,7 +587,7 @@
   body.mini .grip { display: block; position: fixed; z-index: 20; right: 0; bottom: 0; width: 18px; height: 18px;
     cursor: nwse-resize; touch-action: none; opacity: .8;
     background: linear-gradient(135deg, transparent 0 45%, #c9d3e0 45% 52%, transparent 52% 66%,
-                #c9d3e0 66% 73%, transparent 73% 87%, #c9d3e0 87% 94%, transparent 94%); }
+                #c9d3e0 66% 73%, transparent 73% 87%, #c9d3e0 87% 94%, transparent 94%) right bottom / 12px 12px no-repeat; }
   body.mini .grip:hover { opacity: 1; }
   body.mini .mapmsg { font-size: 12px; }
   /* La columna no crece con el título (un jefe de nombre largo sacaba el % y el × de la ventana). */
@@ -1651,6 +1656,7 @@ function firstAlert(key) {
 }
 
 // ---------------- Medidor de daño ----------------
+let party = null;     // grupo de expedición en espera (grupo.py)
 let dps = null, viewing = null, selPlayer = null;   // viewing: índice del historial o null = actual
 const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, I18N.lang === "en" ? "," : ".");   // 5.956 / 5,956
 // DPS abreviado: 15211 -> 15.2k, 1234567 -> 1.2M (menos de 1000: tal cual).
@@ -1745,7 +1751,24 @@ const fullCp = cp => cp.toLocaleString(I18N.locale());
 const shortCp = cp => `${(Math.floor(cp / 10) / 100).toFixed(2)}k`;
 const cpMark = cp => cp ? `<span class="pcp" title="${fullCp(cp)}">${CP_ICON}${shortCp(cp)}</span>` : "";
 
+// Antes de entrar a la mazmorra: quién está en el grupo, su CP y si dio en listo (sin datos de daño).
+function renderPartyMini() {
+  const n = party.members.length;
+  $("miniTitle").className = "t pywebview-drag-region";
+  $("miniTitle").textContent = `⚔ ${short(party.title, 22)} · ${n}/${party.slots}`;
+  const head = settings?.dps.headers ? `<div class="mrow head"><span>Jugador</span><span class="num" title="Poder de combate">CP</span>` +
+    `<span class="pst">Listo</span></div>` : "";
+  const state = p => p.ready ? ["ok", "✓", "Listo"] : p.leader ? ["lead", "♛", "Líder"] : ["wait", "⏳", "Pendiente"];
+  animateRows($("dpsMini"), head + party.members.map(p => {
+    const [cls, mark, text] = state(p);
+    return `<div class="mrow${p.self ? " self" : ""}" data-id="p${p.id}"><span class="n">${clsIcon(p)}<span>${esc(p.name)}</span></span>` +
+      `<span class="mcp"${p.cp ? ` title="${fullCp(p.cp)}"` : ""}>${p.cp ? CP_ICON + shortCp(p.cp) : ""}</span>` +
+      `<span class="pst ${cls}" title="${text}">${mark}</span></div>`;
+  }).join(""));
+}
+
 function renderDpsMini() {
+  if (party && !dps.current) return renderPartyMini();
   const last = dps.history[0], live = !!dps.current;
   const f = dps.current || (last && last.end > dps.clearedAt ? last : null);
   $("miniTitle").className = "t pywebview-drag-region" + (live ? " live" : "");
@@ -2816,7 +2839,7 @@ function applySettings(m) {
     q(".fOpacity").value = Math.round(s.opacity * 100); q(".fOpacityV").textContent = Math.round(s.opacity * 100) + " %";
     q(".fTop").checked = s.onTop;
     if (MINI_DPS) { setMiniScale(s.scale); q(".fScale").value = Math.round(s.scale * 100); q(".fScaleV").textContent = Math.round(s.scale * 100) + " %";
-      q(".fHeaders").checked = !!s.headers; if (dps) renderDpsMini(); }
+      q(".fHeaders").checked = !!s.headers; if (dps) renderDpsMini(); growToMinHeight(); }
     if (!MINI_DPS) { q(".fSound").checked = settings.sound; q(".fRoute").checked = !!s.route; q(".fFollow").checked = !!s.follow;
       if (s.follow) followMe(); else followZoomed = false; requestDraw(); }
     applyWindow();
@@ -2850,19 +2873,24 @@ function showPanel(open) {
   } else if (panelSize) {
     panelSize = null;
     api.resize(saved.width, saved.height);
+    growToMinHeight();
   }
 }
 window.addEventListener("pywebviewready", applyWindow);
 $("miniClose").onclick = () => window.pywebview?.api.close();
 
-// Alto mínimo: el medidor, lo justo para 5 filas de jugadores (barra de título incluida);
+// Alto mínimo: el medidor, lo justo para 5 jugadores con su tamaño (barra de título y cabecera
+// incluidas, aunque aún no haya filas que medir: 20 px cada fila y 15 la cabecera al 100 %);
 // el minimapa, 180 px.
 function minWindowHeight() {
   if (!MINI_DPS) return 180;
-  const row = document.querySelector(".mrow:not(.head)"), bar = document.querySelector(".minibar");
-  const rowH = row ? row.offsetHeight + parseFloat(getComputedStyle(row).marginBottom) : 20;
-  const pad = $("dpsMini"), cs = getComputedStyle(pad);
-  return Math.ceil(bar.offsetHeight + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + 5 * rowH);
+  const ms = settings?.dps.scale ?? 1, pad = getComputedStyle($("dpsMini"));
+  return Math.ceil(document.querySelector(".minibar").offsetHeight + parseFloat(pad.paddingTop) + parseFloat(pad.paddingBottom)
+    + 5 * 20 * ms + (settings?.dps.headers ? 15 * ms : 0));
+}
+// Un medidor más bajo que el mínimo (guardado antes, o al activar cabeceras) se agranda solo.
+function growToMinHeight() {
+  if (MINI_DPS && !panelSize && settings.dps.height < minWindowHeight()) saveSettings({ dps: { height: minWindowHeight() } });
 }
 
 // Asa de la esquina: la ventana no tiene bordes, así que el tamaño lo cambia la página.
@@ -2949,6 +2977,7 @@ function connect() {
         if (m.event === "spawn" && firstAlert(m.key)) alertCube();
       }
       else if (m.type === "pos") onPosition(m.position);
+      else if (m.type === "party") { party = m.state; if (MINI_DPS && dps) renderDpsMini(); }
       else if (m.type === "veins") { ores = m.state; renderOre(); if (MINI) requestDraw(); }
       else if (m.type === "cubetest") {                       // «Probar aviso» desde cualquier ventana
         alertCube(true);                                      // el sonido ya sonó en la que lo pidió
