@@ -120,6 +120,10 @@ const I18N = (() => {
     "Se quitará {0} de todos tus personajes, junto con lo que tengas marcado.":
       "{0} will be removed from all your characters, along with anything you've checked.",
     // Ventanas flotantes (su ⚙) y su barra de título
+    "Curación": "Healing", "Curado": "Healed", "Curación total": "Total healing", "HPS del grupo": "Group HPS", "Sanadores": "Healers",
+    "Usos": "Uses", "Media": "Average", "Curaciones": "Healing", "Tus curaciones": "Your healing", "Sin curaciones en este combate.": "No healing in this fight.",
+    "Este combate se guardó antes de separar la curación por habilidad.": "This fight was saved before healing was split by skill.",
+    "La curación es la que envía el juego: incluye lo que sobra si el objetivo ya tenía la vida llena.": "Healing is what the game reports: it includes the excess when the target was already at full health.",
     "Opacidad": "Opacity", "Tamaño": "Size", "Listo": "Ready", "Pendiente": "Pending", "Líder": "Leader", "Ver cabeceras de columnas": "Show column headers", "Siempre encima": "Always on top", "Medidor de daño": "Damage meter",
     "Ningún cubo a la vista.": "No cube in sight.", "Aún no has visto ningún cubo.": "You haven't seen any cube yet.", "Energía de Od": "Od Energy",
     "diaria": "daily", "semanal": "weekly", "por batalla": "per battle", "cuenta": "account", "personaje": "character",
@@ -195,7 +199,7 @@ const I18N = (() => {
     [/^¿Quitar a (.+) de la lista de tareas\?$/, "Remove $1 from the task list?"],
     [/^\+(\d+) en (.+)$/, "+$1 in $2"], [/^Personaje (.+)$/, "Character $1"], [/^Jugador (\d+)$/, "Player $1"],
     [/^Entidad (\d+)$/, "Entity $1"], [/^Sin cubo$/, "No cube"],
-    [/^Veta (\d+)$/, "Vein $1"], [/^(.*)· curación (.+)$/, "$1· healing $2"], [/^¿Borrar la ruta «(.+)»\? Sus vetas siguen en la lista\.$/, "Delete the route “$1”? Its veins stay in the list."],
+    [/^Veta (\d+)$/, "Vein $1"], [/^Curaciones de (.+)$/, "$1's healing"], [/^(.*)· curación (.+)$/, "$1· healing $2"], [/^¿Borrar la ruta «(.+)»\? Sus vetas siguen en la lista\.$/, "Delete the route “$1”? Its veins stay in the list."],
     [/^ya hay una ruta «(.+)»$/, "there is already a route “$1”"], [/^vista hace (.+)$/, "seen $1 ago"], [/^Recolectada por ti: (\d+)$/, "Gathered by you: $1"],
     [/^Todavía no hay vetas en (.+)\. Cada veta \(oricalco, rubí, zafiro o diamante\) se guarda al recolectarla\.$/,
      "No veins in $1 yet. Each vein (orichalcum, ruby, sapphire or diamond) is saved when you gather it."],    [/^Nombre del objeto (\d+), como sale en el juego \(vacío: quitarlo\):$/, "Name of item $1, as shown in the game (empty: remove it):"],

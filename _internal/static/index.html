@@ -160,6 +160,9 @@
   .dpsmeta { color: var(--muted); font-size: 12px; }
   .dpsmeta .on { color: var(--danger); font-weight: 600; }
   .dpstotals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+  .dpsseg { display: flex; gap: 2px; width: fit-content; margin-bottom: 8px; background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 2px; }
+  .dpsseg button { border: 0; background: none; padding: 3px 12px; border-radius: 6px; color: var(--muted); font-size: 12px; }
+  .dpsseg button.on { background: var(--accent); color: #fff; }
   .dpstotals div { background: var(--panel2); border-radius: 6px; padding: 8px 10px; }
   .dpstotals b { display: block; font-size: 18px; font-variant-numeric: tabular-nums; }
   .dpstotals span { font-size: 11px; color: var(--muted); }
@@ -791,11 +794,13 @@
         </span></span>
     </div>
     <div class="dpstotals" id="dpsTotals"></div>
-    <div class="phead"><span>#</span><span>Jugador</span><span class="num" title="Muertes"><svg class="skull" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 1.2C4.4 1.2 1.8 3.7 1.8 7c0 1.9.9 3.4 2.3 4.3v1.9c0 .7.5 1.2 1.2 1.2h.6v-1.6h1v1.6h2.2v-1.6h1v1.6h.6c.7 0 1.2-.5 1.2-1.2v-1.9c1.4-.9 2.3-2.4 2.3-4.3 0-3.3-2.6-5.8-6.2-5.8zM5.4 9.6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5.2 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM8 11.2l-.9-1.3h1.8z"/></svg></span><span class="num">Daño</span><span class="num">DPS</span><span class="num">%</span></div>
+    <div class="dpsseg" id="dpsSeg"><button data-m="damage" class="on">Daño</button><button data-m="heal">Curación</button></div>
+    <div class="phead"><span>#</span><span>Jugador</span><span class="num" id="phDeaths" title="Muertes"><svg class="skull" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 1.2C4.4 1.2 1.8 3.7 1.8 7c0 1.9.9 3.4 2.3 4.3v1.9c0 .7.5 1.2 1.2 1.2h.6v-1.6h1v1.6h2.2v-1.6h1v1.6h.6c.7 0 1.2-.5 1.2-1.2v-1.9c1.4-.9 2.3-2.4 2.3-4.3 0-3.3-2.6-5.8-6.2-5.8zM5.4 9.6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5.2 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM8 11.2l-.9-1.3h1.8z"/></svg></span><span class="num" id="phAmount">Daño</span><span class="num" id="phRate">DPS</span><span class="num">%</span></div>
     <div id="dpsPlayers"></div>
     <div class="dpssec" id="dpsSkillsTitle">Habilidades</div>
-    <div class="shead"><span>Habilidad</span><span class="num">Daño</span><span class="num">Golpes</span><span class="num">Crít.</span><span class="num">%</span></div>
+    <div class="shead"><span>Habilidad</span><span class="num" id="shAmount">Daño</span><span class="num" id="shHits">Golpes</span><span class="num" id="shCrit">Crít.</span><span class="num">%</span></div>
     <div id="dpsSkills"></div>
+    <div class="histkey" id="dpsHealNote" hidden>La curación es la que envía el juego: incluye lo que sobra si el objetivo ya tenía la vida llena.</div>
   </div>
   <div class="card">
     <h3>Combates <span class="grow"></span><button id="dpsClear" title="Borra el historial de combates">Borrar</button></h3>
@@ -1133,15 +1138,15 @@ function draw() {
   }
 
   // Tu personaje: flecha en la dirección en la que te mueves (punto si aún no se sabe).
-  const me = state?.position;
+  const me = shownMe();
   if (me && mapFor(me.world) === m) {
-    const [px, py] = toPx(m, me.x, me.y), x = sx(px), y = sy(py);
+    const [px, py] = toPx(m, me.x, me.y), x = sx(px), y = sy(py), angle = shownHeading();
     ctx.fillStyle = "rgba(255,255,255,.25)"; ctx.beginPath(); ctx.arc(x, y, 16, 0, Math.PI * 2); ctx.fill();
     ctx.save(); ctx.translate(x, y);
     ctx.fillStyle = "#fff"; ctx.strokeStyle = "#0b3a7a"; ctx.lineWidth = 2.5;
-    if (heading == null) { ctx.beginPath(); ctx.arc(0, 0, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+    if (angle == null) { ctx.beginPath(); ctx.arc(0, 0, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
     else {
-      ctx.rotate(heading); ctx.beginPath();
+      ctx.rotate(angle); ctx.beginPath();
       ctx.moveTo(11, 0); ctx.lineTo(-8, 8); ctx.lineTo(-4, 0); ctx.lineTo(-8, -8); ctx.closePath();
       ctx.fill(); ctx.stroke();
     }
@@ -1157,14 +1162,60 @@ function draw() {
 
 // Dirección del movimiento: de la última posición distinta (más de 1 m) a la actual.
 let heading = null, lastPos = null;
+
+// Flecha suavizada: el juego da ~1 posición por segundo, así que lo que se dibuja se desliza de la
+// posición mostrada a la nueva en lo que tardó en llegar (va ~1 s por detrás de la real). Es solo
+// visual: distancias y «Siguiente» usan state.position. Un salto grande se dibuja de golpe.
+const SMOOTH = { from: null, to: null, start: 0, ms: 1, last: 0, turnFrom: null, raf: 0, drawn: 0 };
+const SMOOTH_JUMP = 6000, SMOOTH_GAP = 3000, SMOOTH_TURN_MS = 250, SMOOTH_FRAME_MS = 33;   // cm, ms, ms, ms (~30 fps)
+const smoothT = () => Math.min(1, (performance.now() - SMOOTH.start) / SMOOTH.ms);
+function shownMe() {
+  const s = SMOOTH, p = state?.position;
+  if (!p || !s.from || !s.to || s.to.x !== p.x || s.to.y !== p.y) return p;
+  const t = smoothT();
+  return { world: p.world, x: s.from.x + (p.x - s.from.x) * t, y: s.from.y + (p.y - s.from.y) * t, z: p.z };
+}
+function shownHeading() {
+  const s = SMOOTH;
+  if (heading == null || s.turnFrom == null || !s.from) return heading;
+  const d = Math.atan2(Math.sin(heading - s.turnFrom), Math.cos(heading - s.turnFrom));    // por el lado más corto
+  return s.turnFrom + d * Math.min(1, (performance.now() - s.start) / SMOOTH_TURN_MS);
+}
+function followShown() {
+  if (miniFollows()) followMe();
+  if (!MINI) followOre();
+}
+function smoothFrame(now) {
+  const s = SMOOTH;
+  s.raf = 0;
+  if (!s.from) return;
+  const done = smoothT() >= 1;
+  if (done || now - s.drawn >= SMOOTH_FRAME_MS) {
+    s.drawn = now;
+    if (done) s.from = null;
+    followShown(); requestDraw();
+    if (!MINI) requestOreDraw();
+  }
+  if (!done) s.raf = requestAnimationFrame(smoothFrame);
+}
+function smoothTo(from, turn, p) {
+  const s = SMOOTH, now = performance.now(), gap = now - s.last;
+  s.last = now;
+  const near = from && from.world === p.world && Math.hypot(p.x - from.x, p.y - from.y) < SMOOTH_JUMP;
+  s.from = near && gap < SMOOTH_GAP && !REDUCED_MOTION ? from : null;
+  s.to = p; s.start = now; s.ms = Math.max(150, Math.min(1100, gap)); s.turnFrom = turn;
+  if (s.from && !s.raf) s.raf = requestAnimationFrame(smoothFrame);
+}
+
 function onPosition(p) {
   if (!state) return;
-  const m = mapFor(p.world);
+  const m = mapFor(p.world), from = shownMe(), turn = shownHeading();
   if (lastPos && lastPos.world === p.world && m) {
     const dx = p.x - lastPos.x, dy = p.y - lastPos.y;
     if (Math.hypot(dx, dy) > 100) { heading = Math.atan2(dy * m.ay, dx * m.ax); lastPos = p; }
   } else { heading = null; lastPos = p; }
   state.position = p;
+  smoothTo(from, turn, p);
   if (miniFollows()) followMe();
   if (MINI) fitMeAndCube(false);
   requestDraw();
@@ -1175,7 +1226,7 @@ const miniFollows = () => MINI && !MINI_DPS && !!settings?.mini?.follow;
 // Al empezar a seguirte acerca el zoom como al centrar un cubo; después respeta el que elijas.
 let followZoomed = false;
 function followMe() {
-  const p = state?.position, m = p && mapFor(p.world);
+  const p = shownMe(), m = p && mapFor(p.world);
   if (!m) return;
   if (m !== currentMap()) setMapSel("auto");
   [view.cx, view.cy] = toPx(m, p.x, p.y);
@@ -1201,7 +1252,7 @@ function fitMeAndCube(force) {
   if (miniFollows()) {                               // centrado en ti: hasta donde llega el cubo
     const dx = Math.abs(cx - mx), dy = cy - my;
     scale = Math.min(dx ? (w / 2 - side) / dx : Infinity, dy < 0 ? (h / 2 - top) / -dy : dy > 0 ? (h / 2 - bottom) / dy : Infinity);
-    [view.cx, view.cy] = [mx, my];
+    [view.cx, view.cy] = toPx(m, shownMe().x, shownMe().y);
   } else {                                           // los dos, con el hueco del pin arriba y de los botones abajo
     const x0 = Math.min(cx, mx), x1 = Math.max(cx, mx), y0 = Math.min(cy, my), y1 = Math.max(cy, my);
     scale = Math.min(x1 > x0 ? (w - 2 * side) / (x1 - x0) : Infinity, y1 > y0 ? (h - top - bottom) / (y1 - y0) : Infinity);
@@ -1350,7 +1401,7 @@ function drawGatherRoute(g, m, sx, sy, w, h, { hits = null, sel = null, onlyRout
     });
   }
   // Línea punteada desde ti hasta la siguiente veta.
-  const me = state?.position, meHere = me && String(me.world) === world;
+  const me = shownMe(), meHere = me && String(me.world) === world;
   let mx, my;
   if (meHere) { const [px, py] = toPx(m, me.x, me.y); mx = sx(px); my = sy(py); }
   if (meHere && r.next && veins.get(r.next)) {
@@ -1411,7 +1462,7 @@ function drawOre() {
     if (img.complete && img.naturalWidth) g.drawImage(img, sx(i * span), sy(j * span), span * s + 0.6, span * s + 0.6);
   }
   const world = drawGatherRoute(g, m, sx, sy, w, h, { hits: oreHits, sel: oreSel });
-  const me = state?.position, meHere = me && String(me.world) === world;
+  const me = shownMe(), meHere = me && String(me.world) === world;
   let mx, my;
   if (meHere) { const [px, py] = toPx(m, me.x, me.y); mx = sx(px); my = sy(py); }
   // Tu personaje, como en el mapa de cubos.
@@ -1419,9 +1470,10 @@ function drawOre() {
     g.fillStyle = "rgba(255,255,255,.25)"; g.beginPath(); g.arc(mx, my, 16, 0, Math.PI * 2); g.fill();
     g.save(); g.translate(mx, my);
     g.fillStyle = "#fff"; g.strokeStyle = "#0b3a7a"; g.lineWidth = 2.5;
-    if (heading == null) { g.beginPath(); g.arc(0, 0, 7, 0, Math.PI * 2); g.fill(); g.stroke(); }
+    const angle = shownHeading();
+    if (angle == null) { g.beginPath(); g.arc(0, 0, 7, 0, Math.PI * 2); g.fill(); g.stroke(); }
     else {
-      g.rotate(heading); g.beginPath();
+      g.rotate(angle); g.beginPath();
       g.moveTo(11, 0); g.lineTo(-8, 8); g.lineTo(-4, 0); g.lineTo(-8, -8); g.closePath();
       g.fill(); g.stroke();
     }
@@ -1460,9 +1512,12 @@ async function postOre(body) {
     if (!r.ok) throw new Error((await r.json()).error);
   } catch (e) { showErr("Error: " + e.message); }
 }
+function followOre() {
+  const m = oreMap(), p = shownMe();
+  if (oreFollow && m && p && String(p.world) === oreWorld(m)) [oreView.cx, oreView.cy] = toPx(m, p.x, p.y);
+}
 function onOrePosition(p) {
-  const m = oreMap();
-  if (oreFollow && m && String(p.world) === oreWorld(m)) [oreView.cx, oreView.cy] = toPx(m, p.x, p.y);
+  followOre();
   renderOreNext(); requestOreDraw();
 }
 
@@ -1679,8 +1734,10 @@ function shownFight() {
 }
 
 // Jugador cuyo desglose se muestra: el elegido, si no tú, si no el primero.
-function pickPlayer(f) {
-  return f.players.find(p => p.id === selPlayer) || f.players.find(p => p.self) || f.players[0] || null;
+// Sección del medidor: daño o curación (los mismos combates, otra lista).
+let dpsMode = "damage";
+function pickPlayer(list) {
+  return list.find(p => p.id === selPlayer) || list.find(p => p.self) || list[0] || null;
 }
 
 function renderDps() {
@@ -1700,15 +1757,34 @@ function renderDps() {
     $("dpsTarget").textContent = f.target || "Combate";
     $("dpsMeta").innerHTML = (live ? `<span class="on">● En curso</span> · desde las ${hhmm(f.start)}`
       : `${hhmm(f.start)} – ${hhmm(f.end)}`) + (viewing === null && !live ? " · último combate" : "");
-    $("dpsTotals").innerHTML = [["Daño total", fmt(f.damage)], ["DPS del grupo", kfmt(f.dps)],
-      ["Duración", secs(f.duration)], ["Jugadores", f.players.length]]
+    const healing = dpsMode === "heal", list = healing ? f.healers || [] : f.players;
+    $("dpsTotals").innerHTML = (healing
+      ? [["Curación total", fmt(f.heal || 0)], ["HPS del grupo", kfmt(f.hps || 0)], ["Duración", secs(f.duration)], ["Sanadores", list.length]]
+      : [["Daño total", fmt(f.damage)], ["DPS del grupo", kfmt(f.dps)], ["Duración", secs(f.duration)], ["Jugadores", f.players.length]])
       .map(([l, v]) => `<div><b>${v}</b><span>${l}</span></div>`).join("");
-    const sel = pickPlayer(f), top = f.players[0]?.damage || 1;
+    const sel = pickPlayer(list), top = (healing ? list[0]?.heal : list[0]?.damage) || 1;
+    if (healing) {
+      animateRows($("dpsPlayers"), list.map((p, i) =>
+        `<div class="prow${p.self ? " self" : ""}${p === sel ? " sel" : ""}" data-id="${p.id}">` +
+        `<span class="fill" style="width:${(p.heal / top * 100).toFixed(1)}%;${barStyle(p)}"></span><span class="rank">${i + 1}</span>` +
+        `<span class="who">${clsIcon(p)}<span><b>${esc(p.name)}</b>` +
+        `<small>${esc(p.cls || "clase desconocida")}${p.cp ? " · " : ""}${cpMark(p.cp)}</small></span></span><span></span>` +
+        `<span class="num">${fmt(p.heal)}</span><span class="num">${kfmt(p.hps)}</span><span class="num">${pct(p.share)}</span></div>`).join("")
+        || empty("Sin curaciones en este combate."));
+      $("dpsSkillsTitle").textContent = !sel ? "Curaciones" : sel.self ? "Tus curaciones" : `Curaciones de ${sel.name}`;
+      const topH = sel?.skills[0]?.heal || 1;
+      $("dpsSkills").innerHTML = !sel ? "" : sel.skills.map(sk => `<div class="srow">` +
+        `<span class="fill" style="width:${(sk.heal / topH * 100).toFixed(1)}%"></span>` +
+        `<span class="sk">${sk.icon ? `<img src="/icons/${encodeURIComponent(sk.icon)}.png" alt="" loading="lazy">` : "<i></i>"}` +
+        `<span>${esc(sk.name)}</span></span><span class="num">${fmt(sk.heal)}</span><span class="num">${sk.uses}</span>` +
+        `<span class="num">${fmt(Math.round(sk.heal / sk.uses))}</span><span class="num">${pct(sk.share)}</span></div>`).join("")
+        || empty("Este combate se guardó antes de separar la curación por habilidad.");
+    } else {
     animateRows($("dpsPlayers"), f.players.map((p, i) =>
       `<div class="prow${p.self ? " self" : ""}${p === sel ? " sel" : ""}" data-id="${p.id}">` +
       `<span class="fill" style="width:${(p.damage / top * 100).toFixed(1)}%;${barStyle(p)}"></span><span class="rank">${i + 1}</span>` +
       `<span class="who">${clsIcon(p)}<span><b>${esc(p.name)}</b>` +
-      `<small>${esc(p.cls || "clase desconocida")}${p.cp ? " · " : ""}${cpMark(p.cp)}${p.heal ? " · curación " + fmt(p.heal) : ""}</small></span></span>` +
+      `<small><span>${esc(p.cls || "clase desconocida")}</span>${p.cp ? " · " : ""}${cpMark(p.cp)}${p.heal ? " · curación " + fmt(p.heal) : ""}</small></span></span>` +
       `<span class="num">${deathMark(p)}</span>` +
       `<span class="num">${fmt(p.damage)}</span><span class="num">${kfmt(p.dps)}</span><span class="num">${pct(p.share)}</span></div>`).join("")
       || empty("Sin daño de jugadores en este combate."));
@@ -1719,7 +1795,16 @@ function renderDps() {
       `<span class="sk">${sk.icon ? `<img src="/icons/${encodeURIComponent(sk.icon)}.png" alt="" loading="lazy">` : "<i></i>"}` +
       `<span>${esc(sk.name)}</span></span><span class="num">${fmt(sk.damage)}</span><span class="num">${sk.hits}</span>` +
       `<span class="num">${sk.hits ? Math.round(sk.crits * 100 / sk.hits) : 0} %</span><span class="num">${pct(sk.share)}</span></div>`).join("") : "";
+    }
   }
+  const healing = dpsMode === "heal";
+  for (const b of $("dpsSeg").children) b.classList.toggle("on", b.dataset.m === dpsMode);
+  $("phAmount").textContent = $("shAmount").textContent = healing ? "Curado" : "Daño";
+  $("phRate").textContent = healing ? "HPS" : "DPS";
+  $("shHits").textContent = healing ? "Usos" : "Golpes";
+  $("shCrit").textContent = healing ? "Media" : "Crít.";
+  $("phDeaths").style.visibility = healing ? "hidden" : "";
+  $("dpsHealNote").hidden = !healing;
   if (MINI_DPS) renderDpsMini();
   $("dpsHistory").innerHTML = dps.history.slice(0, HISTORY_SHOWN).map((h, i) => `<div class="fight${i === viewing ? " sel" : ""}" data-i="${i}">` +
     `<b>${esc(h.target || "Combate")}</b><span class="num"><b>${kfmt(h.dps)}</b> <small>DPS</small></span>` +
@@ -1768,22 +1853,25 @@ function renderPartyMini() {
 }
 
 function renderDpsMini() {
-  if (party && !dps.current) return renderPartyMini();
+  if (party && !party.inside) return renderPartyMini();
   const last = dps.history[0], live = !!dps.current;
   const f = dps.current || (last && last.end > dps.clearedAt ? last : null);
   $("miniTitle").className = "t pywebview-drag-region" + (live ? " live" : "");
-  $("miniTitle").innerHTML = !f ? "⚔ Sin combates" :
+  const roster = party?.inside ? party.members : [];     // en la mazmorra: todo el grupo, aunque aún no haya golpeado
+  $("miniTitle").innerHTML = !f ? `⚔ ${roster.length ? esc(short(party.title, 22)) : "Sin combates"}` :
     `⚔ ${esc(short(f.target || "Combate", 16))} · <span class="dur">${secs(f.duration)}</span> · ${kfmt(f.dps)} DPS`;
   const top = f?.players[0]?.damage || 1;
+  const shown = (f?.players || []).map(p => p.cp ? p : { ...p, cp: roster.find(m => m.name === p.name)?.cp });
+  const rows = shown.concat(roster.filter(m => !shown.some(p => p.name === m.name)).map(m => ({ ...m, id: `p${m.id}`, damage: 0, idle: true })));
   const head = settings?.dps.headers ? `<div class="mrow head"><span>Jugador</span><span class="num" title="Poder de combate">CP</span>` +
     `<span class="num" title="Muertes">${SKULL}</span><span class="num">DPS</span><span class="num">%</span></div>` : "";
-  animateRows($("dpsMini"), !f ? empty(running ? "Ataca a algo y aparecerá aquí." : "La captura está detenida.") :
-    head + f.players.map(p => `<div class="mrow${p.self ? " self" : ""}" data-id="${p.id}"><span class="fill" style="width:${(p.damage / top * 100).toFixed(1)}%;` +
+  animateRows($("dpsMini"), !rows.length ? empty(running ? "Ataca a algo y aparecerá aquí." : "La captura está detenida.") :
+    head + rows.map(p => `<div class="mrow${p.self ? " self" : ""}" data-id="${p.id}"><span class="fill" style="width:${(p.damage / top * 100).toFixed(1)}%;` +
       `${barStyle(p)}"></span>` +
       `<span class="n">${clsIcon(p)}<span>${esc(p.name)}</span></span>` +
       `<span class="mcp"${p.cp ? ` title="${fullCp(p.cp)}"` : ""}>${p.cp ? CP_ICON + shortCp(p.cp) : ""}</span>` +
       `<span class="num">${deathMark(p)}</span>` +
-      `<span class="num">${kfmt(p.dps)}</span><span class="num">${pct(p.share)}</span></div>`).join(""));
+      `<span class="num">${p.idle ? "–" : kfmt(p.dps)}</span><span class="num">${p.idle ? "–" : pct(p.share)}</span></div>`).join(""));
 }
 
 // Redibuja las filas de jugadores animando el cambio (técnica FLIP): quien adelanta a otro
@@ -1817,6 +1905,7 @@ $("dpsHistory").addEventListener("click", e => {
   const row = e.target.closest(".fight"); if (row) { viewing = +row.dataset.i; renderDps(); }
 });
 $("dpsBack").onclick = () => { viewing = null; renderDps(); };
+$("dpsSeg").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { dpsMode = b.dataset.m; renderDps(); } });
 $("dpsReset").onclick = () => { viewing = null; post("/api/dps/reset"); };
 $("dpsCfgBtn").onclick = e => { e.stopPropagation(); $("dpsCfg").hidden = !$("dpsCfg").hidden; };
 closeOnOutsideClick($("dpsCfg"));

@@ -16,6 +16,8 @@
     "0x2B38 (marca 02): ~1 por segundo mientras te mueves. 0x2A38 (marca 00): al empezar, girar o pararte.",
     "Llegan para ti y para jugadores cercanos; la tuya es la del entity de ownEntityOpcodes. Al recolectar",
     "estás a 2,1 m (mediana, 158 usos); 0x2A38 queda a 3,2 m de la 0x2B38 anterior (mediana, 4726). 2026-10-28.",
+    "character (0x3336): tu personaje al llegar a un mapa, con tu posición exacta (aion2.character_position).",
+    "positionJump (0x3C37): varint entity, 03 y X/Y/Z float32 LE; solo la de tu entity. 2026-10-29.",
     "veinEnvIds: vetas que se recolectan (vetas.py), EnvId -> tipo. Por el objeto que llega tras tus usos",
     "(tramas reales del 2026-10-27/28): 1500004 y 1550004 (Altgard) Orichalcum Ore 610620013/14,",
     "1500020 Sapphire Gemstone 610660025/28, 1500021 Diamond 610660026/29, 1500022 Ruby 610660027/30.",
@@ -31,7 +33,9 @@
     "worldEnter": 401,
     "entityDestroyed": 1421,
     "envState": 13622,
-    "useComplete": 14902
+    "useComplete": 14902,
+    "character": 13110,
+    "positionJump": 15415
   },
   "positionOpcodes": {"11064": 2, "10808": 0},
   "ownEntityOpcodes": [17463, 17975, 18998, 653, 909, 16695, 16951],

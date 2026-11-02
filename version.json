@@ -1,4 +1,4 @@
 {
- "version": "1.0.44",
- "notes": "Modo grupo en el mini: al unirte a un grupo de expedición muestra quién está, su CP y si dio en listo. Cabecera fija al hacer scroll, alto mínimo para 5 jugadores y asa más pequeña. Iconos de habilidades, pasivas y estigmas en mayor resolución. README y capturas actualizados."
+ "version": "1.0.45",
+ "notes": "Sección de curación en el medidor con HPS y habilidades. El nombre del jefe se queda en el título aunque un esbirro reciba más daño. Listo al instante en el grupo, medidor en pausa mientras se arma y las estadísticas aparecen sin reiniciar al entrar en la mazmorra. Posición al llegar a un sitio y flecha suavizada. README y capturas actualizados."
 }

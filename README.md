@@ -48,7 +48,7 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 - Detects hidden cubes as they appear and marks them on the zone map (Verteron or Altgard), with all the possible spots where they can show up.
 - History of the last 10 cubes with the time and outcome of each one: **green** if you opened it, **red** if another player did, or replaced by a new one.
 - Alert with sound when a cube appears: the app switches to the Cubes tab and flashes (configurable).
-- **Your character** shows on the map as an arrow pointing the way you're moving, updated about once a second while you move, and the active cube's label shows how far away it is in meters, with ▲ or ▼ when it's higher or lower than you. It's read from the game's traffic, like everything else: nothing is sent to the game.
+- **Your character** shows on the map as an arrow pointing the way you're moving. It glides smoothly as you move and lands on your new spot as soon as you arrive somewhere by teleport or loading screen. The active cube's label shows how far away it is in meters, with ▲ or ▼ when it's higher or lower than you. It's read from the game's traffic, like everything else: nothing is sent to the game.
 
 ### Gathering
 
@@ -66,10 +66,17 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 
 - Total damage, DPS and share of each group member, with their class, **combat power** (CP) and the fight's deaths.
 - Click a player for the per-skill breakdown: damage, hits and crits.
-- History of the last 10 fights with the boss or monster name, duration and number of players.
-- Only damage from players and their summons counts; the fight ends when the boss dies or after a time without hits (configurable).
+- History of the last 10 fights with the boss or monster name, duration and number of players. A boss keeps the fight's title from its first hit, even if a minion takes more damage; without a boss, it's the monster that took the most.
+- A fight adds up the damage to all its targets. Only damage from players and their summons counts; the fight ends when the boss dies or after a time without hits (configurable).
 - Other players' CP arrives when they come into your range, so a player you haven't met yet shows none. A value the game sends identically for several players isn't shown.
 - Animated bars: they grow smoothly and, when a player overtakes another, their row slides up above it.
+
+#### Healing
+
+![Healing](capturas/curacion.png)
+
+- The **Damage / Healing** switch shows total healing, group HPS and each healer's share. Click a player for their healing skills: amount, uses and average.
+- Healing is what the game reports, so it includes the excess when the target was already at full health.
 
 ### Floating windows
 
@@ -81,7 +88,7 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 - Each one has its ⚙: opacity, size and position. Open them with the buttons at the top right.
 - The minimap's ⚙ can also show the **gathering route** you chose and **follow your position**, keeping you centered as you move. The active cube's pin always stays on top.
 - The meter's ⚙ adds **Size** (70–200 %), which scales the rows, text and class icons along with the window, and **Show column headers** (Player, CP, deaths, DPS, %). The headers stay in place when you scroll, and the window always keeps room for at least 5 players.
-- **Expedition group**: when you join one, the meter resets and shows who's in it, each one's CP and whether they're ready (✓ ready, ⏳ pending, ♛ leader), with no damage data. It goes back to normal when you enter the dungeon.
+- **Expedition group**: when you join one, the meter resets and shows who's in it, each one's CP and whether they're ready (✓ ready, ⏳ pending, ♛ leader), with no damage data. Ready checks change as soon as someone presses it, you included. The meter stays paused while the group forms, so hits from nearby fights don't wipe the list; the pause ends after 5 minutes with no group news. When you enter the dungeon, the same list switches to the fight's stats with no further reset, and players who haven't hit yet stay on it.
 - When a cube appears, the minimap zooms so that **you and the cube's pin** both fit, and it adjusts again if either one leaves the view.
 
 ### Field bosses and events
