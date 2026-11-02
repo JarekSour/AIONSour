@@ -225,7 +225,7 @@
   .homeview { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); align-content: start;
     grid-auto-rows: max-content; overflow-y: auto; }
   /* Reinicio y los 3 eventos en la primera fila; solo con 4 columnas o más (con 3 dejaría huecos). */
-  @media (min-width: 1150px) { .homeview .hcard:nth-child(5) { grid-column-start: 1; } }
+  @media (min-width: 1150px) { .homeview .hcard:nth-child(6) { grid-column-start: 1; } }   /* tras la membresía */
   .hcard h3 .hico { width: 18px; height: 18px; flex: none; object-fit: contain; }
   .hcard .hbig { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; margin: 4px 0 2px; }
   .hcard .hbig.live { color: var(--ok); }
@@ -247,6 +247,12 @@
   .hkeys .hk b { color: var(--gold); font-variant-numeric: tabular-nums; }
   .hkeys .hk .hrefill { color: var(--muted); font-size: 11px; white-space: nowrap; }
   .homeview .hwide { grid-column: span 2; }
+  .homeview .hfull { grid-column: 1 / -1; }
+  /* Membresía: título, tiempo que queda y vencimiento en una fila. */
+  .hmember { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 14px; }
+  .hmember[hidden] { display: none; }
+  .hmember h3 { margin: 0; }
+  .hmember .hbig { font-size: 18px; }
   @media (max-width: 700px) { .homeview .hwide { grid-column: auto; } }
   /* Personajes: una fila cada uno con columnas alineadas (llaves de cubo y monedas). */
   .hchars { display: grid; grid-template-columns: minmax(0, 1fr) repeat(6, auto); gap: 4px 14px; align-items: center;
@@ -671,6 +677,11 @@
 </header>
 
 <main id="viewHome" class="homeview" hidden>
+  <div class="card hcard hfull hmember" id="homeMemberCard" hidden>
+    <h3><svg class="hico" viewBox="0 0 16 16" style="color:#facc15"><path fill="currentColor" d="M1.5 4.5 5 7.5 8 2.5l3 5 3.5-3-1.3 8.5H2.8zM2.8 14h10.4v1.2H2.8z"/></svg>Membresía especial Quai</h3>
+    <div class="hbig" id="homeMember">–</div>
+    <div class="hsub" id="homeMemberAt"></div>
+  </div>
   <div class="card hcard">
     <h3><svg class="hico" viewBox="0 0 16 16" style="color:#f472b6"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" d="M13.5 6.5A5.6 5.6 0 0 0 3 4.6M2.5 9.5A5.6 5.6 0 0 0 13 11.4"/><path fill="currentColor" d="M2.2 1.6v4h4zM13.8 14.4v-4h-4z"/></svg>Reinicio semanal</h3>
     <div class="hbig" id="homeWeekly">–</div>
@@ -2706,6 +2717,11 @@ const longDay = t => {
   return d.toLocaleDateString(I18N.locale(), { weekday: "long" }) + " " +
     d.toLocaleTimeString(I18N.locale(), { hour: "2-digit", minute: "2-digit", hour12: false });
 };
+const longDate = t => {
+  const d = new Date(t * 1000);
+  return d.toLocaleDateString(I18N.locale(), { weekday: "long", day: "numeric", month: "long" }) + " " +
+    d.toLocaleTimeString(I18N.locale(), { hour: "2-digit", minute: "2-digit", hour12: false });
+};
 function renderHome() {
   if (!home || $("viewHome").hidden) return;
   const now = Date.now() / 1000;
@@ -2713,11 +2729,21 @@ function renderHome() {
     home.invasion?.next, home.invasion?.liveUntil, home.rift?.next, home.rift?.liveUntil,
     home.battlefield?.next, home.battlefield?.liveUntil,
     home.siege?.liveUntil, ...(home.siege?.next || [])].filter(Boolean);
+  if (home.membership?.until > now) marks.push(home.membership.until);   // al vencer, se vuelve a pedir
   if (marks.some(t => t <= now)) { home = null; loadHome(); return; }      // pasó una de las horas
   const set = (id, text, cls = "") => { $(id).textContent = text; $(id).className = "hbig" + (cls ? " " + cls : ""); };
   // Poco tiempo: amarillo con 1 h o menos, rojo con 15 min o menos.
   const urgency = t => t - now <= 900 ? "danger" : t - now <= 3600 ? "warn" : "";
 
+  // Membresía (la manda el juego al entrar o al comprarla): amarilla con 3 días o menos, roja con 1.
+  // Sin ninguna (o aún sin dato del juego) la tarjeta no se muestra; vencida o activa, sí.
+  const mu = home.membership?.until;
+  $("homeMemberCard").hidden = !mu;
+  if (mu && mu <= now) { set("homeMember", "Vencida", "danger"); $("homeMemberAt").textContent = `Venció el ${longDate(mu)}`; }
+  else if (mu) {
+    set("homeMember", untilText(mu), mu - now <= 86400 ? "danger" : mu - now <= 3 * 86400 ? "warn" : "");
+    $("homeMemberAt").textContent = `Vence el ${longDate(mu)}`;
+  }
   $("homeDaily").textContent = `Reinicio diario en ${untilText(home.dailyReset)}`;
   // Mantenimiento semanal (30 min antes del reinicio, ~5–6 h): en amarillo mientras dura.
   // Mientras dura, la tarjeta lo dice en lugar de la cuenta atrás al reinicio.

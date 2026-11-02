@@ -1,4 +1,4 @@
 {
- "version": "1.0.46",
- "notes": "Nueva tarea semanal Misión de temporada, por personaje, con los pasos hechos y las pendientes con su contador. Las órdenes del Abismo pasan a común, raro, épico y único. La lista del grupo muestra la clase correcta. El combate se cierra al cambiar de zona y el mini no se reinicia al salir de la excursión. README y capturas actualizados."
+ "version": "1.0.47",
+ "notes": "Membresía especial Quai en Inicio: tiempo que queda y vencimiento, leídos del juego. Con ella activa, los topes de llaves de Shugo (21) y Energía de Od (840); sin ella, 12 y 560. La barra de Energía de Od sigue contando sin conexión (+15 cada 3 h). README y captura de Inicio actualizados."
 }

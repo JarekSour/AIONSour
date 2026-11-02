@@ -20,11 +20,12 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 
 ![Home](capturas/inicio.png)
 
+- **Special Quai Membership**: time left until it expires, read from the game. While it's active, the Shugo key and Od Energy caps go up.
 - Countdowns to the **weekly reset** (and the daily one), the **Shugo Festival**, the **Dimensional Invasion** and the **Spacetime Rift**, or how long they stay open. They turn yellow with less than 1 h left and red with less than 15 min.
 - **Weekly maintenance**: when it starts (30 min before the weekly reset, about 5–6 h long); while it lasts, the card shows «Under maintenance» and its approximate end.
 - **Corridor battles**: the upcoming artifact battles, since when the Abyss corridors are open and when they expire, and who holds each artifact (Elyos or Asmodian), read from the game.
 - **Battlefield**: time until it opens (every day from 11:00 to 14:00 and from 19:00 to 21:00) or how long it stays open.
-- **Keys and currency**: the account's Shugo and Dimensional Invasion keys, with their cap (21 and 7) and time to the next refill (+3 and +1 at each daily reset); per character, cube keys, kinah, bound kinah, Abyss points, centennial root tokens and dream fragments. Extra amounts are shown in parentheses in another color: «16 (+3) / 21».
+- **Keys and currency**: the account's Shugo and Dimensional Invasion keys, with their cap (Shugo: 12, or 21 with a membership; Invasion: 7) and time to the next refill (+3 and +1 at each daily reset); per character, cube keys, kinah, bound kinah, Abyss points, centennial root tokens and dream fragments. Extra amounts are shown in parentheses in another color: «16 (+3) / 21».
 
 ### Tasks
 
@@ -37,7 +38,7 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 - **Combat power** of each character on its card, shortened to thousands (69.18k; hover for the full number), and up to date when you change gear or character.
 - **Per battle** section: the Abyss corridors open for your account and which ones each character did; they reset with each artifact battle.
 - **Account** card at the top (🌐), with what all your characters share: duty missions (5 a day per account), attendance rewards, the daily gathering limit (1000 a day), Unknown Fissure entries (14 a week), order purchases (city: 12 a week; Abyss: common, rare, epic and unique, 5 a week each, colored by grade) and the weekly Odyle purchase (16 a week).
-- Each character's Od Energy bar and its Odyle purchase (4 a week).
+- Each character's Od Energy bar and its Odyle purchase (4 a week). The bar keeps counting while a character is offline, +15 every 3 hours up to the cap (560, or 840 with a membership).
 - **Your own tasks**: name, daily, weekly or per battle, number of times, and per character or per account. Click to add, right-click to subtract. The ones you created appear under «New task», with a button to delete them.
 - Automatic daily and weekly reset at server time.
 
