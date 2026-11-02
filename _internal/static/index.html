@@ -384,7 +384,12 @@
   /* Grado de la categoría (órdenes del abismo): blanco, verde, azul y amarillo. */
   .tn .g-common { color: #e3e7ed; } .tn .g-rare { color: #19df48; }
   .tn .g-epic { color: #5aa9ff; } .tn .g-legend { color: #f5c542; }
-  .trow.sub .tn { padding-left: 14px; }
+  .trow.sub .tn { padding-left: 14px; font-size: 11px; color: var(--muted); }
+  .trow.sub:not(.done) .tc { color: var(--muted); }
+  .tstep { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; gap: 7px; align-items: center; padding: 1px 4px;
+           font-size: 11px; color: var(--muted); }
+  .tstep > :nth-child(2) { padding-left: 14px; }
+  .tstep .tc { font-variant-numeric: tabular-nums; }
   /* Nombre en su propia fila; debajo ciclo, veces, alcance y Añadir. */
   .taskadd { display: grid; grid-template-columns: minmax(0, 1fr) 52px minmax(0, 1fr) auto; gap: 6px; margin-top: 8px; }
   .taskadd input[name=name] { grid-column: 1 / -1; }
@@ -2068,7 +2073,8 @@ function renderTasks() {
         return head + `<div class="trow${t.done ? " done" : ""}${t.auto ? " auto" : ""}${t.auto && !live ? " nodata" : ""}${cycle === "keys" ? " key" : ""}${grouped ? " sub" : ""}" data-char="${esc(owner)}" ` +
           `data-task="${t.id}">` +
           `<span class="box">${t.done ? "✓" : ""}</span><span class="tn">${gradeLabel(label, d.grade)}</span>` +
-          `<span class="tc">${t.auto ? withExtra(t.text || "") : d.times > 1 ? `${t.count}/${d.times}` : ""}</span></div>`;
+          `<span class="tc">${t.auto ? withExtra(t.text || "") : d.times > 1 ? `${t.count}/${d.times}` : ""}</span></div>` +
+          (t.left || []).map(s => `<div class="tstep"><span></span><span>${esc(s.name)}</span><span class="tc">${s.value} / ${s.goal}</span></div>`).join("");
       }).join("");
       return rows ? `<div class="tsub">${CYCLE[cycle]}</div>${rows}` : "";
     }).join("");

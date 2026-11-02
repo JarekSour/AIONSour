@@ -1,4 +1,4 @@
 {
- "version": "1.0.45",
- "notes": "Sección de curación en el medidor con HPS y habilidades. El nombre del jefe se queda en el título aunque un esbirro reciba más daño. Listo al instante en el grupo, medidor en pausa mientras se arma y las estadísticas aparecen sin reiniciar al entrar en la mazmorra. Posición al llegar a un sitio y flecha suavizada. README y capturas actualizados."
+ "version": "1.0.46",
+ "notes": "Nueva tarea semanal Misión de temporada, por personaje, con los pasos hechos y las pendientes con su contador. Las órdenes del Abismo pasan a común, raro, épico y único. La lista del grupo muestra la clase correcta. El combate se cierra al cambiar de zona y el mini no se reinicia al salir de la excursión. README y capturas actualizados."
 }

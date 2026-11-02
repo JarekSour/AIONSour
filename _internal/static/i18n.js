@@ -130,7 +130,7 @@ const I18N = (() => {
     // Tareas automáticas (nombres) y estados
     "Misiones de encargo": "Duty missions", "Recompensas de asistencia": "Attendance rewards", "Tope de kinah": "Kinah cap",
     "Suministros: urgentes": "Supplies: urgent", "Suministros: semanales": "Supplies: weekly",
-    "Mazmorra diaria: Fisura desconocida": "Daily dungeon: Unknown Fissure", "Comprar órdenes": "Buy orders", "Ciudad": "City", "Abismo": "Abyss", "común": "common", "poco común": "uncommon", "raro": "rare", "épico": "epic",
+    "Mazmorra diaria: Fisura desconocida": "Daily dungeon: Unknown Fissure", "Comprar órdenes": "Buy orders", "Ciudad": "City", "Abismo": "Abyss", "Misión de temporada": "Season mission", "Cazar en el Abismo": "Abyss", "Trascendencia": "Transcendence", "Conquista de expedición": "Expedition", "Conectarse": "Login", "Obtener equipo único": "Obtain Gear", "Usar pergaminos": "Use Scrolls", "Festival Shugo": "Shugo Festival", "común": "common", "raro": "rare", "épico": "epic", "único": "unique",
     "Comprar Odyle": "Buy Odyle", "Límite de recolección": "Gathering limit",
     "Comprar Piedras de grieta": "Buy Rift Stones", "Pesadilla": "Nightmare", "Prueba de ascenso": "Ascension Trial",
     "Tiempo en el Abismo": "Abyss time", "Corredores del Abismo": "Abyss corridors",
