@@ -1,4 +1,4 @@
 {
- "version": "1.0.47",
- "notes": "Membresía especial Quai en Inicio: tiempo que queda y vencimiento, leídos del juego. Con ella activa, los topes de llaves de Shugo (21) y Energía de Od (840); sin ella, 12 y 560. La barra de Energía de Od sigue contando sin conexión (+15 cada 3 h). README y captura de Inicio actualizados."
+ "version": "1.0.48",
+ "notes": "README más corto: cada sección resume lo que hace la app."
 }

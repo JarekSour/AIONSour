@@ -1,8 +1,8 @@
 # AIONSour
 
-Portable companion for **AION 2** (Windows): a home screen with upcoming events, keys and currencies, hidden cubes with your position on the map, gathering veins and routes, a damage meter, field bosses and events, pets, daily and weekly tasks, a reminder to wear the right set in each content, duty missions with their rewards, and every class's skills. It only reads the game's traffic on your PC: it doesn't modify the game, never moves your character or presses keys for you, and doesn't send your data anywhere.
+Portable companion for **AION 2** (Windows): events and resets, keys and currencies, hidden cubes, gathering routes, a damage meter, field bosses, pets, daily and weekly tasks, set reminders, duty missions and class skills. It only reads the game's traffic on your PC: it doesn't modify the game, never plays for you and doesn't send your data anywhere.
 
-Available in **English and Spanish**: it follows your Windows language the first time, and you can switch it at any time from the selector at the top right.
+Available in **English and Spanish**.
 
 **[⬇ Download AIONSour (ZIP)](https://github.com/JarekSour/AIONSour/archive/refs/heads/main.zip)**
 
@@ -10,9 +10,9 @@ Available in **English and Spanish**: it follows your Windows language the first
 
 1. Install [Npcap](https://npcap.com) (needed to read the game's traffic).
 2. [Download the ZIP](https://github.com/JarekSour/AIONSour/archive/refs/heads/main.zip) and extract it anywhere.
-3. Open `AIONSour.exe`. Capture starts on its own: it listens on all your network adapters (wired, Wi-Fi, VPN…), so there's nothing to choose.
+3. Open `AIONSour.exe`. Capture starts on its own.
 
-It's a portable folder: nothing else gets installed, and your data (history, tasks, pets, veins and routes, settings) is stored inside it.
+It's a portable folder: nothing gets installed, and your data is stored inside it.
 
 ## Features
 
@@ -20,64 +20,48 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 
 ![Home](capturas/inicio.png)
 
-- **Special Quai Membership**: time left until it expires, read from the game. While it's active, the Shugo key and Od Energy caps go up.
-- Countdowns to the **weekly reset** (and the daily one), the **Shugo Festival**, the **Dimensional Invasion** and the **Spacetime Rift**, or how long they stay open. They turn yellow with less than 1 h left and red with less than 15 min.
-- **Weekly maintenance**: when it starts (30 min before the weekly reset, about 5–6 h long); while it lasts, the card shows «Under maintenance» and its approximate end.
-- **Corridor battles**: the upcoming artifact battles, since when the Abyss corridors are open and when they expire, and who holds each artifact (Elyos or Asmodian), read from the game.
-- **Battlefield**: time until it opens (every day from 11:00 to 14:00 and from 19:00 to 21:00) or how long it stays open.
-- **Keys and currency**: the account's Shugo and Dimensional Invasion keys, with their cap (Shugo: 12, or 21 with a membership; Invasion: 7) and time to the next refill (+3 and +1 at each daily reset); per character, cube keys, kinah, bound kinah, Abyss points, centennial root tokens and dream fragments. Extra amounts are shown in parentheses in another color: «16 (+3) / 21».
+- **Special Quai Membership**: time left until it expires.
+- Countdowns to the resets, weekly maintenance, Shugo Festival, Dimensional Invasion, Spacetime Rift, corridor battles and Battlefield.
+- Who holds each Abyss artifact and when the corridors expire.
+- Account keys and each character's cube keys and currencies.
 
 ### Tasks
 
 ![Tasks](capturas/tareas.png)
 
-- Daily and weekly to-do list **per character**; characters are added on their own when you log in with them.
-- **Automatic** tasks checked off from game data: kinah cap, supplies (urgent and weekly), Odyle and Rift Stone purchases, Nightmare, the weekly season mission (steps done out of 10 and which ones are left, per character), Ascension Trial, Abyss time and points… Until there's game data they say «log in to the game» and can't be ticked by hand.
-- **Solo PvP, Co-op PvP and Battlefield**: the week's wins and participation (30 and 10; 3 and 3 on the Battlefield). They update on their own when you win or lose each match and when you open the game's PvP window.
-- Extra entries («0 left (+2) / 3») are shown apart and don't leave the task pending.
-- **Combat power** of each character on its card, shortened to thousands (69.18k; hover for the full number), and up to date when you change gear or character.
-- **Per battle** section: the Abyss corridors open for your account and which ones each character did; they reset with each artifact battle.
-- **Account** card at the top (🌐), with what all your characters share: duty missions (5 a day per account), attendance rewards, the daily gathering limit (1000 a day), Unknown Fissure entries (14 a week), order purchases (city: 12 a week; Abyss: common, rare, epic and unique, 5 a week each, colored by grade) and the weekly Odyle purchase (16 a week).
-- Each character's Od Energy bar and its Odyle purchase (4 a week). The bar keeps counting while a character is offline, +15 every 3 hours up to the cap (560, or 840 with a membership).
-- **Your own tasks**: name, daily, weekly or per battle, number of times, and per character or per account. Click to add, right-click to subtract. The ones you created appear under «New task», with a button to delete them.
-- Automatic daily and weekly reset at server time.
+- Daily and weekly tasks **per character**, checked off on their own from game data: kinah cap, supplies, Nightmare, season mission, Ascension Trial, Abyss, PvP and more.
+- Account tasks: duty missions, attendance, gathering limit, Unknown Fissure and shop purchases.
+- Each character's combat power and Od Energy, which keeps counting while offline.
+- Add your own tasks, daily, weekly or per battle.
 
 ### Hidden cubes
 
 ![Hidden cubes](capturas/cubos.jpg)
 
-- Detects hidden cubes as they appear and marks them on the zone map (Verteron or Altgard), with all the possible spots where they can show up.
-- History of the last 10 cubes with the time and outcome of each one: **green** if you opened it, **red** if another player did, or replaced by a new one.
-- Alert with sound when a cube appears: the app switches to the Cubes tab and flashes (configurable).
-- **Your character** shows on the map as an arrow pointing the way you're moving. It moves when the game reports your position (jumps, skills, mount effects, teleports and loading screens), so plain walking doesn't update it until the next report. The active cube's label shows how far away it is in meters, with ▲ or ▼ when it's higher or lower than you. It's read from the game's traffic, like everything else: nothing is sent to the game.
+- Detects hidden cubes and marks them on the map, with an alert and sound.
+- History of the last 10 cubes: who opened each one.
+- Your position on the map and the distance to the cube.
 
 ### Gathering
 
 ![Gathering](capturas/recoleccion.jpg)
 
-- Every **orichalcum, ruby, sapphire and diamond** vein you gather is saved on its own, with its spot on the map. The vein's border shows its type: brown, red, blue or purple. Only the veins you interact with are saved, not the ones you just see. Veins you gather right after opening the app are saved too, once it recognizes your character.
-- **Available or depleted**: a vein is available while it's in view, if you saw it in the last 3 minutes, or if you're in its range and the game shows it. Otherwise it shows as depleted for now.
-- **Named routes**: create as many as you want, choose one (the map centers on it), and click a vein on the map or in the list to add it or take it out. New veins go into the list but not into any route. The route is drawn as the shortest loop through its veins, with its length and the vein to start from.
-- **Next**: the nearest available vein, with its distance and a dotted line from you to it.
-- Click a vein to see its type, when you last saw it and how many times you gathered it, or to delete it.
+- Saves every vein you gather (orichalcum, ruby, sapphire and diamond) on the map.
+- Shows which ones are available and the nearest one.
+- Create named routes, drawn as the shortest loop.
 
 ### Damage meter
 
 ![Damage meter](capturas/dano.png)
 
-- Total damage, DPS and share of each group member, with their class, **combat power** (CP) and the fight's deaths.
-- Click a player for the per-skill breakdown: damage, hits and crits.
-- History of the last 10 fights with the boss or monster name, duration and number of players. A boss keeps the fight's title from its first hit, even if a minion takes more damage; without a boss, it's the monster that took the most.
-- A fight adds up the damage to all its targets. Only damage from players and their summons counts; the fight ends when the boss dies, when you change zone, or after a time without hits (configurable).
-- Other players' CP arrives when they come into your range, so a player you haven't met yet shows none. A value the game sends identically for several players isn't shown.
-- Animated bars: they grow smoothly and, when a player overtakes another, their row slides up above it.
+- Damage, DPS and share of each player, with class, combat power and deaths.
+- Per-skill breakdown and history of the last 10 fights.
 
 #### Healing
 
 ![Healing](capturas/curacion.png)
 
-- The **Damage / Healing** switch shows total healing, group HPS and each healer's share. Click a player for their healing skills: amount, uses and average.
-- Healing is what the game reports, so it includes the excess when the target was already at full health.
+- Total healing, HPS and each healer's skills.
 
 ### Floating windows
 
@@ -85,20 +69,16 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 | --- | --- | --- |
 | ![Floating minimap](capturas/minimapa.jpg) | ![Floating meter](capturas/medidor.png) | ![Expedition group in the meter](capturas/grupo.png) |
 
-- **Minimap** with the active cube and your position, and a compact **damage meter** with each player's CP in its own column, always on top of the game.
-- Each one has its ⚙: opacity, size and position. Open them with the buttons at the top right.
-- The minimap's ⚙ can also show the **gathering route** you chose and **follow your position**, keeping you centered as you move. The active cube's pin always stays on top.
-- The meter's ⚙ adds **Size** (70–200 %), which scales the rows, text and class icons along with the window, and **Show column headers** (Player, CP, deaths, DPS, %). The headers stay in place when you scroll, and the window always keeps room for at least 5 players.
-- **Expedition group**: when you join one, the meter resets and shows who's in it, each one's CP and whether they're ready (✓ ready, ⏳ pending, ♛ leader), with no damage data. Ready checks change as soon as someone presses it, you included. The meter stays paused while the group forms, so hits from nearby fights don't wipe the list; the pause ends after 5 minutes with no group news. When you enter the dungeon, the same list switches to the fight's stats with no further reset, and players who haven't hit yet stay on it. When you leave, the last stats stay until there's something new: another member, a ready check or a fight.
-- When a cube appears, the minimap zooms so that **you and the cube's pin** both fit, and it adjusts again if either one leaves the view.
+- **Minimap** and compact **damage meter** always on top of the game, each with its own settings.
+- The minimap can show your gathering route and follow you.
+- The meter shows your expedition group, who's ready, and then the fight.
 
 ### Field bosses and events
 
 ![Bosses and events](capturas/jefes.png)
 
-- Status of the field bosses in Verteron, Altgard and Chaotic Lower Reshanta: alive, or time until they respawn.
-- Upcoming events for the Global version with countdowns: Dimensional Invasion, Spacetime Rift, Shugo Festival and the daily and weekly resets.
-- Mark the ones you care about (☆ on bosses, checkbox on events) and you'll get an alert a few minutes before and when they start (it grows to fit long names and several alerts at once):
+- Field boss status and respawn times, and upcoming events.
+- Alerts for the ones you mark:
 
   ![Alert](capturas/aviso.png)
 
@@ -106,15 +86,13 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 
 ![Pets](capturas/mascotas.png)
 
-- Every pet in the game, by family (Cogni, Fera, Natura, Varian and Special), with its level and soul progress. Within each family: the ones to complete first (closest to max level at the top), then the maxed ones, and the ones you don't have yet, dimmed.
-- **For sale**: the pets in the game's shops that you're missing or haven't maxed yet, with your level and souls, the normal price and the discounted one; what you buy shows as sold out. Read when you open the shop, until it refreshes (every hour); it shows whose shop it is, and opening it with another character replaces it.
-- Latest souls obtained (the last 5 pets), with automatic level-ups.
-- Filter by the ones you own, don't have or **haven't completed** (owned but not at max level), by source (dungeons only, or shop, chests and other) and by the zone where it appears. Search by name.
-- Click a pet to see the **map with the spots where the monsters that drop it spawn**, by zone:
+- Every pet by family, with your level and souls, and which ones to complete first.
+- Pets for sale in the game's shops that you're missing.
+- Filters and search, and a map of where each pet drops:
 
 ![Where a pet drops](capturas/mascota-mapa.jpg)
 
-- **What you're missing, on the map**: in Verteron, Altgard and Chaotic Lower Reshanta, the spawn points of every pet you don't have or haven't maxed, colored by family. Hover a point to see which pets drop there, click it to open that pet's map:
+- What you're still missing in each zone, on the map:
 
 ![What you're missing in a zone](capturas/mascotas-zona.jpg)
 
@@ -122,35 +100,28 @@ It's a portable folder: nothing else gets installed, and your data (history, tas
 
 ![Set](capturas/sets.png)
 
-- Pick, for each character, the set to use in each content: **Solo PvP**, **Co-op PvP**, **Battlefield** and **open world** (Verteron and Altgard).
-- If a PvP match starts, or you enter or teleport in the open world, with another set on, you get a red notification over the game, with its own sound:
+- Pick the set for each content (PvP, Battlefield, open world) and get a reminder if you're wearing another one:
 
   ![Set reminder](capturas/aviso-set.png)
-
-- Each card shows the set the character has on, read from the game when you switch sets. Its ⚙ **Settings** has the volume, screen and position of the notification (shared with the boss and event alerts) and a test button.
 
 ### Duty missions
 
 ![Duty missions](capturas/encargos.png)
 
-- Your account's duty board with each mission's **rewards**, as in the game: icon, abbreviated amount, a lock if bound, background by grade, and chance (100 %, 50 %, 33 %, 25 % and 10 %).
-- **Accepted** ones apart at the top and **available** ones below, in the same order as the game. They update instantly when you accept, abandon, complete or refresh the list; accepted ones are kept when you refresh it and cleared at the daily reset. Missions you start with a purchased order aren't mixed with the board's.
-- **Filter by reward**: pick an item and see only the missions that give it, highest chance first.
-- **Mark rewards**: pick the ones you want (soul crystals, tickets, keys, epic materials…) and the missions that give them are highlighted. Your marks are saved.
-- Click a mission or a reward to give it the name shown in the game; it's saved.
+- Your duty board with each mission's rewards and chances.
+- Filter by reward and highlight the ones you want.
 
 ### Classes
 
 ![Classes](capturas/clases.png)
 
-- All 9 classes with their active and passive skills and stigmas, with high-resolution icons from the game and names in your language.
-- **Mark your priorities**: click a skill, passive or stigma to star it, and click again to remove it. Each section counts how many you've marked, and your marks are saved per class.
+- All 9 classes with their skills and stigmas; star your priorities.
 
 ### Updates
 
-- On launch (and every 6 h) the app checks for a new version and updates with one click, keeping your data.
+- Checks for new versions and updates with one click, keeping your data.
 
 ## Notes
 
-- No bots or automation: AIONSour shows information, and everything in the game is done by you.
+- No bots or automation: everything in the game is done by you.
 - Fan project, not affiliated with NCSOFT.
