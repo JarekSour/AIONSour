@@ -56,6 +56,7 @@ It's a portable folder: nothing gets installed, and your data is stored inside i
 
 - Damage, DPS and share of each player, with class, combat power and deaths.
 - Per-skill breakdown and history of the last 10 fights.
+- Boss stagger: how much each player took off every stagger bar.
 
 #### Healing
 
@@ -71,7 +72,8 @@ It's a portable folder: nothing gets installed, and your data is stored inside i
 
 - **Minimap** and compact **damage meter** always on top of the game, each with its own settings.
 - The minimap can show your gathering route and follow you.
-- The meter shows your expedition group, who's ready, and then the fight.
+- The meter shows your expedition group, who's ready, and then the fight, with a box per boss stagger bar.
+- Choose the meter's columns in its ⚙ (player and DPS always shown).
 
 ### Field bosses and events
 
@@ -100,7 +102,7 @@ It's a portable folder: nothing gets installed, and your data is stored inside i
 
 ![Set](capturas/sets.png)
 
-- Pick the set for each content (PvP, Battlefield, open world) and get a reminder if you're wearing another one:
+- Pick the set for each content (expeditions, PvP, Battlefield, open world) and get a reminder if you're wearing another one:
 
   ![Set reminder](capturas/aviso-set.png)
 

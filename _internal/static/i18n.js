@@ -124,7 +124,7 @@ const I18N = (() => {
     "Usos": "Uses", "Media": "Average", "Curaciones": "Healing", "Tus curaciones": "Your healing", "Sin curaciones en este combate.": "No healing in this fight.",
     "Este combate se guardó antes de separar la curación por habilidad.": "This fight was saved before healing was split by skill.",
     "La curación es la que envía el juego: incluye lo que sobra si el objetivo ya tenía la vida llena.": "Healing is what the game reports: it includes the excess when the target was already at full health.",
-    "Opacidad": "Opacity", "Tamaño": "Size", "Listo": "Ready", "Pendiente": "Pending", "Líder": "Leader", "Ver cabeceras de columnas": "Show column headers", "Siempre encima": "Always on top", "Medidor de daño": "Damage meter",
+    "Opacidad": "Opacity", "Tamaño": "Size", "Listo": "Ready", "Pendiente": "Pending", "Líder": "Leader", "Ver cabeceras de columnas": "Show column headers", "Columnas": "Columns", "Siempre encima": "Always on top", "Medidor de daño": "Damage meter",
     "Ningún cubo a la vista.": "No cube in sight.", "Aún no has visto ningún cubo.": "You haven't seen any cube yet.", "Energía de Od": "Od Energy",
     "diaria": "daily", "semanal": "weekly", "por batalla": "per battle", "cuenta": "account", "personaje": "character",
     // Tareas automáticas (nombres) y estados
@@ -137,9 +137,9 @@ const I18N = (() => {
     "Set": "Set", "Configuración": "Settings", "Configurar notificación": "Notification settings", "Recordatorio de set": "Set reminder",
     "Sale en la misma ventana que los avisos de jefes y eventos: el volumen, la pantalla y la posición son los mismos.":
       "It shows in the same window as the boss and event alerts: volume, screen and position are shared.",
-"Set para cada contenido": "Set for each content", "Mundo abierto": "Open world", "Set actual:": "Current set:",
-    "Elige el set de cada personaje. Si empiezas una partida de PvP o entras al mundo abierto (Verteron o Altgard) con otro set puesto, se mostrará una notificación.":
-      "Pick each character's set. If you start a PvP match or enter the open world (Verteron or Altgard) with another set on, a notification will show up.",
+"Set para cada contenido": "Set for each content", "Mundo abierto": "Open world", "Expedición": "Expedition", "Set actual:": "Current set:",
+    "Elige el set de cada personaje. Si entras a una expedición, empiezas una partida de PvP o entras al mundo abierto (Verteron o Altgard) con otro set puesto, se mostrará una notificación.":
+      "Pick each character's set. If you enter an expedition, start a PvP match or enter the open world (Verteron or Altgard) with another set on, a notification will show up.",
     "cámbialo en el juego para que lo vea": "switch it in the game so the app sees it", "no sé qué set llevas": "current set unknown",
     "Entra al juego con tus personajes para configurar sus sets.": "Log in with your characters to set up their sets.",
     "PvP solo": "Solo PvP", "PvP cooperativo": "Co-op PvP", "Victorias": "Wins", "Participación": "Participation",

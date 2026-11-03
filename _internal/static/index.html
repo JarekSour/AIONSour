@@ -200,8 +200,11 @@
   .mcp { display: flex; align-items: center; justify-self: end; gap: .25em; padding: 0 .6em; border-radius: 999px;
     background: #0c1119; color: var(--gold); white-space: nowrap; }
   .mcp:empty { background: none; }
-  .pst { grid-column: 3 / -1; text-align: right; }
-  .pst.ok { color: var(--ok); font-weight: 700; } .pst.lead { color: var(--gold); }
+  /* Listo, líder o pendiente: iconos del mismo tamaño, alineados a la derecha (escalan con el mini). */
+  .pst { grid-column: 3 / -1; display: flex; justify-content: flex-end; align-items: center; }
+  .pst svg { width: 1.3em; height: 1.3em; display: block; }
+  .pst.ok { color: var(--ok); } .pst.lead { color: var(--gold); } .pst.wait { color: #b4bdca; }
+  .mrow.head .pst { display: block; text-align: right; }
   .mcp img { flex: none; width: 1.2em; height: 1.2em; }
   .prow .who small, .srow small { color: var(--muted); font-size: 11px; }
   .num { text-align: right; }
@@ -579,11 +582,21 @@
   .mrow.head { position: sticky; top: -3px; z-index: 3; background: var(--bg); color: var(--muted); font-size: calc(10px * var(--ms)); text-transform: uppercase;
     padding-top: 0; padding-bottom: calc(2px * var(--ms)); margin-bottom: 0; border-radius: 0; overflow: visible; }
   .dpsmini .empty { padding: 16px 8px; font-size: 12px; }
+  /* Stagger del jefe: en la fila de cada jugador, un cuadro por barra con lo que bajó. */
+  /* Filas del combate: solo las columnas visibles (⚙ del medidor), mismo ancho en todas (--mcols). */
+  .mrow.dr { grid-template-columns: var(--mcols); }
+  .schips { display: flex; gap: calc(2px * var(--ms)); justify-content: flex-end; }
+  .schip { min-width: calc(22px * var(--ms)); padding: 0 calc(3px * var(--ms)); box-sizing: border-box; text-align: center;
+    border: 1px solid rgba(167,110,240,.55); border-radius: 3px; background: rgba(124,58,237,.55); color: #f3eaff;
+    font-size: .92em; line-height: 1.35; }
+  .schip.zero { color: rgba(243,234,255,.5); }
+  .mrow.head .stghead { justify-self: end; white-space: nowrap; }
   .panel { position: absolute; right: 0; top: calc(100% + 6px); z-index: 10; width: 300px; background: var(--panel);
     border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; box-shadow: 0 8px 24px rgba(0,0,0,.45);
     display: flex; flex-direction: column; gap: 10px; }
   .panel[hidden] { display: none; }
   .panel h4 { margin: 0; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .panel .fCols { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; }
   .panel .row { display: grid; grid-template-columns: 70px minmax(0, 1fr) 50px; align-items: center; gap: 8px; }
   .panel .row input[type=range] { min-width: 0; width: 100%; }
   .panel .row span:last-child { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
@@ -941,7 +954,7 @@
           <button id="setTest">Probar notificación</button>
           <small>Sale en la misma ventana que los avisos de jefes y eventos: el volumen, la pantalla y la posición son los mismos.</small>
         </span></span></h3>
-    <div class="histkey">Elige el set de cada personaje. Si empiezas una partida de PvP o entras al mundo abierto (Verteron o Altgard) con otro set puesto, se mostrará una notificación.</div>
+    <div class="histkey">Elige el set de cada personaje. Si entras a una expedición, empiezas una partida de PvP o entras al mundo abierto (Verteron o Altgard) con otro set puesto, se mostrará una notificación.</div>
     <div class="setgrid" id="setList"></div>
   </div>
 </main>
@@ -1842,6 +1855,10 @@ const classRgb = p => CLASS_RGB[p.cls] || UNKNOWN_RGB;
 const barStyle = p => `background:linear-gradient(90deg, rgba(${classRgb(p)},.55), rgba(${classRgb(p)},.22))`;
 // Muertes del jugador en el combate: calavera roja (SVG) con el número.
 const SKULL = '<svg class="skull" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 1.2C4.4 1.2 1.8 3.7 1.8 7c0 1.9.9 3.4 2.3 4.3v1.9c0 .7.5 1.2 1.2 1.2h.6v-1.6h1v1.6h2.2v-1.6h1v1.6h.6c.7 0 1.2-.5 1.2-1.2v-1.9c1.4-.9 2.3-2.4 2.3-4.3 0-3.3-2.6-5.8-6.2-5.8zM5.4 9.6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5.2 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM8 11.2l-.9-1.3h1.8z"/></svg>';
+// Estado en el grupo (mini): trazos gruesos para que se lean bien a tamaño pequeño.
+const READY_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M3 8.5l3.2 3.2L13 4.8"/></svg>';
+const LEADER_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M1.6 4.6 5 7.6 8 2.4l3 5.2 3.4-3-1.2 7.4H2.8z"/><rect fill="currentColor" x="2.8" y="12.6" width="10.4" height="1.6" rx=".4"/></svg>';
+const WAIT_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M3.5 1.8h9M3.5 14.2h9M4.6 1.8c0 3.4 3.4 4.4 3.4 6.2S4.6 10.8 4.6 14.2M11.4 1.8c0 3.4-3.4 4.4-3.4 6.2s3.4 2.8 3.4 6.2"/><path fill="currentColor" d="M5.6 13.4c.4-1.6 1.6-2.3 2.4-2.6.8.3 2 1 2.4 2.6z"/></svg>';
 const deathMark = p => p.deaths ? `<span class="deaths" title="Muertes en este combate">${SKULL}${p.deaths}</span>` : "";
 const short = (text, max) => text.length > max ? text.slice(0, max - 1).trimEnd() + "…" : text;
 
@@ -1852,6 +1869,28 @@ const fullCp = cp => cp.toLocaleString(I18N.locale());
 const shortCp = cp => `${(Math.floor(cp / 10) / 100).toFixed(2)}k`;
 const cpMark = cp => cp ? `<span class="pcp" title="${fullCp(cp)}">${CP_ICON}${shortCp(cp)}</span>` : "";
 
+// Columnas del medidor flotante: ancho, cabecera y celda. Las que tienen `key` se pueden ocultar
+// en su ⚙ (settings.dps.hidden); el jugador y el DPS siempre se ven.
+const ms = px => `calc(${px}px * var(--ms))`;
+const DPS_COLUMNS = [
+  { label: "Jugador", width: () => "minmax(0, 1fr)", head: `<span>Jugador</span>`,
+    cell: p => `<span class="n">${clsIcon(p)}<span>${esc(p.name)}</span></span>` },
+  // Stagger: un cuadro por barra del jefe con lo que bajó cada jugador.
+  { key: "stagger", label: "Stagger", width: n => `max(${ms(26 * n)}, ${ms(46)})`, head: `<span class="num stghead">Stagger</span>`,
+    cell: (p, bars) => `<span class="schips">${bars.map(b => {
+      const v = b.players.find(s => s.name === p.name)?.amount || 0;
+      return `<span class="schip${v ? "" : " zero"}" title="Stagger">${v}</span>`;
+    }).join("")}</span>` },
+  { key: "cp", label: "CP", width: () => ms(68), head: `<span class="num" title="Poder de combate">CP</span>`,
+    cell: p => `<span class="mcp"${p.cp ? ` title="${fullCp(p.cp)}"` : ""}>${p.cp ? CP_ICON + shortCp(p.cp) : ""}</span>` },
+  { key: "deaths", label: "Muertes", width: () => ms(30), head: `<span class="num" title="Muertes">${SKULL}</span>`,
+    cell: p => `<span class="num">${deathMark(p)}</span>` },
+  { label: "DPS", width: () => ms(48), head: `<span class="num">DPS</span>`,
+    cell: p => `<span class="num">${p.idle ? "–" : kfmt(p.dps)}</span>` },
+  { key: "share", label: "%", width: () => ms(46), head: `<span class="num">%</span>`,
+    cell: p => `<span class="num">${p.idle ? "–" : pct(p.share)}</span>` },
+];
+
 // Antes de entrar a la mazmorra: quién está en el grupo, su CP y si dio en listo (sin datos de daño).
 function renderPartyMini() {
   const n = party.members.length;
@@ -1859,7 +1898,7 @@ function renderPartyMini() {
   $("miniTitle").textContent = `⚔ ${short(party.title, 22)} · ${n}/${party.slots}`;
   const head = settings?.dps.headers ? `<div class="mrow head"><span>Jugador</span><span class="num" title="Poder de combate">CP</span>` +
     `<span class="pst">Listo</span></div>` : "";
-  const state = p => p.ready ? ["ok", "✓", "Listo"] : p.leader ? ["lead", "♛", "Líder"] : ["wait", "⏳", "Pendiente"];
+  const state = p => p.ready ? ["ok", READY_ICON, "Listo"] : p.leader ? ["lead", LEADER_ICON, "Líder"] : ["wait", WAIT_ICON, "Pendiente"];
   animateRows($("dpsMini"), head + party.members.map(p => {
     const [cls, mark, text] = state(p);
     return `<div class="mrow${p.self ? " self" : ""}" data-id="p${p.id}"><span class="n">${clsIcon(p)}<span>${esc(p.name)}</span></span>` +
@@ -1879,15 +1918,15 @@ function renderDpsMini() {
   const top = f?.players[0]?.damage || 1;
   const shown = (f?.players || []).map(p => p.cp ? p : { ...p, cp: roster.find(m => m.name === p.name)?.cp });
   const rows = shown.concat(roster.filter(m => !shown.some(p => p.name === m.name)).map(m => ({ ...m, id: `p${m.id}`, damage: 0, idle: true })));
-  const head = settings?.dps.headers ? `<div class="mrow head"><span>Jugador</span><span class="num" title="Poder de combate">CP</span>` +
-    `<span class="num" title="Muertes">${SKULL}</span><span class="num">DPS</span><span class="num">%</span></div>` : "";
+  // Stagger: un cuadro por barra del jefe con lo que bajó cada jugador (columna solo si hay barras).
+  const bars = f?.stagger || [];
+  // Columnas: jugador y DPS siempre; las demás según el ⚙ (stagger, solo si el jefe tiene barras).
+  const cols = DPS_COLUMNS.filter(c => !(settings?.dps.hidden || []).includes(c.key) && (c.key !== "stagger" || bars.length));
+  $("dpsMini").style.setProperty("--mcols", cols.map(c => c.width(bars.length)).join(" "));
+  const head = settings?.dps.headers ? `<div class="mrow head dr">${cols.map(c => c.head).join("")}</div>` : "";
   animateRows($("dpsMini"), !rows.length ? empty(running ? "Ataca a algo y aparecerá aquí." : "La captura está detenida.") :
-    head + rows.map(p => `<div class="mrow${p.self ? " self" : ""}" data-id="${p.id}"><span class="fill" style="width:${(p.damage / top * 100).toFixed(1)}%;` +
-      `${barStyle(p)}"></span>` +
-      `<span class="n">${clsIcon(p)}<span>${esc(p.name)}</span></span>` +
-      `<span class="mcp"${p.cp ? ` title="${fullCp(p.cp)}"` : ""}>${p.cp ? CP_ICON + shortCp(p.cp) : ""}</span>` +
-      `<span class="num">${deathMark(p)}</span>` +
-      `<span class="num">${p.idle ? "–" : kfmt(p.dps)}</span><span class="num">${p.idle ? "–" : pct(p.share)}</span></div>`).join(""));
+    head + rows.map(p => `<div class="mrow dr${p.self ? " self" : ""}" data-id="${p.id}"><span class="fill" style="width:${(p.damage / top * 100).toFixed(1)}%;` +
+      `${barStyle(p)}"></span>` + cols.map(c => c.cell(p, bars)).join("") + `</div>`).join(""));
 }
 
 // Redibuja las filas de jugadores animando el cambio (técnica FLIP): quien adelanta a otro
@@ -2406,7 +2445,7 @@ $("classSkills").addEventListener("click", e => {
 // Set de cada personaje para cada modo de PvP (sets.py). Al empezar una partida con otro set,
 // el recordatorio sale en la ventana de avisos (avisos.py), no en la app.
 let sets = null;
-const PVP_MODES = { 1: "PvP solo", 2: "PvP cooperativo", 3: "Campo de batalla", 4: "Mundo abierto" };
+const PVP_MODES = { 1: "PvP solo", 2: "PvP cooperativo", 3: "Campo de batalla", 4: "Mundo abierto", 5: "Expedición" };
 async function loadSets() { sets = await (await fetch("/api/sets")).json(); renderSets(); }
 function renderSets() {
   if (!sets || MINI || $("viewSets").hidden) return;
@@ -2889,7 +2928,9 @@ if (MINI) {
     <div class="row"><span>Opacidad</span><input type="range" class="fOpacity" min="20" max="100" step="5"><span class="fOpacityV"></span></div>
     ${MINI_DPS ? `<div class="row"><span>Tamaño</span><input type="range" class="fScale" min="70" max="200" step="10"><span class="fScaleV"></span></div>` : ""}
     <label class="chk"><input type="checkbox" class="fTop">Siempre encima</label>
-    ${MINI_DPS ? `<label class="chk"><input type="checkbox" class="fHeaders">Ver cabeceras de columnas</label>` : `<div class="row"><span>Volumen</span><input type="range" class="volRange" min="0" max="100" step="5"><span class="volV"></span></div>
+    ${MINI_DPS ? `<label class="chk"><input type="checkbox" class="fHeaders">Ver cabeceras de columnas</label>
+    <h4>Columnas</h4>
+    <div class="fCols">${DPS_COLUMNS.map(c => `<label class="chk"><input type="checkbox"${c.key ? ` data-col="${c.key}"` : " checked disabled"}>${c.label}</label>`).join("")}</div>` : `<div class="row"><span>Volumen</span><input type="range" class="volRange" min="0" max="100" step="5"><span class="volV"></span></div>
     <label class="chk"><input type="checkbox" class="fSound">Sonido al encontrar un cubo</label>
     <label class="chk"><input type="checkbox" class="fRoute">Ver la ruta de recolección</label>
     <label class="chk"><input type="checkbox" class="fFollow">Seguir mi posición</label>
@@ -2913,7 +2954,16 @@ if (MINI) {
     clearTimeout(t); t = setTimeout(() => saveSettings({ [kind]: { opacity: e.target.value / 100 } }), 150);
   });
   $("miniReset").onclick = () => post("/api/dps/reset");
-  if (MINI_DPS) q(".fHeaders").onchange = e => saveSettings({ dps: { headers: e.target.checked } });
+  // Cabeceras: cambian el alto mínimo. La ventana que estaba en el mínimo pasa al nuevo (también al
+  // quitarlas: si no, quedaba el hueco de la cabecera); una más baja crece (growToMinHeight).
+  if (MINI_DPS) q(".fHeaders").onchange = e => {
+    const headers = e.target.checked, s = settings.dps;
+    const height = s.height <= minWindowHeight(!headers) ? minWindowHeight(headers) : s.height;
+    if (panelSize && height !== s.height) panelSize = { ...panelSize, height: Math.max(panelSize.height, height) };
+    saveSettings({ dps: { headers, height } });
+  };
+  if (MINI_DPS) q(".fCols").onchange = () => saveSettings({ dps: { hidden:
+    [...panel.querySelectorAll("[data-col]")].filter(i => !i.checked).map(i => i.dataset.col) } });
   if (MINI_DPS) {        // tamaño: textos e iconos al arrastrar; la ventana crece en la misma proporción
     let st = null;
     q(".fScale").addEventListener("input", e => {
@@ -2924,7 +2974,10 @@ if (MINI) {
       st = setTimeout(() => {
         const s = settings.dps, f = scale / s.scale;
         const width = Math.min(1600, Math.max(180, Math.round(s.width * f)));
-        const height = Math.min(1600, Math.max(40, Math.round(s.height * f)));
+        // El mínimo depende del tamaño (la barra de título no escala): la ventana que estaba en el
+        // mínimo pasa al nuevo; las demás crecen en proporción, sin bajar de él.
+        const min = minWindowHeight(s.headers, scale);
+        const height = Math.min(1600, s.height <= minWindowHeight(s.headers, s.scale) ? min : Math.max(min, Math.round(s.height * f)));
         if (panelSize) panelSize = { width: Math.max(panelSize.width, width), height: Math.max(panelSize.height, height) };
         saveSettings({ dps: { scale, width, height } });
       }, 150);
@@ -2960,7 +3013,9 @@ function applySettings(m) {
     q(".fOpacity").value = Math.round(s.opacity * 100); q(".fOpacityV").textContent = Math.round(s.opacity * 100) + " %";
     q(".fTop").checked = s.onTop;
     if (MINI_DPS) { setMiniScale(s.scale); q(".fScale").value = Math.round(s.scale * 100); q(".fScaleV").textContent = Math.round(s.scale * 100) + " %";
-      q(".fHeaders").checked = !!s.headers; if (dps) renderDpsMini(); growToMinHeight(); }
+      q(".fHeaders").checked = !!s.headers;
+      for (const i of document.querySelectorAll("#floatPanel [data-col]")) i.checked = !(s.hidden || []).includes(i.dataset.col);
+      if (dps) renderDpsMini(); growToMinHeight(); }
     if (!MINI_DPS) { q(".fSound").checked = settings.sound; q(".fRoute").checked = !!s.route; q(".fFollow").checked = !!s.follow;
       if (s.follow) followMe(); else followZoomed = false; requestDraw(); }
     applyWindow();
@@ -3003,11 +3058,11 @@ $("miniClose").onclick = () => window.pywebview?.api.close();
 // Alto mínimo: el medidor, lo justo para 5 jugadores con su tamaño (barra de título y cabecera
 // incluidas, aunque aún no haya filas que medir: 20 px cada fila y 15 la cabecera al 100 %);
 // el minimapa, 180 px.
-function minWindowHeight() {
+function minWindowHeight(headers = settings?.dps.headers, ms = settings?.dps.scale ?? 1) {
   if (!MINI_DPS) return 180;
-  const ms = settings?.dps.scale ?? 1, pad = getComputedStyle($("dpsMini"));
+  const pad = getComputedStyle($("dpsMini"));
   return Math.ceil(document.querySelector(".minibar").offsetHeight + parseFloat(pad.paddingTop) + parseFloat(pad.paddingBottom)
-    + 5 * 20 * ms + (settings?.dps.headers ? 15 * ms : 0));
+    + 5 * 20 * ms + (headers ? 15 * ms : 0));
 }
 // Un medidor más bajo que el mínimo (guardado antes, o al activar cabeceras) se agranda solo.
 function growToMinHeight() {

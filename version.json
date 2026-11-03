@@ -1,4 +1,4 @@
 {
- "version": "1.0.48",
- "notes": "README más corto: cada sección resume lo que hace la app."
+ "version": "1.0.49",
+ "notes": "Stagger del jefe en el medidor: un cuadro morado por barra con lo que bajó cada jugador, también en el historial. En el ⚙ del medidor flotante eliges sus columnas (jugador y DPS siempre); el alto mínimo sigue a las cabeceras y al tamaño. Las invocaciones que golpean antes de aparecer ya no salen como otro jugador, y la misma habilidad con varios ID (Juicio) sale en una sola fila. README y captura del medidor actualizados."
 }
