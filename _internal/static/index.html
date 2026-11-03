@@ -1892,10 +1892,12 @@ const DPS_COLUMNS = [
 ];
 
 // Antes de entrar a la mazmorra: quién está en el grupo, su CP y si dio en listo (sin datos de daño).
+// Al terminar la expedición, lo mismo con la votación para volver a entrar (party.voting).
 function renderPartyMini() {
   const n = party.members.length;
   $("miniTitle").className = "t pywebview-drag-region";
-  $("miniTitle").textContent = `⚔ ${short(party.title, 22)} · ${n}/${party.slots}`;
+  $("miniTitle").textContent = party.voting ? `⚔ Volver a entrar · ${party.members.filter(m => m.ready).length}/${n}`
+    : `⚔ ${short(party.title, 22)} · ${n}/${party.slots}`;
   const head = settings?.dps.headers ? `<div class="mrow head"><span>Jugador</span><span class="num" title="Poder de combate">CP</span>` +
     `<span class="pst">Listo</span></div>` : "";
   const state = p => p.ready ? ["ok", READY_ICON, "Listo"] : p.leader ? ["lead", LEADER_ICON, "Líder"] : ["wait", WAIT_ICON, "Pendiente"];
@@ -1918,10 +1920,10 @@ function renderDpsMini() {
   const top = f?.players[0]?.damage || 1;
   const shown = (f?.players || []).map(p => p.cp ? p : { ...p, cp: roster.find(m => m.name === p.name)?.cp });
   const rows = shown.concat(roster.filter(m => !shown.some(p => p.name === m.name)).map(m => ({ ...m, id: `p${m.id}`, damage: 0, idle: true })));
-  // Stagger: un cuadro por barra del jefe con lo que bajó cada jugador (columna solo si hay barras).
+  // Stagger: un cuadro por barra del jefe con lo que bajó cada jugador (vacía hasta la primera barra).
   const bars = f?.stagger || [];
-  // Columnas: jugador y DPS siempre; las demás según el ⚙ (stagger, solo si el jefe tiene barras).
-  const cols = DPS_COLUMNS.filter(c => !(settings?.dps.hidden || []).includes(c.key) && (c.key !== "stagger" || bars.length));
+  // Columnas: jugador y DPS siempre; las demás según el ⚙.
+  const cols = DPS_COLUMNS.filter(c => !(settings?.dps.hidden || []).includes(c.key));
   $("dpsMini").style.setProperty("--mcols", cols.map(c => c.width(bars.length)).join(" "));
   const head = settings?.dps.headers ? `<div class="mrow head dr">${cols.map(c => c.head).join("")}</div>` : "";
   animateRows($("dpsMini"), !rows.length ? empty(running ? "Ataca a algo y aparecerá aquí." : "La captura está detenida.") :

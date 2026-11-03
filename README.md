@@ -72,7 +72,7 @@ It's a portable folder: nothing gets installed, and your data is stored inside i
 
 - **Minimap** and compact **damage meter** always on top of the game, each with its own settings.
 - The minimap can show your gathering route and follow you.
-- The meter shows your expedition group, who's ready, and then the fight, with a box per boss stagger bar.
+- The meter shows your expedition group, who's ready, and then the fight, with a box per boss stagger bar. After an expedition it shows who voted to enter again.
 - Choose the meter's columns in its ⚙ (player and DPS always shown).
 
 ### Field bosses and events

@@ -1,4 +1,4 @@
 {
- "version": "1.0.50",
- "notes": "El medidor flotante vuelve al DPS al salir de un grupo en espera (antes seguía mostrando el grupo hasta 5 minutos)."
+ "version": "1.0.51",
+ "notes": "El medidor flotante muestra la votación para volver a entrar al terminar una expedición, con quién votó. La columna Stagger se ve desde que entras, como las demás cabeceras. Al cambiar de mapa sin dar en listo, o si te expulsan del grupo, vuelve el medidor de DPS. Cancelar el listo ya no te deja marcado como listo."
 }

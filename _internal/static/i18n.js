@@ -180,7 +180,7 @@ const I18N = (() => {
     [/^Vivo \(visto hace (.+)\)$/, "Alive (seen $1 ago)"], [/^abierto por otro tras (.+)$/, "opened by another after $1"],
     [/^abierto por ti tras (.+)$/, "opened by you after $1"], [/^reemplazado tras (.+)$/, "replaced after $1"],
     [/^fuera de rango tras (.+)$/, "out of range after $1"], [/^Misión (\d+)$/, "Mission $1"], [/^Artefacto (\d+)$/, "Artifact $1"],
-    [/^Nv (\d+)$/, "Lv $1"], [/^Usa el set (\d+)$/, "Use set $1"], [/^llevas el set (\d+)$/, "you have set $1"], [/^Set (\d+)$/, "Set $1"], [/^(\d+) mascotas$/, "$1 pets"], [/^(\d+)\/(\d+) almas$/, "$1/$2 souls"], [/^mundo (\d+)$/, "world $1"], [/^(\d+) veces$/, "$1 times"], [/^1 vez$/, "1 time"],
+    [/^⚔ Volver a entrar · (\d+)\/(\d+)$/, "⚔ Enter again · $1/$2"], [/^Nv (\d+)$/, "Lv $1"], [/^Usa el set (\d+)$/, "Use set $1"], [/^llevas el set (\d+)$/, "you have set $1"], [/^Set (\d+)$/, "Set $1"], [/^(\d+) mascotas$/, "$1 pets"], [/^(\d+)\/(\d+) almas$/, "$1/$2 souls"], [/^mundo (\d+)$/, "world $1"], [/^(\d+) veces$/, "$1 times"], [/^1 vez$/, "1 time"],
     [/^última (.+)$/, "last $1"], [/^Abre en (.+)$/, "Opens in $1"], [/^tablón de ([^·]+?)( · .+)?$/, (m, who, rest) => `${tr(who)}'s board${rest || ""}`],
     [/^Aceptadas$/, "Accepted"], [/^Disponibles$/, "Available"],
     [/^Un combate termina tras (.+) sin golpes, o contra un jefe al morir o desaparecer\. Solo cuenta el daño de jugadores y sus invocaciones\.$/,
