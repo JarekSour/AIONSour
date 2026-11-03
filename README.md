@@ -34,20 +34,15 @@ It's a portable folder: nothing gets installed, and your data is stored inside i
 - Each character's combat power and Od Energy, which keeps counting while offline.
 - Add your own tasks, daily, weekly or per battle.
 
-### Hidden cubes
+### Map
 
-![Hidden cubes](capturas/cubos.jpg)
+![Map](capturas/mapa.jpg)
 
-- Detects hidden cubes and marks them on the map, with an alert and sound.
-- History of the last 10 cubes: who opened each one.
-- Your position on the map and the distance to the cube.
-
-### Gathering
-
-![Gathering](capturas/recoleccion.jpg)
-
-- Saves every vein you gather (orichalcum, ruby, sapphire and diamond) on the map.
-- Shows which ones are available and the nearest one.
+- Hidden cubes and gathering on one map, with your position and the distance to each cube.
+- Detects hidden cubes, several at once, with a flash and sound; you can turn the cube notifications off.
+- A cube can open the floating minimap on its own, which says who opened it and closes 5 s later.
+- A cube nobody opens within a minute is forgotten.
+- Saves every vein you gather (orichalcum, ruby, sapphire and diamond) and shows which ones are available and the next one.
 - Create named routes, drawn as the shortest loop.
 
 ### Damage meter
@@ -71,8 +66,9 @@ It's a portable folder: nothing gets installed, and your data is stored inside i
 | ![Floating minimap](capturas/minimapa.jpg) | ![Floating meter](capturas/medidor.png) | ![Expedition group in the meter](capturas/grupo.png) |
 
 - **Minimap** and compact **damage meter** always on top of the game, each with its own settings.
-- The minimap can show your gathering route and follow you.
-- The meter shows your expedition group, who's ready, and then the fight, with a box per boss stagger bar. After an expedition it shows who voted to enter again.
+- The minimap can show your gathering route and follow you. Between the game's position updates it follows you by reading the game's own minimap on screen (read-only).
+- The minimap opens instantly and stays out of the taskbar.
+- The meter shows your expedition group, who's ready, and then the fight, with a box per boss stagger bar. Players joining or leaving show at once. After an expedition it shows who voted to enter again.
 - Choose the meter's columns in its ⚙ (player and DPS always shown).
 
 ### Field bosses and events

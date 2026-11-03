@@ -92,6 +92,21 @@
   .maptools { position: absolute; top: 10px; left: 10px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
   .maptools button, .maptools select { background: rgba(23,27,33,.9); padding: 4px 8px; font-size: 12px; }
   .maptools label { background: rgba(23,27,33,.9); border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px; font-size: 12px; }
+  /* Avisos de cubos, encima de la ruta de recolección. */
+  .card.cubebar { display: flex; flex-direction: column; align-items: stretch; gap: 10px; text-align: left; white-space: nowrap; align-items: center; gap: 10px; font-size: 13px; }
+  .cuberow { display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; }
+  .cubebar > .switch { align-self: flex-start; }
+  .cubebar button:disabled { opacity: .45; cursor: default; }
+  /* Interruptor: la casilla escondida y una pista que se desliza. */
+  .switch { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; user-select: none; }
+  .switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .switch .track { position: relative; width: 30px; height: 16px; border-radius: 8px; background: #3a414b; transition: background .15s; flex: none; }
+  .switch .track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%;
+    background: #e3e7ed; transition: transform .15s; }
+  .switch input:checked + .track { background: var(--ok); }
+  .switch input:checked + .track::after { transform: translateX(14px); }
+  .switch input:focus-visible + .track { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .switch:has(input:disabled) { opacity: .45; cursor: default; }
   .mapmsg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
     color: var(--muted); text-align: center; padding: 20px; pointer-events: none; }
   .legend { position: absolute; bottom: 8px; left: 10px; font-size: 11px; color: var(--muted);
@@ -617,6 +632,9 @@
                 #c9d3e0 66% 73%, transparent 73% 87%, #c9d3e0 87% 94%, transparent 94%) right bottom / 12px 12px no-repeat; }
   body.mini .grip:hover { opacity: 1; }
   body.mini .mapmsg { font-size: 12px; }
+  .cubemsg { position: absolute; left: 50%; top: 12%; transform: translateX(-50%); max-width: 90%; pointer-events: none;
+    padding: 4px 10px; border-radius: 6px; background: rgba(15,18,22,.65); text-align: center;
+    font: 700 15px system-ui; color: var(--danger); text-shadow: 0 1px 2px #000; }
   /* La columna no crece con el título (un jefe de nombre largo sacaba el % y el × de la ventana). */
   body.mini { grid-template-columns: minmax(0, 1fr); }
   body.mini .minibar { display: flex; align-items: center; gap: 6px; padding: 0 4px 0 10px; height: 28px; font-size: 12px;
@@ -637,13 +655,13 @@
   .cubecfg button { align-self: flex-start; padding: 5px 10px; font-size: 12px; }
   body.mini .floatpanel:not([hidden]) { display: flex; position: fixed; top: 32px; right: 4px; left: auto;
     width: min(300px, calc(100vw - 8px)); max-height: calc(100vh - 36px); overflow: auto; z-index: 30; }
-  .floatpanel .row { grid-template-columns: auto minmax(0, 1fr) 40px; }
+  .floatpanel .row { grid-template-columns: 70px minmax(0, 1fr) 40px; }   /* misma columna de nombre: barras del mismo ancho */
   .floatpanel .fErr:empty { display: none; }
   .floatpanel button { align-self: flex-start; padding: 5px 10px; font-size: 12px; }
-  body.mini.flash .minibar { animation: flash .6s 10; }
-  /* Cubo encontrado (ventana principal): el fondo de la página parpadea 6 s */
+  body.mini.flash .minibar { animation: flash .5s 9; }      /* aviso de cubo: 4,5 s */
+  /* Cubo encontrado (ventana principal): el fondo de la página parpadea 4,5 s */
   @keyframes bgflash { 0%, 100% { background-color: var(--bg); } 50% { background-color: #4a3d12; } }
-  body:not(.mini).flash { animation: bgflash .6s 10; }
+  body:not(.mini).flash { animation: bgflash .5s 9; }      /* aviso de cubo: 4,5 s */
 
   @media (max-width: 900px) {   /* página en pantalla estrecha; el minimapa siempre llena su ventana */
     body:not(.mini) { height: auto; }
@@ -667,8 +685,7 @@
   <nav class="tabs" id="tabs">
     <button data-view="home" class="on">🏠 Inicio</button>
     <button data-view="tasks">✓ Tareas</button>
-    <button data-view="cubes">◆ Cubos</button>
-    <button data-view="ore">⛏ Recolección</button>
+    <button data-view="ore">🗺 Mapa</button>
     <button data-view="dps">⚔ Daño<span class="live" id="dpsLive" hidden></span></button>
     <button data-view="timers">♛ Jefes y eventos</button>
     <button data-view="pets">🐾 Mascotas</button>
@@ -743,29 +760,14 @@
   <div class="card mapcard">
     <canvas id="map"></canvas>
     <div class="mapmsg" id="mapMsg"></div>
+    <div class="cubemsg" id="cubeMsg" hidden></div>
     <div class="maptools">
       <select id="mapSel" title="Mapa"></select>
       <button id="btnFocus" title="Centrar el mapa en el cubo activo">◆ Ir al cubo</button>
       <button id="zoomIn" title="Acercar">+</button>
       <button id="zoomOut" title="Alejar">−</button>
-      <label class="chk"><input type="checkbox" id="showSpots" checked>Puntos posibles</label>
     </div>
-    <div class="legend"><span style="color:var(--gold)">◆</span> cubo activo · <span style="color:#c9d3e0">•</span> punto posible de cubo</div>
-  </div>
-  <div class="side">
-    <div class="card">
-      <h3>Historial <span class="grow"></span><button id="btnReset" title="Borra el cubo activo y todo el historial">Borrar historial</button>
-        <span class="menu"><button id="cubeCfgBtn" title="Configuración de los avisos de cubos">⚙ <span>Configuración</span></button>
-          <span class="panel cubecfg" id="cubeCfg" hidden>
-            <span class="h">Avisos de cubos</span>
-            <label class="chk"><input type="checkbox" id="sound" checked>Sonido al encontrar un cubo</label>
-            <span class="row"><span>Volumen</span><input type="range" class="volRange" min="0" max="100" step="5"><span class="volV"></span></span>
-            <button id="btnTest" title="Probar el aviso">Probar aviso</button>
-            <small>Si el minimapa flotante está abierto, el aviso suena en él.</small>
-          </span></span></h3>
-      <div class="list" id="history"></div>
-      <div class="histkey"><b style="color:var(--ok)">Verde</b>: lo abriste tú · <b style="color:var(--danger)">Rojo</b>: lo abrió otro jugador</div>
-    </div>
+    <div class="legend"><span style="color:#22d3ee">◆</span> cubo activo</div>
   </div>
 </main>
 
@@ -777,10 +779,14 @@
       <select id="oreMapSel" title="Mapa"></select>
       <button id="oreFit" title="Encuadra todas las vetas del mapa">⤢ Ver la ruta</button>
       <button id="oreFollow" title="El mapa te sigue mientras te mueves">◎ Seguirme</button>
+      <button id="oreFocus" title="Centrar el mapa en el cubo activo">◆ Ir al cubo</button>
       <button id="oreZoomIn" title="Acercar">+</button>
       <button id="oreZoomOut" title="Alejar">−</button>
+      <label class="chk"><input type="checkbox" id="oreSpots" checked>Puntos posibles</label>
     </div>
-    <div class="legend orelegend"><span><i style="background:var(--ore)"></i>Disponible</span>
+    <div class="legend orelegend"><span><i style="background:#22d3ee"></i>Cubo oculto</span>
+      <span><i style="background:#c9d3e0;width:6px;height:6px"></i>Punto posible de cubo</span>
+      <span><i style="background:var(--ore)"></i>Disponible</span>
       <span><i style="background:var(--ok)"></i>Siguiente</span> <span><i style="background:var(--accent)"></i>Recolectando</span>
       <span><i style="background:#4a5260"></i>Agotada por ahora</span> <span><i class="skip"></i>Fuera de la ruta</span>
       <span>Borde:</span> <span><i class="ring" style="border-color:#9a6430"></i>Oricalco</span>
@@ -789,6 +795,19 @@
     <div class="oretip" id="oreTip"></div>
   </div>
   <div class="side oreside">
+    <div class="card cubebar">
+      <div class="cuberow">
+        <label class="switch" title="Sonido, parpadeo y los avisos de abajo al encontrar un cubo"><input type="checkbox" id="cubeAlerts" checked><span class="track"></span>Activar notificaciones de cubo</label>
+        <span class="menu"><button id="cubeCfgBtn" title="Avisos de cubos: sonido y volumen">⚙</button>
+          <span class="panel cubecfg" id="cubeCfg" hidden>
+            <span class="h">Avisos de cubos</span>
+            <label class="chk"><input type="checkbox" id="sound" checked>Sonido al encontrar un cubo</label>
+            <span class="row"><span>Volumen</span><input type="range" class="volRange" min="0" max="100" step="5"><span class="volV"></span></span>
+            <button id="btnTest" title="Probar la notificación de cubo">Probar notificación</button>
+          </span></span>
+      </div>
+      <label class="switch" title="Con un cubo nuevo abre el minimapa flotante; cuando alguien lo abre, dice quién y lo cierra a los 5 s"><input type="checkbox" id="cubeAutoMini" checked><span class="track"></span>Abrir el minimapa al encontrar un cubo</label>
+    </div>
     <div class="card">
       <h3>Ruta de recolección</h3>
       <div class="oreroutes"><select id="oreRouteSel" title="Ruta"></select>
@@ -991,7 +1010,7 @@ const MINI_KIND = MINI_PARAM === null ? null : MINI_PARAM === "dps" ? "dps" : "m
 const MINI = !!MINI_KIND, MINI_DPS = MINI_KIND === "dps";
 if (MINI) document.body.classList.add("mini");
 if (MINI_DPS) document.body.classList.add("mini-dps");
-let state = null, running = false, audioCtx = null;
+let state = null, running = false;
 let settings = null, floatsRunning = {}, volDragging = null;   // settings.json del servidor y ventanas flotantes abiertas
 
 const ago = t => { const s = Math.max(0, Math.round(Date.now() / 1000 - t));
@@ -1000,16 +1019,9 @@ const clock = t => new Date(t * 1000).toLocaleTimeString([], { hour: "2-digit", 
 const empty = text => `<div class="empty">${text}</div>`;
 
 // ---------------- Listas ----------------
-const HISTORY_SHOWN = 10;      // historiales de cubos y de combates: solo los últimos (el resto sigue guardado)
+const HISTORY_SHOWN = 10;      // historial de combates: solo los últimos (el resto sigue guardado)
 function render() {
   if (!state) return;
-  $("history").innerHTML = state.history.length ? state.history.slice(0, HISTORY_SHOWN).map((h, i) => `<div class="cube ${h.goneAt || h.lost ? "gone" : "live"}` +
-    `${h.opened && h.mine === true ? " mine" : h.opened && h.mine === false ? " other" : ""}` +
-    `${cubeKey(h) === selCube ? " sel" : ""}" data-src="history" data-i="${i}">` +
-    `<span class="icon">◆</span><span><b>${clock(h.at)}</b><small>${esc(mapName(h.world))}</small></span>` +
-    `<small>${h.goneAt ? (h.opened ? openedBy(h) : h.replaced ? "reemplazado" : "fuera de rango") + " tras " + Math.round(h.goneAt - h.at) + " s"
-      : h.lost ? "fin desconocido" : "activo"}</small></div>`).join("")
-    : empty("Aún no has visto ningún cubo.");
   updateMiniTitle();
 }
 
@@ -1017,7 +1029,9 @@ function updateMiniTitle() {
   if (MINI_DPS || !state) return;
   const c = state.active[0];
   $("miniTitle").className = "t pywebview-drag-region" + (c ? " live" : "");
-  $("miniTitle").textContent = c ? `◆ Cubo oculto · ${mapName(c.world)} · ${ago(c.at)}`
+  const n = state.active.length;
+  $("miniTitle").textContent = n > 1 ? `◆ ${n} cubos ocultos · ${mapName(c.world)}`
+    : c ? `◆ Cubo oculto · ${mapName(c.world)} · ${ago(c.at)}`
     : `Sin cubo · ${mapName(state.world)}`;
 }
 
@@ -1036,27 +1050,6 @@ function cubeDistanceText(c) {
   const dz = c.z != null && state.position.z != null ? (c.z - state.position.z) / 100 : 0;
   return `${d} m${dz > 3 ? " ▲" : dz < -3 ? " ▼" : ""}`;
 }
-
-function openedBy(h) {
-  return h.mine === true ? "abierto por ti" : h.mine === false ? "abierto por otro" : "abierto";
-}
-
-// Clic en un cubo de las listas: centra el mapa en él. Uno del historial queda marcado
-// en el mapa con su propio pin (otro clic lo desmarca).
-let selCube = null;
-const cubeKey = c => c ? `${c.at}:${c.envId}:${c.x}:${c.y}` : null;
-function selectedCube() {
-  return selCube && state ? state.history.find(h => cubeKey(h) === selCube) || null : null;
-}
-$("history").addEventListener("click", e => {
-  const row = e.target.closest(".cube"); if (!row || !state) return;
-  const c = state[row.dataset.src][+row.dataset.i];
-  if (row.dataset.src === "history") selCube = cubeKey(c) === selCube ? null : cubeKey(c);
-  else selCube = null;
-  render();
-  focusCube(c);
-  requestDraw();
-});
 
 // ---------------- Mapa ----------------
 let maps = null, mapSel = "auto";
@@ -1112,7 +1105,14 @@ function tile(m, z, x, y) {
 }
 
 let drawPending = false;
-function requestDraw() { if (!drawPending) { drawPending = true; requestAnimationFrame(draw); } }
+// En el siguiente cuadro; si el navegador no da cuadros (el minimapa nace oculto y pausa requestAnimationFrame),
+// igual a los 250 ms: si no, quedaba pendiente para siempre y el minimapa en «Cargando mapas…» (3/11).
+function requestDraw() {
+  if (drawPending) return;
+  drawPending = true;
+  requestAnimationFrame(draw);
+  setTimeout(() => { if (drawPending) draw(); }, 250);
+}
 
 function draw() {
   drawPending = false;
@@ -1124,7 +1124,7 @@ function draw() {
   ctx.fillStyle = "#0b0e12"; ctx.fillRect(0, 0, w, h);
   const m = currentMap();
   if (!m) {
-    $("mapMsg").textContent = !maps ? "Cargando mapas…" : state?.world != null
+    $("mapMsg").textContent = !maps ? "Cargando mapas…" : !state ? "Conectando con AIONSour…" : state.world != null
       ? `No sé qué mapa es el mundo ${state.world}. Elígelo en el selector de arriba.`
       : "Mapa aún no detectado (se detecta al entrar a un mundo). Puedes elegirlo en el selector de arriba.";
     return;
@@ -1144,27 +1144,9 @@ function draw() {
     if (img.complete && img.naturalWidth) ctx.drawImage(img, sx(i * span), sy(j * span), span * s + 0.6, span * s + 0.6);
   }
 
-  // Puntos posibles de cubo.
-  if ($("showSpots").checked) {
-    const r = Math.max(1.5, Math.min(4, 3 * s));
-    ctx.fillStyle = "rgba(235,240,248,.75)"; ctx.strokeStyle = "rgba(20,24,30,.8)"; ctx.lineWidth = 1;
-    for (const [px, py] of m.cubes) {
-      const x = sx(px), y = sy(py);
-      if (x < -5 || y < -5 || x > w + 5 || y > h + 5) continue;
-      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); if (s > 0.5) ctx.stroke();
-    }
-  }
 
   // Minimapa: la ruta de recolección elegida, si está activada en su ⚙.
   if (MINI && settings?.mini?.route && ores && maps) drawGatherRoute(ctx, m, sx, sy, w, h, { onlyRoute: true });
-
-  // Cubo del historial elegido (si es de este mapa y no es el activo).
-  const sel = selectedCube();
-  if (sel && mapFor(sel.world) === m && !(state.active || []).some(a => a.x === sel.x && a.y === sel.y)) {
-    const [px, py] = toPx(m, sel.x, sel.y);
-    const color = sel.opened && sel.mine === true ? "#3ccf8e" : sel.opened && sel.mine === false ? "#ff6b6b" : "#9aa4b2";
-    pin(sx(px), sy(py), null, color);
-  }
 
   // Tu personaje: flecha en la dirección en la que te mueves (punto si aún no se sabe).
   const me = shownMe();
@@ -1183,10 +1165,7 @@ function draw() {
   }
 
   // Cubo activo: por encima de todo (ruta, cubos del historial y tu personaje).
-  for (const c of state?.active || []) {
-    const [px, py] = toPx(m, c.x, c.y);
-    pin(sx(px), sy(py), cubeDistanceText(c) ?? "Cubo oculto");
-  }
+  activeCubes(ctx, m, sx, sy, s);
 }
 
 // Dirección del movimiento: de la última posición distinta (más de 1 m) a la actual.
@@ -1269,50 +1248,71 @@ function followMe() {
 const FIT_PAD = { side: 36, top: 64, bottom: 44 };   // px: el pin y su etiqueta van encima; abajo, los botones
 function fitMeAndCube(force) {
   if (!MINI || MINI_DPS || !maps) return false;
-  const c = state?.active?.[0], p = state?.position, m = c && mapFor(c.world);
-  if (!m || !p || mapFor(p.world) !== m) return false;
+  const p = state?.position, m = p && mapFor(p.world);
+  const cubes = m ? (state?.active || []).filter(c => mapFor(c.world) === m) : [];
+  if (!cubes.length) return false;
   const w = canvas.clientWidth, h = canvas.clientHeight; if (!w || !h) return false;
-  const [cx, cy] = toPx(m, c.x, c.y), [mx, my] = toPx(m, p.x, p.y), { side, top, bottom } = FIT_PAD;
+  const pts = cubes.map(c => toPx(m, c.x, c.y)), [mx, my] = toPx(m, p.x, p.y), { side, top, bottom } = FIT_PAD;
   const inView = (x, y, t, b) => { const sx = (x - view.cx) * view.scale + w / 2, sy = (y - view.cy) * view.scale + h / 2;
     return sx >= side && sx <= w - side && sy >= t && sy <= h - b; };
-  if (!force && m === currentMap() && inView(cx, cy, top, bottom) && inView(mx, my, 20, 20)) return false;
+  if (!force && m === currentMap() && pts.every(([x, y]) => inView(x, y, top, bottom)) && inView(mx, my, 20, 20)) return false;
   if (m !== currentMap()) setMapSel(miniFollows() ? "auto" : m.id);
   let scale;
-  if (miniFollows()) {                               // centrado en ti: hasta donde llega el cubo
-    const dx = Math.abs(cx - mx), dy = cy - my;
-    scale = Math.min(dx ? (w / 2 - side) / dx : Infinity, dy < 0 ? (h / 2 - top) / -dy : dy > 0 ? (h / 2 - bottom) / dy : Infinity);
+  if (miniFollows()) {                               // centrado en ti: hasta donde llega el cubo más lejano
+    scale = Math.min(...pts.map(([cx, cy]) => {
+      const dx = Math.abs(cx - mx), dy = cy - my;
+      return Math.min(dx ? (w / 2 - side) / dx : Infinity, dy < 0 ? (h / 2 - top) / -dy : dy > 0 ? (h / 2 - bottom) / dy : Infinity);
+    }));
     [view.cx, view.cy] = toPx(m, shownMe().x, shownMe().y);
-  } else {                                           // los dos, con el hueco del pin arriba y de los botones abajo
-    const x0 = Math.min(cx, mx), x1 = Math.max(cx, mx), y0 = Math.min(cy, my), y1 = Math.max(cy, my);
+  } else {                                           // todos, con el hueco de la etiqueta arriba y de los botones abajo
+    const xs = [mx, ...pts.map(q => q[0])], ys = [my, ...pts.map(q => q[1])];
+    const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
     scale = Math.min(x1 > x0 ? (w - 2 * side) / (x1 - x0) : Infinity, y1 > y0 ? (h - top - bottom) / (y1 - y0) : Infinity);
+    view.scale = Math.max(MIN_SCALE, Math.min(CUBE_SCALE, scale));
+    view.cx = (x0 + x1) / 2;
+    view.cy = (y0 + y1) / 2 - (top - bottom) / 2 / view.scale;
+    requestDraw();
+    return true;
   }
   view.scale = Math.max(MIN_SCALE, Math.min(CUBE_SCALE, scale));
-  if (!miniFollows()) {
-    view.cx = (Math.min(cx, mx) + Math.max(cx, mx)) / 2;
-    view.cy = (Math.min(cy, my) + Math.max(cy, my)) / 2 - (top - bottom) / 2 / view.scale;
-  }
   requestDraw();
   return true;
 }
 
-function pin(x, y, label, color = "#ffd166") {
-  const rgb = [1, 3, 5].map(i => parseInt(color.slice(i, i + 2), 16)).join(",");
-  ctx.fillStyle = `rgba(${rgb},.25)`; ctx.beginPath(); ctx.arc(x, y, 16, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = color; ctx.strokeStyle = "#3a2c05"; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(x, y);
-  ctx.bezierCurveTo(x - 4, y - 8, x - 11, y - 14, x - 11, y - 22);
-  ctx.arc(x, y - 22, 11, Math.PI, 0);
-  ctx.bezierCurveTo(x + 11, y - 14, x + 4, y - 8, x, y);
-  ctx.fill(); ctx.stroke();
-  ctx.fillStyle = "#3a2c05"; ctx.font = "bold 12px system-ui"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-  ctx.fillText("◆", x, y - 22);
+// Puntos posibles de cubo del mapa `m` (en el mapa de cubos y en el de la vista Mapa).
+function cubeSpots(ctx, m, sx, sy, w, h, s) {
+  const r = Math.max(1.5, Math.min(4, 3 * s));
+  ctx.fillStyle = "rgba(235,240,248,.75)"; ctx.strokeStyle = "rgba(20,24,30,.8)"; ctx.lineWidth = 1;
+  for (const [px, py] of m.cubes) {
+    const x = sx(px), y = sy(py);
+    if (x < -5 || y < -5 || x > w + 5 || y > h + 5) continue;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); if (s > 0.5) ctx.stroke();
+  }
+}
+
+// Los cubos activos de este mapa, por encima de todo.
+function activeCubes(ctx, m, sx, sy, s) {
+  for (const c of state?.active || []) {
+    if (mapFor(c.world) !== m) continue;
+    const [px, py] = toPx(m, c.x, c.y);
+    cubeMark(ctx, sx(px), sy(py), cubeDistanceText(c) ?? "Cubo oculto", s);
+  }
+}
+
+// Cubo activo: su punto de cubo, en cian y algo mayor, con la distancia encima.
+const CUBE_CYAN = "#22d3ee";
+function cubeMark(ctx, x, y, label, s) {
+  const r = Math.max(3, Math.min(6, 4 * s));
+  ctx.fillStyle = CUBE_CYAN; ctx.strokeStyle = "rgba(20,24,30,.9)"; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
   if (label) {
     label = I18N.tr(label);                       // el lienzo no lo traduce el observador
-    ctx.font = "600 12px system-ui"; const tw = ctx.measureText(label).width + 10;
-    ctx.fillStyle = "rgba(23,27,33,.9)"; ctx.fillRect(x - tw / 2, y - 52, tw, 18);
-    ctx.fillStyle = color; ctx.fillText(label, x, y - 43);
+    ctx.font = "600 12px system-ui"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    const tw = ctx.measureText(label).width + 10;
+    ctx.fillStyle = "rgba(23,27,33,.9)"; ctx.fillRect(x - tw / 2, y - r - 24, tw, 18);
+    ctx.fillStyle = CUBE_CYAN; ctx.fillText(label, x, y - r - 15);
+    ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
   }
-  ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
 }
 
 function setMapSel(id) {
@@ -1342,7 +1342,6 @@ canvas.addEventListener("pointerup", endDrag); canvas.addEventListener("pointerc
 $("btnFocus").onclick = () => focusCube(state?.active[0]);
 $("zoomIn").onclick = () => zoomBy(1.25);
 $("zoomOut").onclick = () => zoomBy(0.8);
-$("showSpots").onchange = requestDraw;
 $("mapSel").onchange = e => setMapSel(e.target.value);
 new ResizeObserver(requestDraw).observe(canvas);
 
@@ -1355,7 +1354,8 @@ async function loadMaps() {
   if (mapSel !== "auto" && !cubeMaps.some(m => m.id === mapSel)) mapSel = "auto";
   $("mapSel").value = mapSel;
   $("oreMapSel").innerHTML = $("mapSel").innerHTML; $("oreMapSel").value = "auto";
-  updateAutoLabel(); render(); focusCube(state?.active[0]); requestDraw(); renderOre();
+  updateAutoLabel(); render(); requestDraw(); renderOre();
+  if (MINI) focusCube(state?.active[0]); else if (state) { updateCubeButton(); oreFocusCube(state.active.at(-1)); }
 }
 function updateAutoLabel() {
   if (!maps) return;
@@ -1466,7 +1466,12 @@ function drawGatherRoute(g, m, sx, sy, w, h, { hits = null, sel = null, onlyRout
   return world;
 }
 
-function requestOreDraw() { if (!oreDrawPending) { oreDrawPending = true; requestAnimationFrame(drawOre); } }
+function requestOreDraw() {          // como requestDraw
+  if (oreDrawPending) return;
+  oreDrawPending = true;
+  requestAnimationFrame(drawOre);
+  setTimeout(() => { if (oreDrawPending) drawOre(); }, 250);
+}
 function drawOre() {
   oreDrawPending = false;
   if ($("viewOre").hidden) return;
@@ -1490,6 +1495,7 @@ function drawOre() {
     const img = tile(m, z, i, j);
     if (img.complete && img.naturalWidth) g.drawImage(img, sx(i * span), sy(j * span), span * s + 0.6, span * s + 0.6);
   }
+  if ($("oreSpots").checked && m.cubes) cubeSpots(g, m, sx, sy, w, h, s);
   const world = drawGatherRoute(g, m, sx, sy, w, h, { hits: oreHits, sel: oreSel });
   const me = shownMe(), meHere = me && String(me.world) === world;
   let mx, my;
@@ -1508,6 +1514,17 @@ function drawOre() {
     }
     g.restore();
   }
+  activeCubes(g, m, sx, sy, s);
+}
+
+// Vista Mapa: al cubo activo, en su mapa y con zoom.
+function oreFocusCube(c) {
+  if (!c || !maps) return;
+  const m = mapFor(c.world); if (!m) return;
+  if (m !== oreMap()) { $("oreMapSel").value = m.id; oreFitted = m.id; }
+  [oreView.cx, oreView.cy] = toPx(m, c.x, c.y);
+  oreView.scale = Math.max(oreView.scale, CUBE_SCALE);
+  requestOreDraw();
 }
 
 function fitOre() {
@@ -1634,6 +1651,18 @@ $("oreRouteDel").onclick = () => {
 };
 $("oreMapSel").onchange = () => { oreFitted = null; renderOre(); };
 $("oreFit").onclick = fitOre;
+let oreCubeIdx = -1;                                  // «Ir al cubo» va de uno en uno
+$("oreFocus").onclick = () => {
+  const list = state?.active || []; if (!list.length) return;
+  oreCubeIdx = (oreCubeIdx + 1) % list.length;
+  oreFocusCube(list[oreCubeIdx]);
+};
+function updateCubeButton() {
+  const n = state?.active?.length || 0;
+  $("oreFocus").textContent = n > 1 ? `◆ Ir al cubo · ${n}` : "◆ Ir al cubo";
+  $("oreFocus").disabled = !n;
+}
+$("oreSpots").onchange = requestOreDraw;
 $("oreFollow").onclick = () => {
   oreFollow = !oreFollow; $("oreFollow").classList.toggle("primary", oreFollow);
   if (oreFollow && state?.position) onOrePosition(state.position);
@@ -1684,26 +1713,6 @@ setInterval(() => { if (!$("viewOre").hidden) renderOre(); }, 15000);   // «hac
 
 // ---------------- Avisos ----------------
 // Notas con el volumen de los avisos (settings.volume, 0..1).
-function tones(notes, length, wave = "triangle") {
-  const vol = settings?.volume ?? 0.2;
-  if (vol <= 0) return;
-  try {
-    audioCtx = audioCtx || new AudioContext();
-    if (audioCtx.state === "suspended") audioCtx.resume();
-    const t = audioCtx.currentTime, peak = Math.max(0.0002, 0.7 * vol);
-    for (const [d, freq] of notes) {
-      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-      o.frequency.value = freq; o.type = wave;
-      g.gain.setValueAtTime(0.0001, t + d);
-      g.gain.exponentialRampToValueAtTime(peak, t + d + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + d + length);
-      o.connect(g).connect(audioCtx.destination); o.start(t + d); o.stop(t + d + length + 0.02);
-    }
-  } catch { /* el navegador puede bloquear el audio hasta que haya un clic */ }
-}
-// Cubo encontrado: arpegio ascendente de «tesoro» (do-mi-sol-do) con un destello final.
-const beep = () => tones([[0, 1046.5], [0.09, 1318.5], [0.18, 1568], [0.27, 2093], [0.36, 2637]], 0.45, "sine");
-
 // Paneles ⚙: se cierran al pulsar fuera, pero no al soltar fuera un arrastre que empezó dentro
 // (el slider de volumen), que el navegador cuenta como clic fuera.
 function closeOnOutsideClick(panel) {
@@ -1714,29 +1723,23 @@ function closeOnOutsideClick(panel) {
 }
 
 function flash(el) { el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
-function alertCube(silent = false) {
+// El sonido lo pone AIONSour (cubos_aviso.py, una vez y en Windows): aquí, el parpadeo y el mapa.
+function alertCube() {
   if (MINI_DPS) return;                     // el medidor flotante no avisa de cubos
   if (MINI) flash(document.body);
-  else { showView("cubes"); flash(document.body); }   // ventana principal: a Cubos y parpadea el fondo
-  // Suena el minimapa si está abierto; si no, la página. Nunca los dos.
-  if (!silent && settings?.sound !== false && (MINI || !floatsRunning.mini)) beep();
+  else { showView("ore"); flash(document.body); }     // ventana principal: al mapa y parpadea el fondo
   document.title = "◆ ¡Cubo oculto!";
   setTimeout(() => { document.title = "AIONSour"; }, 8000);
 }
 
-// Un aviso por cubo, aunque haya varias pestañas abiertas: la primera que lo
-// reclama en localStorage es la que suena.
-const ALERT_TTL = 3600 * 1000;
-function firstAlert(key) {
-  if (!key) return true;
-  try {
-    const now = Date.now(), seen = JSON.parse(localStorage.getItem("cubeAlerts") || "{}");
-    for (const k in seen) if (now - seen[k] > ALERT_TTL) delete seen[k];
-    if (seen[key]) return false;
-    seen[key] = now;
-    localStorage.setItem("cubeAlerts", JSON.stringify(seen));
-  } catch { /* sin almacenamiento: se avisa igualmente */ }
-  return true;
+// Minimapa flotante: qué otro jugador abrió el cubo, sobre el mapa, hasta que se cierra (cubos_aviso.py, 5 s).
+let cubeMsgTimer = 0;
+function showCubeOpened(m) {
+  const el = $("cubeMsg");
+  el.textContent = m.who ? `Lo abrió ${m.who}` : "Lo abrió otro jugador";
+  el.hidden = false;
+  clearTimeout(cubeMsgTimer);
+  cubeMsgTimer = setTimeout(() => { el.hidden = true; }, 6000);
 }
 
 // ---------------- Medidor de daño ----------------
@@ -2851,6 +2854,7 @@ setInterval(renderHome, 1000);
 // Pestañas (la ventana del minimapa siempre muestra el mapa).
 function showView(view) {
   if (MINI) view = "cubes";
+  else if (view === "cubes") view = "ore";           // la vista de cubos se unió a la de recolección: «Mapa»
   for (const b of $("tabs").children) b.classList.toggle("on", b.dataset.view === view);
   moveTabPill();
   $("viewCubes").hidden = view !== "cubes"; $("viewDps").hidden = view !== "dps";
@@ -2900,12 +2904,9 @@ async function post(url, body) {
 
 $("cubeCfgBtn").onclick = e => { e.stopPropagation(); $("cubeCfg").hidden = !$("cubeCfg").hidden; };
 closeOnOutsideClick($("cubeCfg"));
-$("btnReset").onclick = async () => {
-  if (await askConfirm("Borrar historial", esc("¿Borrar el cubo activo y todo el historial? No se puede deshacer."), "Borrar"))
-    post("/api/cubes/clear");
-};
-// Suena aquí mismo (el clic deja reproducir audio) y el resto de ventanas cambian a Cubos y parpadean.
-const testCube = () => { if (settings?.sound !== false) beep(); post("/api/cubes/test"); };
+// Suena como un cubo de verdad (AIONSour, con las mismas condiciones) y las ventanas parpadean. Pulsado con
+// otra prueba en curso, AIONSour corta su sonido y empieza de nuevo con lo marcado ahora; el parpadeo también.
+const testCube = () => post("/api/cubes/test");
 $("btnTest").onclick = testCube;
 
 // ---------------- Configuración y ventanas flotantes ----------------
@@ -2932,17 +2933,12 @@ if (MINI) {
     <label class="chk"><input type="checkbox" class="fTop">Siempre encima</label>
     ${MINI_DPS ? `<label class="chk"><input type="checkbox" class="fHeaders">Ver cabeceras de columnas</label>
     <h4>Columnas</h4>
-    <div class="fCols">${DPS_COLUMNS.map(c => `<label class="chk"><input type="checkbox"${c.key ? ` data-col="${c.key}"` : " checked disabled"}>${c.label}</label>`).join("")}</div>` : `<div class="row"><span>Volumen</span><input type="range" class="volRange" min="0" max="100" step="5"><span class="volV"></span></div>
-    <label class="chk"><input type="checkbox" class="fSound">Sonido al encontrar un cubo</label>
-    <label class="chk"><input type="checkbox" class="fRoute">Ver la ruta de recolección</label>
-    <label class="chk"><input type="checkbox" class="fFollow">Seguir mi posición</label>
-    <button class="fTest">Probar aviso</button>`}
+    <div class="fCols">${DPS_COLUMNS.map(c => `<label class="chk"><input type="checkbox"${c.key ? ` data-col="${c.key}"` : " checked disabled"}>${c.label}</label>`).join("")}</div>` : `<label class="chk"><input type="checkbox" class="fRoute">Ver la ruta de recolección</label>
+    <label class="chk"><input type="checkbox" class="fFollow">Seguir mi posición</label>`}
     <small class="fErr" style="color:var(--danger)"></small>`;
   if (!MINI_DPS) {
-    q(".fSound").onchange = e => saveSettings({ sound: e.target.checked });
     q(".fRoute").onchange = e => saveSettings({ mini: { route: e.target.checked } });
     q(".fFollow").onchange = e => saveSettings({ mini: { follow: e.target.checked } });
-    q(".fTest").onclick = testCube;
   }
   $("miniCfg").hidden = false;
   $("miniReset").hidden = !MINI_DPS;
@@ -3000,6 +2996,8 @@ function applySettings(m) {
   skillMarks = new Set(settings.skillMarks || []); renderClasses();
   if (settings.map !== mapSel) setMapSel(settings.map);
   $("sound").checked = settings.sound;
+  $("cubeAlerts").checked = settings.cubeAlerts !== false;
+  syncCubeControls();
   for (const r of document.querySelectorAll(".volRange")) {
     if (r === volDragging) continue;                // no se le mueve el slider a quien lo arrastra
     r.value = Math.round(settings.volume * 100);
@@ -3018,7 +3016,7 @@ function applySettings(m) {
       q(".fHeaders").checked = !!s.headers;
       for (const i of document.querySelectorAll("#floatPanel [data-col]")) i.checked = !(s.hidden || []).includes(i.dataset.col);
       if (dps) renderDpsMini(); growToMinHeight(); }
-    if (!MINI_DPS) { q(".fSound").checked = settings.sound; q(".fRoute").checked = !!s.route; q(".fFollow").checked = !!s.follow;
+    if (!MINI_DPS) { q(".fRoute").checked = !!s.route; q(".fFollow").checked = !!s.follow;
       if (s.follow) followMe(); else followZoomed = false; requestDraw(); }
     applyWindow();
   }
@@ -3030,7 +3028,10 @@ const setMiniScale = scale => document.documentElement.style.setProperty("--ms",
 function applyWindow() {
   if (!MINI || !settings || !window.pywebview?.api) return;
   // Con ⚙ abierto la ventana puede estar agrandada: no se vuelve al tamaño guardado aún.
-  window.pywebview.api.apply(panelSize ? { ...settings[MINI_KIND], ...panelSize } : settings[MINI_KIND]);
+  try {                                       // la ventana aún sin terminar de abrir: la próxima vez
+    Promise.resolve(window.pywebview.api.apply(panelSize ? { ...settings[MINI_KIND], ...panelSize } : settings[MINI_KIND]))
+      .catch(err => console.error("apply", err));
+  } catch (err) { console.error("apply", err); }
 }
 
 // ⚙ en una ventana flotante pequeña: se agranda la ventana lo justo para que el panel
@@ -3099,6 +3100,16 @@ function growToMinHeight() {
 }
 
 $("sound").onchange = e => saveSettings({ sound: e.target.checked });
+// Sin notificaciones de cubo no hay nada que configurar: el ⚙ y el minimapa automático se apagan, y este
+// se ve apagado (atenuado pero marcado parecía activo). Su valor guardado vuelve al activarlas.
+function syncCubeControls() {
+  const on = $("cubeAlerts").checked;
+  $("cubeCfgBtn").disabled = $("cubeAutoMini").disabled = !on;
+  $("cubeAutoMini").checked = on && settings?.cubeAutoMini !== false;
+  if (!on) $("cubeCfg").hidden = true;
+}
+$("cubeAlerts").onchange = e => { syncCubeControls(); saveSettings({ cubeAlerts: e.target.checked }); };
+$("cubeAutoMini").onchange = e => saveSettings({ cubeAutoMini: e.target.checked });
 // Volumen: se guarda al soltar (y, mientras se arrastra, cada 150 ms sin moverse); los ajustes
 // que vuelven del servidor no tocan el slider que se está arrastrando.
 {
@@ -3117,7 +3128,6 @@ $("sound").onchange = e => saveSettings({ sound: e.target.checked });
   document.addEventListener("change", e => { const r = e.target.closest(".volRange"); if (r) { volDragging = null; save(r); } });
   window.addEventListener("blur", () => { volDragging = null; });
 }
-document.addEventListener("click", () => audioCtx?.resume(), { once: true });
 
 // La captura va por todos los adaptadores conectados: solo se avisa si falta Npcap.
 async function checkNpcap() {
@@ -3125,10 +3135,23 @@ async function checkNpcap() {
   if (!npcap) showErr("Npcap no está instalado. Descárgalo de https://npcap.com, instálalo y vuelve a abrir la app.");
 }
 
+// Errores de la página al log de AIONSour (una vez cada uno): desde fuera no se ven.
+const pageErrors = new Set();
+function reportError(what) {
+  const msg = String(what).slice(0, 400);
+  if (pageErrors.has(msg) || pageErrors.size > 20) return;
+  pageErrors.add(msg);
+  post("/api/log", { msg }).catch(() => { });
+}
+window.addEventListener("error", e => reportError(`${e.message} (${e.filename?.split("/").pop()}:${e.lineno})`));
+window.addEventListener("unhandledrejection", e => reportError(e.reason?.stack || e.reason));
+
 function connect() {
   const es = new EventSource("/api/events");
   es.onmessage = e => {
-    for (const m of JSON.parse(e.data)) {
+    // Cada mensaje por su cuenta: uno que falla no se lleva los demás. En el minimapa flotante, un fallo
+    // al aplicar los ajustes perdía el estado inicial y se quedaba en «Mapa aún no detectado» (3/11).
+    for (const m of JSON.parse(e.data)) try {
       if (m.type === "status") setRunning(m.running, m.error);
       else if (m.type === "settings") applySettings(m);
       else if (m.type === "timers") { timers = m; renderTimers(); }
@@ -3151,22 +3174,34 @@ function connect() {
       else if (m.type === "cubes") {
         state = m.state; render(); updateAutoLabel(); requestDraw();
         // Cubo nuevo, o el que vuelve a entrar en rango: el mapa va hacia él.
-        if (m.event === "spawn" || m.event === "return" || m.event === "init") focusCube(state.active[0]);
-        if (m.event === "spawn" && firstAlert(m.key)) alertCube();
+        if (m.event === "spawn" || m.event === "return" || m.event === "init") {
+          const c = state.active.find(a => a.key === m.key) || state.active.at(-1);
+          if (MINI) focusCube(c); else oreFocusCube(c);
+        }
+        if (!MINI) { updateCubeButton(); requestOreDraw(); }
+        if (m.event === "spawn" && settings?.cubeAlerts !== false) alertCube();
       }
       else if (m.type === "pos") onPosition(m.position);
       else if (m.type === "party") { party = m.state; if (MINI_DPS && dps) renderDpsMini(); }
       else if (m.type === "veins") { ores = m.state; renderOre(); if (MINI) requestDraw(); }
+      else if (m.type === "cubeopened" && MINI && !MINI_DPS) showCubeOpened(m);
       else if (m.type === "cubetest") {                       // «Probar aviso» desde cualquier ventana
-        alertCube(true);                                      // el sonido ya sonó en la que lo pidió
+        alertCube();                                          // el sonido lo pone AIONSour
       }
-    }
+    } catch (err) { console.error("mensaje", m.type, err); reportError(`mensaje ${m.type}: ${err?.stack || err}`); }
   };
   es.onerror = () => setRunning(false);
 }
 
 setInterval(render, 1000);   // refresca los "hace X s"
-loadMaps().catch(e => showErr("No se pudieron cargar los mapas: " + e + " (¿ejecutaste importar_datos.py?)"));
+// Los mapas se reintentan hasta tenerlos: el minimapa arranca con AIONSour y puede pedirlos antes de tiempo.
+(function loadMapsUntilLoaded(tries = 0) {
+  loadMaps().catch(e => {
+    if (maps) return reportError(`mapas: ${e?.stack || e}`);      // cargados: el fallo fue al dibujarlos
+    if (tries === 3) showErr("No se pudieron cargar los mapas: " + e + " (¿ejecutaste importar_datos.py?)");
+    setTimeout(() => loadMapsUntilLoaded(tries + 1), 2000);
+  });
+})();
 if (!MINI) checkNpcap().catch(() => { });
 if (!MINI) loadSets().catch(() => { });
 connect();

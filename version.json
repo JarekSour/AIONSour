@@ -1,4 +1,4 @@
 {
- "version": "1.0.51",
- "notes": "El medidor flotante muestra la votación para volver a entrar al terminar una expedición, con quién votó. La columna Stagger se ve desde que entras, como las demás cabeceras. Al cambiar de mapa sin dar en listo, o si te expulsan del grupo, vuelve el medidor de DPS. Cancelar el listo ya no te deja marcado como listo."
+ "version": "1.0.52",
+ "notes": "Vista Mapa: cubos y recolección en un solo mapa, con varios cubos a la vez y su distancia. Notificaciones de cubo con interruptor: sonido desde Windows (sin fallos al probar seguido), el minimapa se abre solo al instante y dice quién abrió el cubo; un cubo sin abrir en 1 minuto se olvida. El minimapa flotante te sigue entre posiciones leyendo el minimapa del juego en pantalla, se abre al momento y ya no sale en la barra de tareas. Las notificaciones de jefes y eventos ya no se ven vacías al aparecer. En la espera del grupo, quien entra o sale se ve al instante. README y capturas actualizados."
 }
