@@ -29,7 +29,7 @@ It's a portable folder: nothing gets installed, and your data is stored inside i
 
 ![Tasks](capturas/tareas.png)
 
-- Daily and weekly tasks **per character**, checked off on their own from game data: kinah cap, supplies, Nightmare, season mission, Ascension Trial, Abyss, PvP and more.
+- Daily and weekly tasks **per character**, checked off on their own from game data: kinah cap, supplies, Nightmare, Ascension Trial, Abyss (Chaotic Lower and Outer Reshanta time, Abyss points), PvP and more.
 - Account tasks: duty missions, attendance, gathering limit, Unknown Fissure and shop purchases.
 - Each character's combat power and Od Energy, which keeps counting while offline.
 - Add your own tasks, daily, weekly or per battle.
@@ -44,6 +44,10 @@ It's a portable folder: nothing gets installed, and your data is stored inside i
 - A cube nobody opens within a minute is forgotten.
 - Saves every vein you gather (orichalcum, ruby, sapphire and diamond) and shows which ones are available and the next one.
 - Create named routes, drawn as the shortest loop.
+- Maps: Verteron, Altgard, and Chaotic Lower and Outer Reshanta.
+- Turn on **Show the pets I'm missing** to see where the pets you don't have or haven't maxed drop, colored by family. Hover a dot to see the pet; click it to open its map.
+
+![Missing pets on the map](capturas/mapa-mascotas.jpg)
 
 ### Damage meter
 
@@ -66,7 +70,7 @@ It's a portable folder: nothing gets installed, and your data is stored inside i
 | ![Floating minimap](capturas/minimapa.jpg) | ![Floating meter](capturas/medidor.png) | ![Expedition group in the meter](capturas/grupo.png) |
 
 - **Minimap** and compact **damage meter** always on top of the game, each with its own settings.
-- The minimap can show your gathering route and follow you. Between the game's position updates it follows you by reading the game's own minimap on screen (read-only).
+- The minimap can show your gathering route, the pets you're missing, and follow you. Between the game's position updates it follows you by reading the game's own minimap on screen (read-only).
 - The minimap opens instantly and stays out of the taskbar.
 - The meter shows your expedition group, who's ready, and then the fight, with a box per boss stagger bar. Players joining or leaving show at once. After an expedition it shows who voted to enter again.
 - Choose the meter's columns in its ⚙ (player and DPS always shown).
@@ -90,7 +94,7 @@ It's a portable folder: nothing gets installed, and your data is stored inside i
 
 ![Where a pet drops](capturas/mascota-mapa.jpg)
 
-- What you're still missing in each zone, on the map:
+- What you're still missing in each zone (Verteron, Altgard, Chaotic Lower and Outer Reshanta), on the map:
 
 ![What you're missing in a zone](capturas/mascotas-zona.jpg)
 

@@ -1,4 +1,4 @@
 {
- "version": "1.0.52",
- "notes": "Vista Mapa: cubos y recolección en un solo mapa, con varios cubos a la vez y su distancia. Notificaciones de cubo con interruptor: sonido desde Windows (sin fallos al probar seguido), el minimapa se abre solo al instante y dice quién abrió el cubo; un cubo sin abrir en 1 minuto se olvida. El minimapa flotante te sigue entre posiciones leyendo el minimapa del juego en pantalla, se abre al momento y ya no sale en la barra de tareas. Las notificaciones de jefes y eventos ya no se ven vacías al aparecer. En la espera del grupo, quien entra o sale se ve al instante. README y capturas actualizados."
+ "version": "1.0.53",
+ "notes": "Parche del 4/11: asedio y jefes de artefacto los jueves y sábados, y Argo, el Rey Espíritu, a las 10:30 y 22:30. Tareas del Abismo agrupadas: Reshanta Inferior del Caos, la nueva Reshanta Exterior del Caos (3 h) y puntos; la misión de temporada se oculta. Vista Mapa y minimapa: interruptor para ver las mascotas que te faltan, y Reshanta Inferior y Exterior del Caos en la lista de mapas (también en Mascotas). Arreglos: el medidor flotante que no se abría y las notificaciones que sonaban sin aparecer al llegar dos seguidas. README y capturas actualizados."
 }

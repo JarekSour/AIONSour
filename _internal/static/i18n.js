@@ -169,7 +169,7 @@ const I18N = (() => {
     "Pulsa para marcar": "Click to mark", "fin desconocido": "unknown end",
     // Mapas (static/maps/maps.json)
     "Reshanta Inferior del Caos": "Chaotic Lower Reshanta", "Reshanta Media del Caos": "Chaotic Middle Reshanta",
-    "Reshanta Superior del Caos": "Chaotic Upper Reshanta", "mapa desconocido": "unknown map", "Cargando mapas…": "Loading maps…",
+    "Reshanta Exterior del Caos": "Chaotic Outer Reshanta", "Ver las mascotas que me faltan": "Show the pets I'm missing", "Mascota que te falta (color de su familia)": "Pet you're missing (family color)", "Dónde salen las mascotas que te faltan o aún no están al máximo, con el color de su familia": "Where the pets you're missing or haven't maxed drop, colored by family", "Puntos": "Points", "mapa desconocido": "unknown map", "Cargando mapas…": "Loading maps…",
     // Varios
     "hace": "ago", "Aviso": "Alert", "Evento": "Event", "Jefe": "Boss", "Avisarme": "Alert me",
     "Captura detenida": "Capture stopped", "No obtenida": "Not obtained", "Pantalla": "Screen",
@@ -203,7 +203,7 @@ const I18N = (() => {
     [/^Veta (\d+)$/, "Vein $1"], [/^Curaciones de (.+)$/, "$1's healing"], [/^(.*)· curación (.+)$/, "$1· healing $2"], [/^¿Borrar la ruta «(.+)»\? Sus vetas siguen en la lista\.$/, "Delete the route “$1”? Its veins stay in the list."],
     [/^ya hay una ruta «(.+)»$/, "there is already a route “$1”"], [/^vista hace (.+)$/, "seen $1 ago"], [/^Recolectada por ti: (\d+)$/, "Gathered by you: $1"],
     [/^Todavía no hay vetas en (.+)\. Cada veta \(oricalco, rubí, zafiro o diamante\) se guarda al recolectarla\.$/,
-     "No veins in $1 yet. Each vein (orichalcum, ruby, sapphire or diamond) is saved when you gather it."],    [/^Nombre del objeto (\d+), como sale en el juego \(vacío: quitarlo\):$/, "Name of item $1, as shown in the game (empty: remove it):"],
+     (m, map) => `No veins in ${tr(map)} yet. Each vein (orichalcum, ruby, sapphire or diamond) is saved when you gather it.`],    [/^Nombre del objeto (\d+), como sale en el juego \(vacío: quitarlo\):$/, "Name of item $1, as shown in the game (empty: remove it):"],
     [/^Nombre de la misión (\d+), como sale en el juego \(vacío: quitarlo\):$/, "Name of mission $1, as shown in the game (empty: remove it):"], [/^Pantalla (\d+) \(principal\)$/, "Screen $1 (primary)"], [/^Pantalla (\d+)$/, "Screen $1"], [/^Mundo (\d+)\?$/, "World $1?"], [/^Automático \((.+)\)$/, "Automatic ($1)"],
   ];
   const DAYS = { "lunes": "Monday", "martes": "Tuesday", "miércoles": "Wednesday", "jueves": "Thursday", "viernes": "Friday",
