@@ -1,4 +1,4 @@
 {
- "version": "1.0.55",
- "notes": "Arcanas: la vista sigue al personaje con el que juegas (aunque aún no tenga datos) y un personaje sin arcanas queda con la lista vacía. README ordenado como las pestañas y capturas nuevas de la versión actual, sin la barra de Windows."
+ "version": "1.0.56",
+ "notes": "Vista Mapa: sección Últimos cubos bajo la lista de vetas, con los 3 últimos (verde si lo abriste tú, rojo si otro jugador); al hacer clic se marca en el mapa con su hora. README y capturas del mapa actualizados."
 }

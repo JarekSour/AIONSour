@@ -42,6 +42,7 @@ It's a portable folder: nothing gets installed, and your data is stored inside i
 - Detects hidden cubes, several at once, with a flash and sound; you can turn the cube notifications off.
 - A cube can open the floating minimap on its own, which says who opened it and closes 5 s later.
 - A cube nobody opens within a minute is forgotten.
+- The last 3 cubes, in green if you opened them and in red if another player did; click one to mark it on the map.
 - Saves every vein you gather (orichalcum, ruby, sapphire and diamond) and shows which ones are available and the next one.
 - Create named routes, drawn as the shortest loop.
 - Maps: Verteron, Altgard, and Chaotic Lower and Outer Reshanta.

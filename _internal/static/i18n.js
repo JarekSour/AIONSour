@@ -29,7 +29,7 @@ const I18N = (() => {
     "Cubo encontrado": "Cube found", "Avisos de cubos": "Cube alerts", "Sonido al encontrar un cubo": "Sound when a cube is found",
     "Volumen": "Volume", "Probar aviso": "Test alert", "Si el minimapa flotante está abierto, el aviso suena en él.":
       "If the floating minimap is open, the alert plays there.", "Historial": "History", "Borrar historial": "Clear history",
-    "Verde": "Green", "Rojo": "Red", ": lo abriste tú ·": ": you opened it ·", ": lo abrió otro jugador": ": another player opened it",
+    "Verde": "Green", "Rojo": "Red", "Últimos cubos": "Latest cubes", "Clic: marcarlo en el mapa": "Click: mark it on the map", ": lo abriste tú ·": ": you opened it ·", ": lo abrió otro jugador": ": another player opened it",
     "Mapa": "Map", "Centrar el mapa en el cubo activo": "Center the map on the active cube", "Acercar": "Zoom in", "Alejar": "Zoom out",
     "Configuración de los avisos de cubos": "Cube alert settings", "Probar el aviso": "Test the alert",
     "Borra el cubo activo y todo el historial": "Clears the active cube and all history", "Automático": "Automatic",

@@ -123,7 +123,15 @@
   .oretip { position: absolute; pointer-events: none; background: rgba(23,27,33,.95); border: 1px solid var(--border);
     border-radius: 6px; padding: 5px 8px; font-size: 12px; white-space: nowrap; display: none; }
   .oreside { display: flex; flex-direction: column; }
-  .oreside > .card:last-child { flex: 1; }
+  .oreside > .orelistcard { flex: 1; }                   /* la lista de vetas crece; los últimos cubos, no */
+  .oreside > .cuberecent { flex: none; }
+  /* Últimos cubos: filas de una línea (hora y mapa a la izquierda, qué pasó a la derecha). */
+  .cuberecent .list { gap: 4px; }
+  .cuberecent .cube { grid-template-columns: 16px 1fr auto; padding: 4px 8px; }
+  .cuberecent .cube .icon { font-size: 13px; }
+  .cuberecent .cube > span:nth-child(2) { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+  .cuberecent .cube b { font-size: 12px; }
+  .cuberecent .cube small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: inherit; }
   .oreside > .card[hidden] { display: none; }
   .oreroutes { display: flex; gap: 6px; margin-bottom: 10px; }
   .oreroutes select { flex: 1; min-width: 0; }
@@ -891,8 +899,10 @@
       <div class="orenext" id="oreNext" hidden></div>
     </div>
     <div class="card" id="oreDetail" hidden></div>
-    <div class="card"><div class="list" id="oreList"></div>
+    <div class="card orelistcard"><div class="list" id="oreList"></div>
       <div class="histkey">Clic en una veta (en el mapa o aquí) para añadirla o quitarla de la ruta.</div></div>
+    <div class="card cuberecent"><h3>Últimos cubos</h3><div class="list" id="cubeRecent"></div>
+      <div class="histkey"><b style="color:var(--ok)">Verde</b>: lo abriste tú · <b style="color:var(--danger)">Rojo</b>: lo abrió otro jugador</div></div>
   </div>
 </main>
 
@@ -1105,9 +1115,32 @@ const empty = text => `<div class="empty">${text}</div>`;
 
 // ---------------- Listas ----------------
 const HISTORY_SHOWN = 10;      // historial de combates: solo los últimos (el resto sigue guardado)
+const CUBES_SHOWN = 3;         // vista Mapa: los últimos cubos vistos (lo pide el usuario)
 function render() {
   if (!state) return;
+  // Últimos cubos: verde si lo abriste tú, rojo si otro jugador; clic, el mapa va a él.
+  if (!MINI) $("cubeRecent").innerHTML = state.history.length ? state.history.slice(0, CUBES_SHOWN).map((h, i) =>
+    `<div class="cube ${h.goneAt || h.lost ? "gone" : "live"}${h.opened && h.mine === true ? " mine" : h.opened && h.mine === false ? " other" : ""}` +
+    `${cubeKey(h) === oreSelCube ? " sel" : ""}"` +
+    ` data-i="${i}" title="${clock(h.at)} · Clic: marcarlo en el mapa"><span class="icon">◆</span><span><b>${dayTime(h.at)}</b><small>${esc(mapName(h.world))}</small></span>` +
+    `<small>${h.goneAt ? (h.opened ? openedBy(h) : h.replaced ? "reemplazado" : "fuera de rango") + " tras " + Math.round(h.goneAt - h.at) + " s"
+      : h.lost ? "fin desconocido" : "activo"}</small></div>`).join("") : empty("Aún no has visto ningún cubo.");
   updateMiniTitle();
+}
+// Cubo de «Últimos cubos» elegido (clic): se marca en el mapa con el color de quién lo abrió y su hora.
+let oreSelCube = null;
+const cubeKey = c => c ? `${c.at}:${c.envId}:${c.x}:${c.y}` : null;
+const cubeColor = h => h.opened && h.mine === true ? "#3ccf8e" : h.opened && h.mine === false ? "#ff6b6b" : "#9aa4b2";
+function oreRecentCube(ctx, m, sx, sy, s) {
+  const c = oreSelCube && state?.history.find(h => cubeKey(h) === oreSelCube);
+  if (!c || mapFor(c.world) !== m) return;
+  const [px, py] = toPx(m, c.x, c.y), x = sx(px), y = sy(py), color = cubeColor(c);
+  ctx.strokeStyle = color; ctx.lineWidth = 2;                       // aro para encontrarlo de un vistazo
+  ctx.beginPath(); ctx.arc(x, y, 14, 0, Math.PI * 2); ctx.stroke();
+  cubeMark(ctx, x, y, dayTime(c.at), s, color);
+}
+function openedBy(h) {
+  return h.mine === true ? "abierto por ti" : h.mine === false ? "abierto por otro" : "abierto";
 }
 
 function updateMiniTitle() {
@@ -1388,18 +1421,19 @@ function activeCubes(ctx, m, sx, sy, s) {
   }
 }
 
-// Cubo activo: su punto de cubo, en cian y algo mayor, con la distancia encima.
+// Cubo activo: su punto de cubo, en cian y algo mayor, con la distancia encima. (Con otro color, un
+// cubo de «Últimos cubos» elegido.)
 const CUBE_CYAN = "#22d3ee";
-function cubeMark(ctx, x, y, label, s) {
+function cubeMark(ctx, x, y, label, s, color = CUBE_CYAN) {
   const r = Math.max(3, Math.min(6, 4 * s));
-  ctx.fillStyle = CUBE_CYAN; ctx.strokeStyle = "rgba(20,24,30,.9)"; ctx.lineWidth = 1.5;
+  ctx.fillStyle = color; ctx.strokeStyle = "rgba(20,24,30,.9)"; ctx.lineWidth = 1.5;
   ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
   if (label) {
     label = I18N.tr(label);                       // el lienzo no lo traduce el observador
     ctx.font = "600 12px system-ui"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
     const tw = ctx.measureText(label).width + 10;
     ctx.fillStyle = "rgba(23,27,33,.9)"; ctx.fillRect(x - tw / 2, y - r - 24, tw, 18);
-    ctx.fillStyle = CUBE_CYAN; ctx.fillText(label, x, y - r - 15);
+    ctx.fillStyle = color; ctx.fillText(label, x, y - r - 15);
     ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
   }
 }
@@ -1607,6 +1641,7 @@ function drawOre() {
     }
     g.restore();
   }
+  oreRecentCube(g, m, sx, sy, s);
   activeCubes(g, m, sx, sy, s);
 }
 
@@ -1784,6 +1819,13 @@ $("orePets").onchange = e => {
   orePets.zone = null; syncOrePets();
 };
 $("oreFit").onclick = fitOre;
+$("cubeRecent").addEventListener("click", e => {
+  const row = e.target.closest(".cube[data-i]"); if (!row || !state) return;
+  const c = state.history[+row.dataset.i];
+  oreSelCube = cubeKey(c) === oreSelCube ? null : cubeKey(c);      // otro clic: se quita la marca
+  render();
+  if (oreSelCube) oreFocusCube(c); else requestOreDraw();
+});
 let oreCubeIdx = -1;                                  // «Ir al cubo» va de uno en uno
 $("oreFocus").onclick = () => {
   const list = state?.active || []; if (!list.length) return;
