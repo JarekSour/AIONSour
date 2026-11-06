@@ -144,6 +144,8 @@ const I18N = (() => {
       "shared by your characters of that class, each with its own cards.",
     "Vigor o Magia": "Vigor or Magic", "Vigor": "Vigor", "Magia": "Magic", "Familia": "Family", "Ninguna arcana cumple los filtros.": "No arcana matches the filters.",
     "Entra al juego con un personaje: sus arcanas llegan con el inventario.": "Log in with a character: its arcana come with the inventory.",
+    "Sus arcanas llegan con el inventario: sal a la selección de personaje y vuelve a entrar con él.":
+      "Its arcana come with the inventory: go back to character select and log in with it again.",
     "Cáliz": "Chalice", "Pergamino": "Parchment", "Brújula": "Compass", "Campana": "Bell", "Espejo": "Mirror",
     "Justicia [Nezekan]": "Justice [Nezekan]", "Libertad [Vaizel]": "Freedom [Vaizel]", "Ilusión [Kaisinel]": "Illusion [Kaisinel]",
     "Vida [Yustiel]": "Life [Yustiel]", "Tiempo [Siel]": "Time [Siel]", "Espacio [Israphel]": "Space [Israphel]",

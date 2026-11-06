@@ -2648,7 +2648,7 @@ closeOnOutsideClick($("setCfg"));
 // ---------------- Arcanas ----------------
 // Las de cada personaje, del inventario que manda el juego al entrar (arcanas.py): por tipo, las
 // equipadas primero. Filtros por estadística del Señor Empíreo, por habilidad y por estado.
-let arcanas = null, arcCharPick = null;
+let arcanas = null, arcCharPick = null, arcCurrent = null;
 async function loadArcanas() {
   try { arcanas = await (await fetch("/api/arcanas")).json(); } catch { return; }
   renderArcanas();
@@ -2661,6 +2661,7 @@ const fillSelect = (sel, first, values) => {
 function renderArcanas() {
   if (!arcanas || MINI || $("viewArcanas").hidden) return;
   const chars = arcanas.characters;
+  if (arcanas.current !== arcCurrent) { arcCurrent = arcanas.current; arcCharPick = null; }   // cambió de personaje: se le sigue
   if (!chars.length) {
     $("arcChar").hidden = true;
     $("arcList").innerHTML = empty("Entra al juego con un personaje: sus arcanas llegan con el inventario.");
@@ -2672,6 +2673,11 @@ function renderArcanas() {
   $("arcWho").innerHTML = (ch.cls ? clsIcon(ch) : "") + `<b>${esc(ch.name)}</b>` + (ch.cls ? `<small>${esc(ch.cls)}</small>` : "");
   $("arcChar").hidden = chars.length < 2;
   $("arcChar").innerHTML = chars.map(c => `<option${c.name === name ? " selected" : ""}>${esc(c.name)}</option>`).join("");
+  if (!ch.arcanas) {                                   // aún no llegó su inventario
+    $("arcWish").hidden || renderArcWish(ch);
+    $("arcList").innerHTML = empty("Sus arcanas llegan con el inventario: sal a la selección de personaje y vuelve a entrar con él.");
+    return;
+  }
   // Lo buscado en su tipo: habilidades (en verde en cualquier carta) y familia (0 cualquiera, 1 Vigor,
   // 2 Magia), que solo es una condición más del borde dorado (lo pide el usuario).
   const wish = ch.wishes || {}, want = a => (wish[a.type] || {}).skills || [];

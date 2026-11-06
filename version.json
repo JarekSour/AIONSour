@@ -1,4 +1,4 @@
 {
- "version": "1.0.54",
- "notes": "Nueva pestaña Arcanas: las de cada personaje por tipo, con rareza, mejora, estadística y nivel de habilidades; se actualizan al conseguir, mejorar, equipar o consumir. Filtros y habilidades buscadas por clase y familia, con borde dorado si la carta las tiene todas. Set para expediciones (primero de la lista). Iconos del grupo más nítidos y alineados. Los Ejecutantes muestran la siguiente aparición. README y capturas actualizados."
+ "version": "1.0.55",
+ "notes": "Arcanas: la vista sigue al personaje con el que juegas (aunque aún no tenga datos) y un personaje sin arcanas queda con la lista vacía. README ordenado como las pestañas y capturas nuevas de la versión actual, sin la barra de Windows."
 }
