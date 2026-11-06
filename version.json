@@ -1,4 +1,4 @@
 {
- "version": "1.0.57",
- "notes": "Tareas: bajo la barra de Energía de Od de cada personaje, cuándo estará llena (día, hora y tiempo que falta). README y captura de Tareas actualizados."
+ "version": "1.0.58",
+ "notes": "Arcanas: cada carta se guarda solo en un personaje de su clase (según las habilidades de la pestaña Clases, contando las compartidas); al cambiar de personaje ya no aparecen las cartas de otro, y las guardadas por error se quitan."
 }
