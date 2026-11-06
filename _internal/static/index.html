@@ -453,6 +453,7 @@
     font-size: 10.5px; line-height: 16px; text-align: center; font-variant-numeric: tabular-nums; }
   .odbar i { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, rgba(79,156,249,.55), rgba(79,156,249,.25)); }
   .odbar span { position: relative; }
+  .odfull { margin: -2px 0 4px; text-align: center; font-size: 10.5px; color: var(--muted); }
   @media (max-width: 900px) { body:not(.mini) .tasksview { grid-template-columns: 1fr; } }
 
   /* Mapa de dónde aparece una mascota */
@@ -2357,7 +2358,9 @@ function renderTasks() {
     return `<div class="tchar${c.current ? " current" : ""}"><header>${clsIcon(c)}<b>${esc(c.name)}</b>` +
       cpBadge(c.cp) + `<button class="x" data-remove="${esc(c.name)}">×</button></header>` +
       (c.energy ? `<div class="odbar"><i style="width:${Math.min(100, c.energy.count * 100 / c.energy.cap).toFixed(1)}%"></i>` +
-        `<span>Energía de Od <b>${c.energy.count}</b>${c.energy.charged ? ` <span class="extra">(+${c.energy.charged})</span>` : ""} / ${c.energy.cap}</span></div>` : "") +
+        `<span>Energía de Od <b>${c.energy.count}</b>${c.energy.charged ? ` <span class="extra">(+${c.energy.charged})</span>` : ""} / ${c.energy.cap}</span></div>` +
+        // Cuándo se llena (con las recargas de +15 cada 3 h)
+        `<div class="odfull">${c.energy.fullAt ? `<span>Llena el ${longDay(c.energy.fullAt)}</span> · <span>en ${untilText(c.energy.fullAt)}</span>` : "Llena"}</div>` : "") +
       sections(c, c.name) + `</div>`;
   }).join("") || empty("Entra al juego con un personaje y aparecerá aquí.");
   if (marqueeRow) {                              // se redibujó con el ratón encima: sigue rodando

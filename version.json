@@ -1,4 +1,4 @@
 {
- "version": "1.0.56",
- "notes": "Vista Mapa: sección Últimos cubos bajo la lista de vetas, con los 3 últimos (verde si lo abriste tú, rojo si otro jugador); al hacer clic se marca en el mapa con su hora. README y capturas del mapa actualizados."
+ "version": "1.0.57",
+ "notes": "Tareas: bajo la barra de Energía de Od de cada personaje, cuándo estará llena (día, hora y tiempo que falta). README y captura de Tareas actualizados."
 }

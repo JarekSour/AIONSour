@@ -207,7 +207,7 @@ const I18N = (() => {
     [/^Termina en (.+)$/, "Ends in $1"], [/^termina en (.+)$/, "ends in $1"],
     [/^(\d+) encargos? marcados?$/, (m, n) => `${n} marked ${n === "1" ? "duty" : "duties"}`], [/^A las (.+)$/, "At $1"], [/^Reinicio diario en (.+)$/, "Daily reset in $1"],
     [/^Mantenimiento: (.+) · ~5–6 h$/, "Maintenance: $1 · ~5–6 h"],
-    [/^Vence el (.+)$/, "Expires $1"], [/^Apareció a las (.+)$/, "Spawned at $1"], [/^siguiente en (.+)$/, "next in $1"], [/^Venció el (.+)$/, "Expired $1"], [/^Termina ~(.+)$/, "Ends ~$1"],
+    [/^Vence el (.+)$/, "Expires $1"], [/^Llena el (.+)$/, "Full on $1"], [/^Llena$/, "Full"], [/^Apareció a las (.+)$/, "Spawned at $1"], [/^siguiente en (.+)$/, "next in $1"], [/^Venció el (.+)$/, "Expired $1"], [/^Termina ~(.+)$/, "Ends ~$1"],
     [/^Diario en (.+) · semanal en (.+) · batalla en (.+)$/, "Daily in $1 · weekly in $2 · battle in $3"],
     [/^(\d+) pendientes?$/, (m, n) => `${n} pending`], [/^(\d+) de (\d+) cofres abiertos$/, "$1 of $2 chests opened"],
     [/^Corredores abiertos desde (.+); caducan al empezar la batalla$/, "Corridors open since $1; they expire when the battle starts"],

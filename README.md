@@ -31,7 +31,7 @@ It's a portable folder: nothing gets installed, and your data is stored inside i
 
 - Daily and weekly tasks **per character**, checked off on their own from game data: kinah cap, supplies, Nightmare, Ascension Trial, Abyss (Chaotic Lower and Outer Reshanta time, Abyss points), PvP and more.
 - Account tasks: duty missions, attendance, gathering limit, Unknown Fissure and shop purchases.
-- Each character's combat power and Od Energy, which keeps counting while offline.
+- Each character's combat power and Od Energy, which keeps counting while offline, and when it will be full.
 - Add your own tasks, daily, weekly or per battle.
 
 ### Map
