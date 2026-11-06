@@ -1,4 +1,4 @@
 {
- "version": "1.0.58",
- "notes": "Arcanas: cada carta se guarda solo en un personaje de su clase (según las habilidades de la pestaña Clases, contando las compartidas); al cambiar de personaje ya no aparecen las cartas de otro, y las guardadas por error se quitan."
+ "version": "1.0.59",
+ "notes": "Grupo: si dejas el grupo dentro de una expedición, al salir vuelve el medidor y no el ready check. Medidor: los espíritus de un Invocador cuya aparición no se vio (p. ej. la app se abrió dentro) se suman a su dueño en vez de salir como «Jugador»."
 }
