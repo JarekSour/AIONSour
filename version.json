@@ -1,4 +1,4 @@
 {
- "version": "1.0.53",
- "notes": "Parche del 4/11: asedio y jefes de artefacto los jueves y sábados, y Argo, el Rey Espíritu, a las 10:30 y 22:30. Tareas del Abismo agrupadas: Reshanta Inferior del Caos, la nueva Reshanta Exterior del Caos (3 h) y puntos; la misión de temporada se oculta. Vista Mapa y minimapa: interruptor para ver las mascotas que te faltan, y Reshanta Inferior y Exterior del Caos en la lista de mapas (también en Mascotas). Arreglos: el medidor flotante que no se abría y las notificaciones que sonaban sin aparecer al llegar dos seguidas. README y capturas actualizados."
+ "version": "1.0.54",
+ "notes": "Nueva pestaña Arcanas: las de cada personaje por tipo, con rareza, mejora, estadística y nivel de habilidades; se actualizan al conseguir, mejorar, equipar o consumir. Filtros y habilidades buscadas por clase y familia, con borde dorado si la carta las tiene todas. Set para expediciones (primero de la lista). Iconos del grupo más nítidos y alineados. Los Ejecutantes muestran la siguiente aparición. README y capturas actualizados."
 }

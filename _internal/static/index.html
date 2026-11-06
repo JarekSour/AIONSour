@@ -541,6 +541,54 @@
   .classesview .card { overflow: auto; }
   .setsview { grid-template-columns: 1fr; }
   .setsview .card { overflow: auto; }
+  /* Arcanas: un bloque por tipo; cada arcana con su icono sobre el fondo de su grado. */
+  .arcfilters { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 10px; }
+  .arcfilters select, #arcChar { padding: 3px 6px; }
+  .arctype { margin-bottom: 12px; }
+  .arctype > h4 { margin: 0 0 6px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .arcgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 8px; }
+  .arc { display: flex; gap: 10px; background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; }
+  .arc.on { border-color: var(--accent); }
+  .arc.full { border-color: #f5c542; box-shadow: 0 0 0 1px #f5c542 inset; }
+  .arctile { flex: none; width: 48px; height: 48px; border-radius: 4px; overflow: hidden; border: 1px solid rgba(0,0,0,.45); }
+  .arctile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .arctile.g-common { background: linear-gradient(#2a2d31 25%, #6b7078); }
+  .arctile.g-rare { background: linear-gradient(#172712 25%, #447137); }
+  .arctile.g-epic { background: linear-gradient(#072331 25%, #1e6e98); }
+  .arctile.g-unique { background: linear-gradient(#3a2a06 25%, #c99a2e); }
+  .arc .body { min-width: 0; flex: 1; }
+  .arc .nm { display: flex; align-items: center; gap: 6px; font-weight: 600; }
+  .arc .nm.g-common { color: #e3e7ed; } .arc .nm.g-rare { color: #19df48; }
+  .arc .nm.g-epic { color: #5aa9ff; } .arc .nm.g-unique { color: #f5c542; }
+  .arc .nm .enh { color: var(--text); font-weight: 700; }
+  .arc .nm .eq { margin-left: auto; font-size: 10px; font-weight: 600; color: var(--accent); border: 1px solid var(--accent);
+    border-radius: 999px; padding: 0 6px; }
+  .arc .lord { font-size: 12px; color: var(--muted); margin: 2px 0 4px; }
+  .arc .lord b { color: var(--text); }
+  .arc .sks { display: flex; flex-wrap: wrap; gap: 4px; }
+  .arc .sk { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 1px 6px 1px 2px;
+    border-radius: 999px; background: #0c1119; border: 1px solid transparent; }
+  .arc .sk img { width: 16px; height: 16px; border-radius: 3px; }
+  .arc .sk.want { background: rgba(25, 223, 72, .16); color: #7cf59a; }
+  .arc .nm .wants { font-size: 10px; font-weight: 600; color: #7cf59a; }
+  /* Habilidades buscadas: una fila por tipo de carta, con las elegidas y un desplegable para añadir. */
+  #arcWishBtn { margin-right: 8px; }
+  /* Personaje de la vista: icono de clase, nombre y clase. */
+  .arcwho { display: inline-flex; align-items: center; gap: 6px; margin-left: 12px; text-transform: none;
+    letter-spacing: 0; font-size: 13px; color: var(--text); }
+  .arcwho .clsicon { width: 22px; height: 22px; padding: 2px; }
+  .arcwho small { color: var(--muted); font-size: 12px; }
+  .arcwish { background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin: 4px 0 10px; }
+  .arcwish .h { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .wrow { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 6px; padding: 4px 0; border-top: 1px solid var(--border); }
+  .wrow:first-of-type { border-top: 0; }
+  .wrow > b { width: 90px; font-size: 12px; }
+  .wrow .sk { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 1px 2px 1px 2px;
+    border-radius: 999px; background: rgba(25, 223, 72, .16); color: #7cf59a; }
+  .wrow .sk img { width: 16px; height: 16px; border-radius: 3px; }
+  .wrow .sk button { all: unset; cursor: pointer; padding: 0 5px; color: var(--muted); }
+  .wrow .sk button:hover { color: var(--danger); }
+  .wrow select { padding: 2px 6px; font-size: 12px; }
   .setgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; margin-top: 10px; }
   .setchar { background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
   .setchar.me { border-color: var(--accent); }
@@ -632,6 +680,24 @@
                 #c9d3e0 66% 73%, transparent 73% 87%, #c9d3e0 87% 94%, transparent 94%) right bottom / 12px 12px no-repeat; }
   body.mini .grip:hover { opacity: 1; }
   body.mini .mapmsg { font-size: 12px; }
+  /* Mascotas de la tienda que acabas de abrir (minimapa, «Mostrar mascotas de tienda»): imagen, nombre y almas. */
+  .shoppets { position: absolute; left: 6px; right: 6px; top: 6px; max-height: calc(100% - 12px); overflow: hidden;
+    display: grid; gap: 3px; padding: 6px 8px; border-radius: 6px; background: rgba(15,18,22,.8); pointer-events: none;
+    font: 12px system-ui; color: #e5e9ef; text-shadow: 0 1px 2px #000; }
+  .shoppets .bar { height: 3px; border-radius: 2px; background: rgba(255,255,255,.15); overflow: hidden; }
+  .shoppets .bar i { display: block; height: 100%; background: var(--accent); transition: width 1s linear; }
+  .shoppets .rows { display: grid; gap: 3px; }
+  .shoppets[hidden] { display: none; }        /* display: grid ganaba a [hidden]: la lista se quedaba al comprar la última */
+  .shoppets .head { display: flex; align-items: center; gap: 6px; }
+  .shoppets .head h5 { flex: 1; min-width: 0; }
+  .shoppets .x { pointer-events: auto; border: 0; background: none; color: #fff; font: 700 15px system-ui; line-height: 1;
+    padding: 0 2px; cursor: pointer; opacity: .8; }
+  .shoppets .x:hover { opacity: 1; color: var(--danger); }
+  .shoppets h5 { margin: 0 0 2px; font-size: 12px; color: #fff; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .shoppets .rows > div { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 6px; align-items: center; }
+  .shoppets .peticon { width: 24px; height: 24px; }
+  .shoppets b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .shoppets small { color: var(--muted); font-size: 11px; }
   .cubemsg { position: absolute; left: 50%; top: 12%; transform: translateX(-50%); max-width: 90%; pointer-events: none;
     padding: 4px 10px; border-radius: 6px; background: rgba(15,18,22,.65); text-align: center;
     font: 700 15px system-ui; color: var(--danger); text-shadow: 0 1px 2px #000; }
@@ -692,6 +758,7 @@
     <button data-view="duty">📜 Encargos</button>
     <button data-view="classes">⛨ Clases</button>
     <button data-view="sets">◈ Set</button>
+    <button data-view="arcanas">✦ Arcanas</button>
   </nav>
   <span class="spacer"></span>
   <button class="floatBtn" data-kind="mini" title="Abre o cierra el minimapa flotante (se configura en su ⚙)">🗺 Minimapa</button>
@@ -761,6 +828,7 @@
     <canvas id="map"></canvas>
     <div class="mapmsg" id="mapMsg"></div>
     <div class="cubemsg" id="cubeMsg" hidden></div>
+    <div class="shoppets" id="shopPets" hidden></div>
     <div class="maptools">
       <select id="mapSel" title="Mapa"></select>
       <button id="btnFocus" title="Centrar el mapa en el cubo activo">◆ Ir al cubo</button>
@@ -980,6 +1048,21 @@
   </div>
 </main>
 
+<main id="viewArcanas" class="setsview" hidden>
+  <div class="card">
+    <h3>Arcanas<span class="arcwho" id="arcWho"></span><span class="grow"></span><button id="arcWishBtn">★ <span>Habilidades que busco</span></button>
+      <select id="arcChar" title="Personaje"></select></h3>
+    <div class="arcwish" id="arcWish" hidden></div>
+    <div class="arcfilters">
+      <select id="arcLord"><option value="">Todas las estadísticas</option></select>
+      <select id="arcSkill"><option value="">Todas las habilidades</option></select>
+      <select id="arcState"><option value="">Equipadas y guardadas</option><option value="on">Solo equipadas</option>
+        <option value="off">Solo guardadas</option><option value="want">Con habilidades buscadas</option></select>
+    </div>
+    <div id="arcList"></div>
+  </div>
+</main>
+
 <main id="viewClasses" class="classesview" hidden>
   <div class="card">
     <h3>Clases</h3>
@@ -1013,7 +1096,7 @@ const MINI = !!MINI_KIND, MINI_DPS = MINI_KIND === "dps";
 if (MINI) document.body.classList.add("mini");
 if (MINI_DPS) document.body.classList.add("mini-dps");
 let state = null, running = false;
-let settings = null, floatsRunning = {}, volDragging = null;   // settings.json del servidor y ventanas flotantes abiertas
+let settings = null, floatsRunning = {}, floatsHidden = {}, volDragging = null;   // settings.json del servidor y ventanas flotantes abiertas
 
 const ago = t => { const s = Math.max(0, Math.round(Date.now() / 1000 - t));
   return s < 60 ? `hace ${s} s` : s < 3600 ? `hace ${Math.floor(s / 60)} min` : new Date(t * 1000).toLocaleString(); };
@@ -1063,6 +1146,7 @@ const canvas = $("map"), ctx = canvas.getContext("2d");
 
 const mapFor = world => maps && world != null ? maps.maps.find(m => m.id === maps.worlds[String(world)]) : null;
 const mapName = world => mapFor(world)?.name ?? (world == null ? "mapa desconocido" : `mundo ${world}`);
+// Automático: el mapa de tu mundo. Sin saberlo (cargando, mundo 0) no se enseña otro: el minimapa dice «Mapa no encontrado».
 function currentMap() {
   if (!maps) return null;
   return mapSel === "auto" ? mapFor(state?.world) : maps.maps.find(m => m.id === mapSel);
@@ -1126,8 +1210,10 @@ function draw() {
   ctx.fillStyle = "#0b0e12"; ctx.fillRect(0, 0, w, h);
   const m = currentMap();
   if (!m) {
-    $("mapMsg").textContent = !maps ? "Cargando mapas…" : !state ? "Conectando con AIONSour…" : state.world != null
-      ? `No sé qué mapa es el mundo ${state.world}. Elígelo en el selector de arriba.`
+    // El minimapa flotante no tiene selector de mapa: no se ofrece.
+    $("mapMsg").textContent = !maps ? "Cargando mapas…" : !state ? "Conectando con AIONSour…"
+      : MINI ? "Mapa no encontrado"
+      : state.world ? `No sé qué mapa es el mundo ${state.world}. Elígelo en el selector de arriba.`
       : "Mapa aún no detectado (se detecta al entrar a un mundo). Puedes elegirlo en el selector de arriba.";
     return;
   }
@@ -1786,6 +1872,36 @@ function alertCube() {
 
 // Minimapa flotante: qué otro jugador abrió el cubo, sobre el mapa, hasta que se cierra (cubos_aviso.py, 5 s).
 let cubeMsgTimer = 0;
+// Minimapa: las mascotas de la tienda que acabas de abrir, mientras dure shopShowUntil (server.py, 60 s). Sin precio:
+// imagen, nombre y almas; las agotadas no.
+let shopPetsTimer = 0;
+function renderShopPets() {
+  const el = $("shopPets");
+  if (!el) return;
+  const until = MINI && !MINI_DPS && settings?.mini?.shopPets ? pets?.shopShowUntil || 0 : 0;
+  const now = Date.now() / 1000;
+  const offers = until > now ? (pets.shop?.offers || []).filter(o => !o.sold && (!o.until || o.until > now)) : [];
+  clearTimeout(shopPetsTimer);
+  el.hidden = !offers.length;
+  if (!offers.length) return;
+  // Arriba, una barra que se vacía hasta que se cierra: la misma barra cada segundo (sin redibujarla), con su
+  // ancho al segundo siguiente y una transición de 1 s, para que baje seguida. Debajo, el título con lo que le
+  // queda a la tienda hasta renovarse (como «A la venta») y cada mascota con su nivel y almas.
+  const total = pets.shopShowFor || 60, left = until - now;
+  if (!el.querySelector(".bar")) {
+    el.innerHTML = `<div class="bar"><i></i></div><div class="head"><h5></h5><button class="x" title="Cerrar">×</button></div><div class="rows"></div>`;
+    el.querySelector(".x").onclick = () => { $("shopPets").hidden = true; post("/api/pets/shop/close").catch(() => { }); };
+  }
+  el.querySelector(".bar i").style.width = `${Math.max(0, Math.min(1, (left - 1) / total)) * 100}%`;
+  const renews = Math.min(...offers.map(o => o.until || Infinity));
+  el.querySelector("h5").textContent = I18N.tr("Mascotas a la venta") + (renews !== Infinity ? ` · ${untilText(renews)}` : "");
+  const rows = offers.map(o => `<div>${petImg(o, "sm")}<span><b>${esc(o.name)}</b>` +
+    `<small>${o.level ? `${esc(I18N.tr(`Nv ${o.level}`))} · ${esc(I18N.tr(`${o.souls}/${o.needed} almas`))}` : esc(I18N.tr("No obtenida"))}</small></span></div>`).join("");
+  const list = el.querySelector(".rows");
+  if (list.dataset.html !== rows) { list.innerHTML = rows; list.dataset.html = rows; }
+  shopPetsTimer = setTimeout(renderShopPets, Math.min(1000, left * 1000 + 50));
+}
+
 function showCubeOpened(m) {
   const el = $("cubeMsg");
   el.textContent = m.who ? `Lo abrió ${m.who}` : "Lo abrió otro jugador";
@@ -2048,6 +2164,8 @@ function bossStatus(b) {
   const now = Date.now() / 1000;
   // Dato antiguo (no estás en ese mapa): se indica cuándo se vio por última vez.
   const old = b.seen && now - b.seen > 600 ? ` (visto hace ${sinceText(b.seen)})` : "";
+  // Horario fijo: el juego no dice si ya murió; mientras dura su ventana, también cuándo vuelve.
+  if (b.phase === "vivo" && b.next) return `Apareció a las ${dayTime(b.at)} · siguiente en ${untilText(b.next)} · ${dayTime(b.next)}`;
   if (b.phase === "vivo") return "Vivo" + old;
   if (b.phase === "reaparece" && b.at > now) return `Reaparece en ${untilText(b.at)} · ${dayTime(b.at)}`;
   if (b.phase === "fijo" && b.at > now) return `Abre en ${untilText(b.at)} · ${dayTime(b.at)}`;
@@ -2527,6 +2645,111 @@ $("setCfgBtn").onclick = e => {
 };
 closeOnOutsideClick($("setCfg"));
 
+// ---------------- Arcanas ----------------
+// Las de cada personaje, del inventario que manda el juego al entrar (arcanas.py): por tipo, las
+// equipadas primero. Filtros por estadística del Señor Empíreo, por habilidad y por estado.
+let arcanas = null, arcCharPick = null;
+async function loadArcanas() {
+  try { arcanas = await (await fetch("/api/arcanas")).json(); } catch { return; }
+  renderArcanas();
+}
+const fillSelect = (sel, first, values) => {
+  const keep = sel.value;
+  sel.innerHTML = `<option value="">${first}</option>` + values.map(([v, t]) => `<option value="${esc(String(v))}">${esc(t)}</option>`).join("");
+  sel.value = values.some(([v]) => String(v) === keep) ? keep : "";
+};
+function renderArcanas() {
+  if (!arcanas || MINI || $("viewArcanas").hidden) return;
+  const chars = arcanas.characters;
+  if (!chars.length) {
+    $("arcChar").hidden = true;
+    $("arcList").innerHTML = empty("Entra al juego con un personaje: sus arcanas llegan con el inventario.");
+    return;
+  }
+  const name = chars.some(c => c.name === arcCharPick) ? arcCharPick
+    : chars.some(c => c.name === arcanas.current) ? arcanas.current : chars[0].name;
+  const ch = chars.find(c => c.name === name);
+  $("arcWho").innerHTML = (ch.cls ? clsIcon(ch) : "") + `<b>${esc(ch.name)}</b>` + (ch.cls ? `<small>${esc(ch.cls)}</small>` : "");
+  $("arcChar").hidden = chars.length < 2;
+  $("arcChar").innerHTML = chars.map(c => `<option${c.name === name ? " selected" : ""}>${esc(c.name)}</option>`).join("");
+  // Lo buscado en su tipo: habilidades (en verde en cualquier carta) y familia (0 cualquiera, 1 Vigor,
+  // 2 Magia), que solo es una condición más del borde dorado (lo pide el usuario).
+  const wish = ch.wishes || {}, want = a => (wish[a.type] || {}).skills || [];
+  const wanted = a => a.skills.filter(s => want(a).includes(s.id)).length;
+  // Completa (borde dorado): con todas las buscadas de su tipo y de la familia buscada, si la hay
+  // (lo pide el usuario: coincidir con todo lo elegido).
+  const full = a => a.wanted > 0 && a.wanted === want(a).length &&
+    (!(wish[a.type] || {}).family || wish[a.type].family === a.family);
+  renderArcWish(ch);
+  const all = ch.arcanas.map(a => ({ ...a, wanted: wanted(a) })).map(a => ({ ...a, full: full(a) }))
+    .sort((a, b) => a.type - b.type || b.equipped - a.equipped || b.wanted - a.wanted);
+  fillSelect($("arcLord"), "Todas las estadísticas", [...new Map(all.map(a => [a.stat, a.lord]))].sort((a, b) => a[0] - b[0]));
+  fillSelect($("arcSkill"), "Todas las habilidades",
+    [...new Map(all.flatMap(a => a.skills.map(s => [s.id, s.name])))].sort((a, b) => a[1].localeCompare(b[1])));
+  const lord = +$("arcLord").value || 0, skill = +$("arcSkill").value || 0, state = $("arcState").value;
+  const shown = all.filter(a => (!lord || a.stat === lord) && (!skill || a.skills.some(s => s.id === skill)) &&
+    (!state || (state === "want" ? a.wanted > 0 : a.equipped === (state === "on"))));
+  const types = [...new Map(shown.map(a => [a.type, a.typeName]))];
+  $("arcList").innerHTML = !shown.length ? empty("Ninguna arcana cumple los filtros.") : types.map(([t, tn]) => {
+    const list = shown.filter(a => a.type === t);
+    return `<section class="arctype"><h4>${esc(tn)} · ${list.length}</h4><div class="arcgrid">` + list.map(a =>
+      `<div class="arc${a.equipped ? " on" : ""}${a.full ? " full" : ""}"${a.full ? ` title="Tiene todas las habilidades que buscas"` : ""}><span class="arctile g-${a.grade}"><img src="${a.icon}" alt="" loading="lazy"></span>` +
+      `<div class="body"><div class="nm g-${a.grade}"><span>${esc(a.name)}</span>${a.enhance ? `<span class="enh">+${a.enhance}</span>` : ""}` +
+      (a.wanted ? `<span class="wants">★ ${a.wanted}</span>` : "") +
+      (a.equipped ? `<span class="eq">Equipada</span>` : "") + `</div>` +
+      `<div class="lord">${esc(a.lord)} <b>+${a.value}</b></div><div class="sks">` +
+      a.skills.map(s => `<span class="sk${want(a).includes(s.id) ? " want" : ""}">` +
+        (s.icon ? `<img src="${s.icon}" alt="">` : "") + `${esc(s.name)} +${s.levels}</span>`).join("") +
+      `</div></div></div>`).join("") + `</div></section>`;
+  }).join("");
+}
+// Habilidades que busca el personaje en cada tipo de carta (las de su clase), guardadas en la app.
+const ARC_TYPES = [[1, "Cáliz"], [2, "Pergamino"], [3, "Brújula"], [4, "Campana"], [5, "Espejo"]];
+function renderArcWish(ch) {
+  if ($("arcWish").hidden) return;
+  const byId = new Map(ch.skills.map(s => [s.id, s]));
+  const sorted = [...ch.skills].sort((a, b) => a.name.localeCompare(b.name));
+  // Cada tipo de carta solo trae algunas habilidades (el Cáliz, todas): las de su grupo, si se conoce.
+  const pool = t => (ch.pools || {})[t] ? sorted.filter(s => ch.pools[t].includes(s.id)) : sorted;
+  $("arcWish").innerHTML = `<div class="h">Elige, para cada tipo de carta, la familia y las habilidades que buscas: se ` +
+    `resaltan en verde en las arcanas que las traen.</div><div class="h"><span>Perfil de clase:</span> <b>${esc(ch.cls || "?")}</b>` +
+    ` · <span>lo comparten tus personajes de esa clase, cada uno con sus cartas.</span></div>` + ARC_TYPES.map(([t, tn]) => {
+      const w = (ch.wishes || {})[t] || {}, mine = w.skills || [];
+      return `<div class="wrow"><b>${tn}</b><select data-family="${t}" title="Familia">` +
+        [[0, "Vigor o Magia"], [1, "Vigor"], [2, "Magia"]].map(([v, l]) =>
+          `<option value="${v}"${(w.family || 0) === v ? " selected" : ""}>${l}</option>`).join("") + `</select>` + mine.map(id => {
+        const s = byId.get(id) || { name: `#${id}` };
+        return `<span class="sk">${s.icon ? `<img src="${s.icon}" alt="">` : ""}${esc(s.name)}` +
+          `<button data-type="${t}" data-del="${id}" title="Quitar">×</button></span>`;
+      }).join("") + `<select data-type="${t}"><option value="">+ Añadir habilidad</option>` +
+        pool(t).filter(s => !mine.includes(s.id)).map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join("") +
+        `</select></div>`;
+    }).join("");
+}
+const arcWishSave = (t, change) => {
+  const ch = arcanas?.characters.find(c => c.name === $("arcChar").value) || arcanas?.characters[0];
+  if (ch?.cls) post("/api/arcanas", { cls: ch.cls, type: t, ...change });
+};
+const arcWishOf = t => (((arcanas?.characters.find(c => c.name === $("arcChar").value) || arcanas?.characters[0])?.wishes || {})[t] || {}).skills || [];
+$("arcWish").addEventListener("change", e => {
+  const fam = e.target.closest("select[data-family]");
+  if (fam) return arcWishSave(+fam.dataset.family, { family: +fam.value });
+  const sel = e.target.closest("select[data-type]"); if (!sel || !sel.value) return;
+  arcWishSave(+sel.dataset.type, { skills: [...arcWishOf(sel.dataset.type), +sel.value] });
+});
+$("arcWish").addEventListener("click", e => {
+  const b = e.target.closest("button[data-del]"); if (!b) return;
+  arcWishSave(+b.dataset.type, { skills: arcWishOf(b.dataset.type).filter(id => id !== +b.dataset.del) });
+});
+$("arcWishBtn").addEventListener("click", () => {
+  $("arcWish").hidden = !$("arcWish").hidden;
+  try { localStorage.setItem("arcWish", $("arcWish").hidden ? "" : "1"); } catch { }
+  renderArcanas();
+});
+try { $("arcWish").hidden = !localStorage.getItem("arcWish"); } catch { }
+$("arcChar").addEventListener("change", e => { arcCharPick = e.target.value; renderArcanas(); });
+for (const id of ["arcLord", "arcSkill", "arcState"]) $(id).addEventListener("change", renderArcanas);
+
 // ---------------- Mascotas ----------------
 let pets = null;
 const PET_FAMILIES = ["Cogni", "Fera", "Natura", "Varian", "Especial"];   // como en el juego, sin traducir
@@ -2914,11 +3137,13 @@ function showView(view) {
   $("viewTasks").hidden = view !== "tasks"; $("viewClasses").hidden = view !== "classes";
   $("viewDuty").hidden = view !== "duty"; $("viewHome").hidden = view !== "home";
   $("viewSets").hidden = view !== "sets"; $("viewOre").hidden = view !== "ore";
+  $("viewArcanas").hidden = view !== "arcanas";
   try { localStorage.setItem("view", view); } catch { }
   if (view === "cubes") requestDraw(); else if (view === "dps") renderDps(); else if (view === "ore") renderOre();
   else if (view === "pets") renderPets(); else if (view === "tasks") renderTasks();
   else if (view === "classes") renderClasses(); else if (view === "duty") loadDuty();
-  else if (view === "home") loadHome(); else if (view === "sets") renderSets(); else renderTimers();
+  else if (view === "home") loadHome(); else if (view === "sets") renderSets();
+  else if (view === "arcanas") loadArcanas(); else renderTimers();
 }
 // Fondo de la pestaña elegida: se coloca bajo ella y se desliza al cambiar (la primera vez, sin animación).
 function moveTabPill() {
@@ -2987,12 +3212,14 @@ if (MINI) {
     <h4>Columnas</h4>
     <div class="fCols">${DPS_COLUMNS.map(c => `<label class="chk"><input type="checkbox"${c.key ? ` data-col="${c.key}"` : " checked disabled"}>${c.label}</label>`).join("")}</div>` : `<label class="chk"><input type="checkbox" class="fRoute">Ver la ruta de recolección</label>
     <label class="chk"><input type="checkbox" class="fFollow">Seguir mi posición</label>
-    <label class="chk"><input type="checkbox" class="fPets">Ver las mascotas que me faltan</label>`}
+    <label class="chk"><input type="checkbox" class="fPets">Ver las mascotas que me faltan</label>
+    <label class="chk" title="Al abrir una tienda del juego que vende mascotas que te faltan, las enseña 60 s (si el minimapa está cerrado, lo abre ese tiempo)"><input type="checkbox" class="fShop">Mostrar mascotas de tienda</label>`}
     <small class="fErr" style="color:var(--danger)"></small>`;
   if (!MINI_DPS) {
     q(".fRoute").onchange = e => saveSettings({ mini: { route: e.target.checked } });
     q(".fFollow").onchange = e => saveSettings({ mini: { follow: e.target.checked } });
     q(".fPets").onchange = e => saveSettings({ mini: { pets: e.target.checked } });
+    q(".fShop").onchange = e => saveSettings({ mini: { shopPets: e.target.checked } });
   }
   $("miniCfg").hidden = false;
   $("miniReset").hidden = !MINI_DPS;
@@ -3038,11 +3265,12 @@ if (MINI) {
 }
 
 function applySettings(m) {
-  settings = m.settings; floatsRunning = m.running || {};
+  settings = m.settings; floatsRunning = m.running || {}; floatsHidden = m.hidden || {};
   if (settings.language && settings.language !== I18N.lang) {   // idioma: la página y los datos del servidor
     I18N.set(settings.language);
     fetch("/api/timers").then(r => r.json()).then(t => { timers = t; renderTimers(); }).catch(() => {});
     classes = null; if (!$("viewClasses").hidden) renderClasses();     // habilidades en el otro idioma
+    arcanas = null; if (!$("viewArcanas").hidden) loadArcanas();       // nombres de arcanas y habilidades
     if (typeof render === "function") render();
   }
   $("langSel").value = I18N.lang;
@@ -3070,7 +3298,7 @@ function applySettings(m) {
       q(".fHeaders").checked = !!s.headers;
       for (const i of document.querySelectorAll("#floatPanel [data-col]")) i.checked = !(s.hidden || []).includes(i.dataset.col);
       if (dps) renderDpsMini(); growToMinHeight(); }
-    if (!MINI_DPS) { q(".fRoute").checked = !!s.route; q(".fFollow").checked = !!s.follow; q(".fPets").checked = !!s.pets;
+    if (!MINI_DPS) { q(".fRoute").checked = !!s.route; q(".fFollow").checked = !!s.follow; q(".fPets").checked = !!s.pets; q(".fShop").checked = !!s.shopPets; renderShopPets();
       if (s.follow) followMe(); else followZoomed = false; requestDraw(); }
     applyWindow();
   }
@@ -3083,7 +3311,9 @@ function applyWindow() {
   if (!MINI || !settings || !window.pywebview?.api) return;
   // Con ⚙ abierto la ventana puede estar agrandada: no se vuelve al tamaño guardado aún.
   try {                                       // la ventana aún sin terminar de abrir: la próxima vez
-    Promise.resolve(window.pywebview.api.apply(panelSize ? { ...settings[MINI_KIND], ...panelSize } : settings[MINI_KIND]))
+    // Oculta en una mazmorra (floatsHidden): viva e invisible, como cerrada, para volver al momento al salir.
+    const s = { ...settings[MINI_KIND], ...(floatsHidden[MINI_KIND] ? { enabled: false } : {}) };
+    Promise.resolve(window.pywebview.api.apply(panelSize ? { ...s, ...panelSize } : s))
       .catch(err => console.error("apply", err));
   } catch (err) { console.error("apply", err); }
 }
@@ -3209,13 +3439,15 @@ function connect() {
       if (m.type === "status") setRunning(m.running, m.error);
       else if (m.type === "settings") applySettings(m);
       else if (m.type === "timers") { timers = m; renderTimers(); }
-      else if (m.type === "pets") { pets = m.state; renderPets(); orePets.zone = miniPets.zone = null; if (MINI) requestDraw(); else if (!$("viewOre").hidden) requestOreDraw(); }
+      else if (m.type === "pets") { pets = m.state; renderPets(); renderShopPets(); orePets.zone = miniPets.zone = null; if (MINI) requestDraw(); else if (!$("viewOre").hidden) requestOreDraw(); }
       else if (m.type === "sets") { sets = m.state; renderSets(); }
+      else if (m.type === "arcanas") { if (!$("viewArcanas").hidden) loadArcanas(); }
       else if (m.type === "tasks") {
         tasks = m.state; renderTasks();
         if (!$("viewDuty").hidden) loadDuty();
         if (!$("viewHome").hidden) loadHome();                 // llaves
         if (!$("viewSets").hidden) loadSets().catch(() => { });   // personajes nuevos
+        if (!$("viewArcanas").hidden) loadArcanas();             // inventario o cambio de arcana
       }
       else if (m.type === "names") { if (!$("viewDuty").hidden) loadDuty(); }
       else if (m.type === "home") { if (!$("viewHome").hidden) loadHome(); }

@@ -1,6 +1,6 @@
 # AIONSour
 
-Portable companion for **AION 2** (Windows): events and resets, keys and currencies, hidden cubes, gathering routes, a damage meter, field bosses, pets, daily and weekly tasks, set reminders, duty missions and class skills. It only reads the game's traffic on your PC: it doesn't modify the game, never plays for you and doesn't send your data anywhere.
+Portable companion for **AION 2** (Windows): events and resets, keys and currencies, hidden cubes, gathering routes, a damage meter, field bosses, pets, daily and weekly tasks, set reminders, your arcana, duty missions and class skills. It only reads the game's traffic on your PC: it doesn't modify the game, never plays for you and doesn't send your data anywhere.
 
 Available in **English and Spanish**.
 
@@ -105,6 +105,14 @@ It's a portable folder: nothing gets installed, and your data is stored inside i
 - Pick the set for each content (expeditions, PvP, Battlefield, open world) and get a reminder if you're wearing another one:
 
   ![Set reminder](capturas/aviso-set.png)
+
+### Arcana
+
+![Arcana](capturas/arcanas.png)
+
+- Each character's arcana, equipped and stored, by type: grade, enhancement, Empyrean Lord stat and skill levels. They update when you get, enhance, equip or consume one.
+- Filter by stat, by skill or by equipped and stored.
+- Pick, for each card type, the family (Vigor or Magic) and the skills you want, from the ones that card can have: they're highlighted, and a card with all of them (and of that family) gets a gold border. The profile is per class, shared by your characters of that class.
 
 ### Duty missions
 
