@@ -136,6 +136,14 @@ const I18N = (() => {
     "Tiempo en el Abismo": "Abyss time", "Corredores del Abismo": "Abyss corridors",
     "Arcanas": "Arcana", "Personaje": "Character", "Todas las estadísticas": "All stats", "Todas las habilidades": "All skills",
     "Equipadas y guardadas": "Equipped and stored", "Solo equipadas": "Equipped only", "Solo guardadas": "Stored only",
+    "Buffs": "Buffs", "Activos ahora": "Active now", "Para elegir": "To pick", "Horizontal": "Horizontal", "Vertical": "Vertical", "Cómo se ordenan los iconos en la ventana": "How the icons are arranged in the window", "Cuadrado": "Square", "Círculo": "Circle", "Forma de los iconos en la ventana": "Shape of the icons in the window",
+    "Todos": "All", "Tus habilidades": "Your skills", "De otros jugadores": "From other players", "Objetos": "Items",
+    "Ninguno de los elegidos está activo.": "None of the chosen ones is active.", "Entra al juego para ver tus buffs.": "Log in to see your buffs.",
+    "Ninguno coincide con el filtro.": "None matches the filter.",
+    "Aún no se ha visto ningún buff en ti: aparecerán aquí cuando te pongan uno.": "No buff has been seen on you yet: they'll show up here when you get one.",
+    "Mostrar la ventana de buffs": "Show the buffs window", "Modificar": "Edit", "Terminar": "Done", "Alineación": "Alignment", "Modo": "Mode", "La ventana se queda visible con tus buffs elegidos y se puede mover; al terminar vuelve a dejar pasar los clics": "The window stays visible with your chosen buffs and can be moved; when done it lets clicks through again", "Ventana flotante con los iconos, siempre encima del juego": "Floating window with the icons, always on top of the game",
+    "Elige los buffs que quieres ver en la ventana flotante: sus iconos con el tiempo que les queda, sin fondo, siempre encima del juego y dejando pasar los clics. Pulsa Modificar para moverla y cambiar su aspecto. La lista se llena sola con los que te van poniendo: tus habilidades, las de otros jugadores y los objetos.":
+      "Pick the buffs you want to see in the floating window: their icons with the time left, with no background, always on top of the game and letting clicks through. Press Edit to move it and change its look. The list fills itself with the ones you get: your skills, other players' and items.",
     "Equipada": "Equipped", "Habilidades que busco": "Skills I want", "Con habilidades buscadas": "With wanted skills",
     "+ Añadir habilidad": "+ Add skill", "Tiene todas las habilidades que buscas": "Has every skill you want",
     "Elige, para cada tipo de carta, la familia y las habilidades que buscas: se resaltan en verde en las arcanas que las traen.":

@@ -1,4 +1,4 @@
 {
- "version": "1.0.59",
- "notes": "Grupo: si dejas el grupo dentro de una expedición, al salir vuelve el medidor y no el ready check. Medidor: los espíritus de un Invocador cuya aparición no se vio (p. ej. la app se abrió dentro) se suman a su dueño en vez de salir como «Jugador»."
+ "version": "1.0.60",
+ "notes": "Nueva pestaña Buffs: elige tus buffs (habilidades propias, de otros jugadores y objetos) y míralos en una ventana flotante sin fondo, siempre encima y que deja pasar los clics, con el tiempo dentro del icono y un borde dorado que se acorta (en rojo y con decimal en los últimos 3 s). Con «Modificar» se mueve y se elige tamaño, opacidad, horizontal o vertical y cuadrado o círculo."
 }

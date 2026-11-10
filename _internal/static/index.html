@@ -550,9 +550,35 @@
   .classesview .card { overflow: auto; }
   .setsview { grid-template-columns: 1fr; }
   .setsview .card { overflow: auto; }
+  /* Buffs: tamaño y opacidad de la ventana, los activos con su tiempo y la lista para elegir. */
+  .bufcfg { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; margin: 8px 0 4px; }
+  /* Tamaño, opacidad, alineación y modo: solo mientras se modifica la ventana. */
+  .bufopts { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 12px; color: var(--muted);
+    margin: 6px 0 4px; padding: 8px 10px; border: 1px solid var(--line, #2a313b); border-radius: 8px; }
+  .bufopts[hidden] { display: none; }
+  #bufEdit.on { border-color: #ffc43d; color: #ffc43d; }
+  .bufopts input[type=range] { width: 140px; }
+  .bufopts span[id] { min-width: 36px; }
+  .bufh { margin: 12px 0 6px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .bufnow { display: flex; flex-wrap: wrap; gap: 8px; min-height: 20px; }
+  .bufnow .b { display: flex; flex-direction: column; align-items: center; width: 46px; font-size: 12px;
+    font-variant-numeric: tabular-nums; }
+  .bufnow .b.low span { color: var(--danger); }
+  .bufic { width: 32px; height: 32px; border-radius: 5px; flex: none; object-fit: cover; }
+  .bufnow .bufic { width: 40px; height: 40px; }
+  .bufph { display: inline-flex; align-items: center; justify-content: center; background: #2b3340; font-size: 11px; }
+  .bufgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 6px; }
+  .bufrow { display: flex; align-items: center; gap: 8px; padding: 5px 8px; background: var(--panel2); border-radius: 6px;
+    border: 1px solid var(--border); cursor: pointer; }
+  .bufrow.on { border-color: var(--accent); }
+  .bufrow .n { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   /* Arcanas: un bloque por tipo; cada arcana con su icono sobre el fondo de su grado. */
   .arcfilters { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 10px; }
   .arcfilters select, #arcChar { padding: 3px 6px; }
+  /* Buscador de la pestaña Buffs: como los selectores de al lado (antes salía con el estilo del navegador). */
+  .arcfilters input { font: inherit; color: var(--text); background: var(--panel2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 8px; width: 180px; }
+  .arcfilters input:focus { outline: none; border-color: var(--accent); }
   .arctype { margin-bottom: 12px; }
   .arctype > h4 { margin: 0 0 6px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
   .arcgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 8px; }
@@ -768,6 +794,7 @@
     <button data-view="classes">⛨ Clases</button>
     <button data-view="sets">◈ Set</button>
     <button data-view="arcanas">✦ Arcanas</button>
+    <button data-view="buffs">⏱ Buffs</button>
   </nav>
   <span class="spacer"></span>
   <button class="floatBtn" data-kind="mini" title="Abre o cierra el minimapa flotante (se configura en su ⚙)">🗺 Minimapa</button>
@@ -1071,6 +1098,34 @@
         <option value="off">Solo guardadas</option><option value="want">Con habilidades buscadas</option></select>
     </div>
     <div id="arcList"></div>
+  </div>
+</main>
+
+<main id="viewBuffs" class="setsview" hidden>
+  <div class="card">
+    <h3>Buffs</h3>
+    <div class="histkey">Elige los buffs que quieres ver en la ventana flotante: sus iconos con el tiempo que les queda,
+      sin fondo, siempre encima del juego y dejando pasar los clics. Pulsa Modificar para moverla y cambiar su
+      aspecto. La lista se llena sola con los que te van poniendo: tus habilidades, las de otros jugadores y los objetos.</div>
+    <div class="bufcfg">
+      <label class="switch bufwin" title="Ventana flotante con los iconos, siempre encima del juego"><input type="checkbox" id="bufWin"><span class="track"></span>Mostrar la ventana de buffs</label>
+      <button id="bufEdit" title="La ventana se queda visible con tus buffs elegidos y se puede mover; al terminar vuelve a dejar pasar los clics">Modificar</button>
+    </div>
+    <div class="bufopts" id="bufOpts" hidden>
+      <span>Tamaño</span><input type="range" id="bufScale" min="70" max="200" step="10"><span id="bufScaleV"></span>
+      <span>Opacidad</span><input type="range" id="bufOpacity" min="20" max="100" step="5"><span id="bufOpacityV"></span>
+      <span>Alineación</span><select id="bufLayout" title="Cómo se ordenan los iconos en la ventana"><option value="h">Horizontal</option><option value="v">Vertical</option></select>
+      <span>Modo</span><select id="bufShape" title="Forma de los iconos en la ventana"><option value="square">Cuadrado</option><option value="circle">Círculo</option></select>
+    </div>
+    <h4 class="bufh">Activos ahora</h4>
+    <div class="bufnow" id="bufNow"></div>
+    <h4 class="bufh">Para elegir</h4>
+    <div class="arcfilters">
+      <select id="bufKind"><option value="">Todos</option><option value="own">Tus habilidades</option>
+        <option value="other">De otros jugadores</option><option value="item">Objetos</option></select>
+      <input id="bufSearch" type="search" placeholder="Buscar…">
+    </div>
+    <div class="bufgrid" id="bufList"></div>
   </div>
 </main>
 
@@ -2801,6 +2856,79 @@ try { $("arcWish").hidden = !localStorage.getItem("arcWish"); } catch { }
 $("arcChar").addEventListener("change", e => { arcCharPick = e.target.value; renderArcanas(); });
 for (const id of ["arcLord", "arcSkill", "arcState"]) $(id).addEventListener("change", renderArcanas);
 
+// ---------------- Buffs ----------------
+// Los elegidos se ven en la ventana flotante (ventana_buffs.py); la lista son los vistos en ti (buffs.py).
+let buffs = null;
+async function loadBuffs() {
+  try { buffs = await (await fetch("/api/buffs")).json(); } catch { return; }
+  renderBuffs();
+}
+const bufLeft = t => {
+  if (t == null) return "∞";
+  const r = t - Date.now() / 1000;
+  if (r < 3) return (Math.max(0, Math.floor(r * 10)) / 10).toFixed(1);       // los últimos 3 s con un decimal
+  const s = Math.ceil(r);
+  return s >= 60 ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}` : `${s}`;
+};
+const bufIcon = b => b.icon ? `<img class="bufic" src="${b.icon}" alt="">` : `<span class="bufic bufph">${esc(b.name.slice(0, 2))}</span>`;
+function renderBuffNow() {
+  if (!buffs || $("viewBuffs").hidden) return;
+  // Los de ejemplo de «Modificar» solo van a la ventana.
+  const now = Date.now() / 1000, act = buffs.active.filter(b => !b.sample && (b.endAt == null || b.endAt > now));
+  $("bufNow").innerHTML = act.length ? act.map(b => `<div class="b${b.endAt != null && b.endAt - now < 3 ? " low" : ""}" title="${esc(b.name)}">` +
+    `${bufIcon(b)}<span>${bufLeft(b.endAt)}</span></div>`).join("")
+    : `<small class="histkey">${buffs.known ? "Ninguno de los elegidos está activo." : "Entra al juego para ver tus buffs."}</small>`;
+}
+function renderBuffs() {
+  if (!buffs || $("viewBuffs").hidden) return;
+  renderBuffNow();
+  const kind = $("bufKind").value, q = $("bufSearch").value.trim().toLowerCase();
+  const list = buffs.seen.filter(b => (!kind || (kind === "item" ? b.item : kind === "own" ? b.own && !b.item : !b.own && !b.item)) &&
+    (!q || b.name.toLowerCase().includes(q)));
+  $("bufList").innerHTML = list.length ? list.map(b => `<label class="bufrow${b.selected ? " on" : ""}">` +
+    `<input type="checkbox" data-keys="${esc(b.keys.join(","))}"${b.selected ? " checked" : ""}>${bufIcon(b)}<span class="n">${esc(b.name)}</span></label>`).join("")
+    : empty(buffs.seen.length ? "Ninguno coincide con el filtro." : "Aún no se ha visto ningún buff en ti: aparecerán aquí cuando te pongan uno.");
+  if (settings) {
+    $("bufWin").checked = !!floatsRunning.buffs;
+    $("bufScale").value = Math.round((settings.buffs.scale || 1) * 100); $("bufScaleV").textContent = `${$("bufScale").value} %`;
+    $("bufOpacity").value = Math.round((settings.buffs.opacity || 1) * 100); $("bufOpacityV").textContent = `${$("bufOpacity").value} %`;
+    $("bufLayout").value = settings.buffs.vertical ? "v" : "h";
+    $("bufShape").value = settings.buffs.shape === "circle" ? "circle" : "square";
+  }
+  $("bufEdit").textContent = buffs.editing ? "Terminar" : "Modificar";
+  $("bufEdit").classList.toggle("on", !!buffs.editing);
+  $("bufOpts").hidden = !buffs.editing;
+}
+$("bufList").addEventListener("change", e => {
+  const c = e.target.closest("input[data-keys]"); if (!c || !buffs) return;
+  const row = c.dataset.keys.split(",");                     // un nombre puede tener varias familias
+  const keys = buffs.seen.filter(b => b.selected).flatMap(b => b.keys).filter(k => !row.includes(k));
+  if (c.checked) keys.push(...row);
+  post("/api/buffs", { selected: keys });
+});
+$("bufKind").addEventListener("change", renderBuffs);
+$("bufWin").addEventListener("change", e => saveSettings({ buffs: { enabled: e.target.checked } }));
+$("bufEdit").addEventListener("click", () => {
+  const on = !(buffs && buffs.editing);
+  if (on && !floatsRunning.buffs) saveSettings({ buffs: { enabled: true } });     // la abre si estaba cerrada
+  post("/api/buffs", { editing: on });
+});
+$("bufSearch").addEventListener("input", renderBuffs);
+// Al mover el deslizador, no solo al soltarlo: la ventana cambia al momento (como mucho cada 150 ms).
+let bufSaveTimer = null;
+function bufSlider(input, label, field) {
+  input.addEventListener("input", e => {
+    $(label).textContent = `${e.target.value} %`;
+    clearTimeout(bufSaveTimer);
+    bufSaveTimer = setTimeout(() => saveSettings({ buffs: { [field]: +e.target.value / 100 } }), 150);
+  });
+}
+bufSlider($("bufScale"), "bufScaleV", "scale");
+$("bufLayout").addEventListener("change", e => saveSettings({ buffs: { vertical: e.target.value === "v" } }));
+$("bufShape").addEventListener("change", e => saveSettings({ buffs: { shape: e.target.value } }));
+bufSlider($("bufOpacity"), "bufOpacityV", "opacity");
+setInterval(renderBuffNow, 500);
+
 // ---------------- Mascotas ----------------
 let pets = null;
 const PET_FAMILIES = ["Cogni", "Fera", "Natura", "Varian", "Especial"];   // como en el juego, sin traducir
@@ -3188,13 +3316,13 @@ function showView(view) {
   $("viewTasks").hidden = view !== "tasks"; $("viewClasses").hidden = view !== "classes";
   $("viewDuty").hidden = view !== "duty"; $("viewHome").hidden = view !== "home";
   $("viewSets").hidden = view !== "sets"; $("viewOre").hidden = view !== "ore";
-  $("viewArcanas").hidden = view !== "arcanas";
+  $("viewArcanas").hidden = view !== "arcanas"; $("viewBuffs").hidden = view !== "buffs";
   try { localStorage.setItem("view", view); } catch { }
   if (view === "cubes") requestDraw(); else if (view === "dps") renderDps(); else if (view === "ore") renderOre();
   else if (view === "pets") renderPets(); else if (view === "tasks") renderTasks();
   else if (view === "classes") renderClasses(); else if (view === "duty") loadDuty();
   else if (view === "home") loadHome(); else if (view === "sets") renderSets();
-  else if (view === "arcanas") loadArcanas(); else renderTimers();
+  else if (view === "arcanas") loadArcanas(); else if (view === "buffs") loadBuffs(); else renderTimers();
 }
 // Fondo de la pestaña elegida: se coloca bajo ella y se desliza al cambiar (la primera vez, sin animación).
 function moveTabPill() {
@@ -3317,6 +3445,7 @@ if (MINI) {
 
 function applySettings(m) {
   settings = m.settings; floatsRunning = m.running || {}; floatsHidden = m.hidden || {};
+  if (!MINI && buffs) renderBuffs();                  // interruptor de la ventana de buffs
   if (settings.language && settings.language !== I18N.lang) {   // idioma: la página y los datos del servidor
     I18N.set(settings.language);
     fetch("/api/timers").then(r => r.json()).then(t => { timers = t; renderTimers(); }).catch(() => {});
@@ -3493,6 +3622,7 @@ function connect() {
       else if (m.type === "pets") { pets = m.state; renderPets(); renderShopPets(); orePets.zone = miniPets.zone = null; if (MINI) requestDraw(); else if (!$("viewOre").hidden) requestOreDraw(); }
       else if (m.type === "sets") { sets = m.state; renderSets(); }
       else if (m.type === "arcanas") { if (!$("viewArcanas").hidden) loadArcanas(); }
+      else if (m.type === "buffs") { if (!$("viewBuffs").hidden) loadBuffs(); }
       else if (m.type === "tasks") {
         tasks = m.state; renderTasks();
         if (!$("viewDuty").hidden) loadDuty();

@@ -1,6 +1,6 @@
 # AIONSour
 
-Portable companion for **AION 2** (Windows): events and resets, keys and currencies, daily and weekly tasks, a map with hidden cubes and gathering routes, a damage meter, field bosses, pets, duty missions, class skills, set reminders and your arcana. It only reads the game's traffic on your PC: it doesn't modify the game, never plays for you and doesn't send your data anywhere.
+Portable companion for **AION 2** (Windows): events and resets, keys and currencies, daily and weekly tasks, a map with hidden cubes and gathering routes, a damage meter, field bosses, pets, duty missions, class skills, set reminders, your arcana and buff timers. It only reads the game's traffic on your PC: it doesn't modify the game, never plays for you and doesn't send your data anywhere.
 
 Available in **English and Spanish**.
 
@@ -115,6 +115,16 @@ It's a portable folder: nothing gets installed, and your data is stored inside i
 - Each character's arcana, equipped and stored, by type: grade, enhancement, Empyrean Lord stat and skill levels. They update when you get, enhance, equip or consume one.
 - Filter by stat, by skill or by equipped and stored.
 - Pick, for each card type, the family (Vigor or Magic) and the skills you want, from the ones that card can have: they're highlighted, and a card with all of them (and of that family) gets a gold border. The profile is per class, shared by your characters of that class.
+
+### Buffs
+
+![Buffs](capturas/buffs.png)
+
+- Pick the buffs you want to track: your skills, other players' buffs and items (scrolls, potions). The list fills itself as you get them.
+- A floating window shows their icons with the time left inside and a gold border that runs down with it; red in the last 3 s.
+- No background, always on top and click-through. Press **Edit** to move it and choose size, opacity, horizontal or vertical, and square or round icons.
+
+  ![Buffs window](capturas/buffs-ventana.png)
 
 ### Floating windows
 
