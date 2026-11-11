@@ -1,4 +1,4 @@
 {
- "version": "1.0.60",
- "notes": "Nueva pestaña Buffs: elige tus buffs (habilidades propias, de otros jugadores y objetos) y míralos en una ventana flotante sin fondo, siempre encima y que deja pasar los clics, con el tiempo dentro del icono y un borde dorado que se acorta (en rojo y con decimal en los últimos 3 s). Con «Modificar» se mueve y se elige tamaño, opacidad, horizontal o vertical y cuadrado o círculo."
+ "version": "1.0.61",
+ "notes": "Arcanas: ya no se duplican. El juego renumera las cartas al entrar; si la app se abría con el juego ya dentro, al equipar o potenciar una carta se sumaba como otra. Ahora reemplaza a su copia vieja, y al abrir se quitan las copias ya guardadas."
 }
