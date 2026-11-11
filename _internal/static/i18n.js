@@ -18,7 +18,7 @@ const I18N = (() => {
     "Al terminar cada batalla por los artefactos se abren los corredores del Abismo (para la facción que la gana); caducan al empezar la siguiente.":
       "When each artifact battle ends, the Abyss corridors open (for the winning faction); they expire when the next one starts.",
     "Abierto todos los días de 11:00 a 14:00 y de 19:00 a 21:00.": "Open every day from 11:00 to 14:00 and from 19:00 to 21:00.",
-    "En curso": "In progress", "En mantenimiento": "Under maintenance", "Vencida": "Expired", "Membresía especial Quai": "Special Quai Membership", "Cuenta": "Account", "Personajes": "Characters",
+    "En curso": "In progress", "Abierto": "Open", "En mantenimiento": "Under maintenance", "Vencida": "Expired", "Membresía especial Quai": "Special Quai Membership", "Cuenta": "Account", "Personajes": "Characters",
     "Llaves de Shugo": "Shugo keys", "Llaves de Invasión dimensional": "Dimensional Invasion keys", "Llaves de cubo": "Cube keys",
     "Kina": "Kinah", "Kina (vinculada)": "Kinah (bound)", "Puntos de Abismo": "Abyss points",
     "Fichas de raíz centenaria (Shugo)": "Centuryroot tokens (Shugo)", "Fragmentos de ensueño (Pesadilla)": "Phantasmal fragments (Nightmare)",

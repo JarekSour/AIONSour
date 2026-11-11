@@ -3256,13 +3256,14 @@ function renderHome() {
     $("homeMaint").textContent = m?.next ? `Mantenimiento: ${longDay(m.next)} · ~5–6 h` : "";
   }
   // Eventos con la misma forma: próximo, o en curso y cuándo termina.
-  const eventCard = (ev, big, sub) => {
-    if (ev?.liveUntil) { set(big, "En curso", "live"); $(sub).textContent = `Termina en ${untilText(ev.liveUntil)}`; }
+  const eventCard = (ev, big, sub, live = "En curso") => {
+    if (ev?.liveUntil) { set(big, live, "live"); $(sub).textContent = `Termina en ${untilText(ev.liveUntil)}`; }
     else if (ev?.next) { set(big, untilText(ev.next), urgency(ev.next)); $(sub).textContent = `A las ${dayTime(ev.next)}`; }
   };
-  eventCard(home.shugo, "homeShugo", "homeShugoAt");
-  eventCard(home.invasion, "homeInvasion", "homeInvasionAt");
-  eventCard(home.rift, "homeRift", "homeRiftAt");
+  // Festival, invasión y grieta: «Abierto» mientras se puede entrar (11/11, el usuario).
+  eventCard(home.shugo, "homeShugo", "homeShugoAt", "Abierto");
+  eventCard(home.invasion, "homeInvasion", "homeInvasionAt", "Abierto");
+  eventCard(home.rift, "homeRift", "homeRiftAt", "Abierto");
   eventCard(home.battlefield, "homeBattlefield", "homeBattlefieldAt");
   const sg = home.siege;
   if (sg?.liveUntil) { set("homeSiege", "En curso", "live"); $("homeSiegeAt").textContent = `Termina en ${untilText(sg.liveUntil)}`; }

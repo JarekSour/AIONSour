@@ -1,4 +1,4 @@
 {
- "version": "1.0.61",
- "notes": "Arcanas: ya no se duplican. El juego renumera las cartas al entrar; si la app se abría con el juego ya dentro, al equipar o potenciar una carta se sumaba como otra. Ahora reemplaza a su copia vieja, y al abrir se quitan las copias ya guardadas."
+ "version": "1.0.62",
+ "notes": "Timers: la Invasión Dimensional queda abierta de :30 a :33. Festival Shugo, Invasión Dimensional y Grieta Espaciotemporal muestran \"Abierto\" en vez de \"En curso\"."
 }
