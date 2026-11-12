@@ -1,6 +1,6 @@
 # AIONSour
 
-Portable companion for **AION 2** (Windows): events and resets, keys and currencies, daily and weekly tasks, a map with hidden cubes and gathering routes, a damage meter, field bosses, pets, duty missions, class skills, set reminders, your arcana and buff timers. It only reads the game's traffic on your PC: it doesn't modify the game, never plays for you and doesn't send your data anywhere.
+Portable companion for **AION 2** (Windows): events and resets, keys and currencies, daily and weekly tasks, a map with hidden cubes and gathering routes, a damage meter, field bosses, pets, duty missions, class skills, set reminders, your arcana, buff timers and a stamina bar. It only reads the game's traffic on your PC: it doesn't modify the game, never plays for you and doesn't send your data anywhere.
 
 Available in **English and Spanish**.
 
@@ -116,9 +116,19 @@ It's a portable folder: nothing gets installed, and your data is stored inside i
 - Filter by stat, by skill or by equipped and stored.
 - Pick, for each card type, the family (Vigor or Magic) and the skills you want, from the ones that card can have: they're highlighted, and a card with all of them (and of that family) gets a gold border. The profile is per class, shared by your characters of that class.
 
-### Buffs
+### Overlay
 
-![Buffs](capturas/buffs.png)
+![Overlay](capturas/buffs.png)
+
+**Stamina**
+
+- A thin bar with your stamina (what sprinting and dashing use), in its own floating window: gold, red under 25 %.
+- Optional mark at the stamina a dash needs (30,000 by default), so you can see when you have enough.
+- No background, always on top and click-through. Press **Edit** to move it and choose size, opacity and height in pixels, and whether it hides when full.
+
+  ![Stamina bar](capturas/estamina.png)
+
+**Buffs**
 
 - Pick the buffs you want to track: your skills, other players' buffs and items (scrolls, potions). The list fills itself as you get them.
 - A floating window shows their icons with the time left inside and a gold border that runs down with it; red in the last 3 s.

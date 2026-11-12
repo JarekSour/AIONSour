@@ -550,13 +550,21 @@
   .classesview .card { overflow: auto; }
   .setsview { grid-template-columns: 1fr; }
   .setsview .card { overflow: auto; }
+  #viewBuffs { grid-template-rows: auto minmax(0, 1fr); }   /* Overlay: estamina a su alto, los buffs el resto */
   /* Buffs: tamaño y opacidad de la ventana, los activos con su tiempo y la lista para elegir. */
   .bufcfg { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; margin: 8px 0 4px; }
   /* Tamaño, opacidad, alineación y modo: solo mientras se modifica la ventana. */
   .bufopts { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 12px; color: var(--muted);
     margin: 6px 0 4px; padding: 8px 10px; border: 1px solid var(--line, #2a313b); border-radius: 8px; }
   .bufopts[hidden] { display: none; }
-  #bufEdit.on { border-color: #ffc43d; color: #ffc43d; }
+  #bufEdit.on, #staEdit.on { border-color: #ffc43d; color: #ffc43d; }
+  .staopts { flex-direction: column; align-items: flex-start; }
+  .staopts .r { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+  .stacost { display: inline-flex; align-items: center; gap: 6px; }
+  .stacost[hidden] { display: none; }
+  .stacost input { width: 80px; font: inherit; color: var(--text); background: var(--panel2);
+    border: 1px solid var(--border); border-radius: 6px; padding: 3px 6px; }
+  .stacost input:focus { outline: none; border-color: var(--accent); }
   .bufopts input[type=range] { width: 140px; }
   .bufopts span[id] { min-width: 36px; }
   .bufh { margin: 12px 0 6px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
@@ -794,7 +802,7 @@
     <button data-view="classes">⛨ Clases</button>
     <button data-view="sets">◈ Set</button>
     <button data-view="arcanas">✦ Arcanas</button>
-    <button data-view="buffs">⏱ Buffs</button>
+    <button data-view="buffs">⏱ Overlay</button>
   </nav>
   <span class="spacer"></span>
   <button class="floatBtn" data-kind="mini" title="Abre o cierra el minimapa flotante (se configura en su ⚙)">🗺 Minimapa</button>
@@ -1103,6 +1111,27 @@
 
 <main id="viewBuffs" class="setsview" hidden>
   <div class="card">
+    <h3>Estamina</h3>
+    <div class="histkey">Una barra con tu estamina (la que gasta correr), sin fondo y siempre encima del juego, en su
+      propia ventana. Pulsa Modificar para moverla y cambiar su aspecto.</div>
+    <div class="bufcfg">
+      <label class="switch bufwin" title="Ventana flotante con la barra, siempre encima del juego"><input type="checkbox" id="staWin"><span class="track"></span>Mostrar la barra de estamina</label>
+      <button id="staEdit" title="La barra se queda visible y se puede mover; al terminar vuelve a dejar pasar los clics">Modificar</button>
+    </div>
+    <div class="bufopts staopts" id="staOpts" hidden>
+      <div class="r">
+        <span>Tamaño</span><input type="range" id="staScale" min="70" max="200" step="5"><span id="staScaleV"></span>
+        <span>Opacidad</span><input type="range" id="staOpacity" min="20" max="100" step="5"><span id="staOpacityV"></span>
+        <span>Alto</span><input type="range" id="staHeight" min="2" max="40" step="1"><span id="staHeightV"></span>
+      </div>
+      <div class="r">
+        <label class="switch" title="Una raya vertical en la barra: la estamina mínima para hacer un dash"><input type="checkbox" id="staDash"><span class="track"></span>Marca de dash</label>
+        <label class="stacost" id="staDashBox">Estamina del dash<input type="number" id="staDashCost" min="0" step="1000"></label>
+        <label class="switch" title="Como en el juego: la barra solo aparece mientras gastas o recuperas estamina"><input type="checkbox" id="staHide"><span class="track"></span>Ocultar la barra con la estamina llena</label>
+      </div>
+    </div>
+  </div>
+  <div class="card">
     <h3>Buffs</h3>
     <div class="histkey">Elige los buffs que quieres ver en la ventana flotante: sus iconos con el tiempo que les queda,
       sin fondo, siempre encima del juego y dejando pasar los clics. Pulsa Modificar para moverla y cambiar su
@@ -1112,7 +1141,7 @@
       <button id="bufEdit" title="La ventana se queda visible con tus buffs elegidos y se puede mover; al terminar vuelve a dejar pasar los clics">Modificar</button>
     </div>
     <div class="bufopts" id="bufOpts" hidden>
-      <span>Tamaño</span><input type="range" id="bufScale" min="70" max="200" step="10"><span id="bufScaleV"></span>
+      <span>Tamaño</span><input type="range" id="bufScale" min="70" max="200" step="5"><span id="bufScaleV"></span>
       <span>Opacidad</span><input type="range" id="bufOpacity" min="20" max="100" step="5"><span id="bufOpacityV"></span>
       <span>Alineación</span><select id="bufLayout" title="Cómo se ordenan los iconos en la ventana"><option value="h">Horizontal</option><option value="v">Vertical</option></select>
       <span>Modo</span><select id="bufShape" title="Forma de los iconos en la ventana"><option value="square">Cuadrado</option><option value="circle">Círculo</option></select>
@@ -2862,6 +2891,7 @@ let buffs = null;
 async function loadBuffs() {
   try { buffs = await (await fetch("/api/buffs")).json(); } catch { return; }
   renderBuffs();
+  loadStamina();
 }
 const bufLeft = t => {
   if (t == null) return "∞";
@@ -2898,6 +2928,7 @@ function renderBuffs() {
   $("bufEdit").textContent = buffs.editing ? "Terminar" : "Modificar";
   $("bufEdit").classList.toggle("on", !!buffs.editing);
   $("bufOpts").hidden = !buffs.editing;
+  renderStamina();
 }
 $("bufList").addEventListener("change", e => {
   const c = e.target.closest("input[data-keys]"); if (!c || !buffs) return;
@@ -2928,6 +2959,55 @@ $("bufLayout").addEventListener("change", e => saveSettings({ buffs: { vertical:
 $("bufShape").addEventListener("change", e => saveSettings({ buffs: { shape: e.target.value } }));
 bufSlider($("bufOpacity"), "bufOpacityV", "opacity");
 setInterval(renderBuffNow, 500);
+
+// ---------------- Estamina (en la pestaña Overlay) ----------------
+let staEditing = false;             // su propio «Modificar»: el de los buffs no la toca
+async function loadStamina() {
+  try { staEditing = !!(await (await fetch("/api/stamina")).json()).editing; } catch { return; }
+  renderStamina();
+}
+function renderStamina() {
+  if ($("viewBuffs").hidden) return;
+  if (settings) {
+    $("staWin").checked = !!floatsRunning.stamina;
+    $("staScale").value = Math.round((settings.stamina.scale || 0.95) * 100); $("staScaleV").textContent = `${$("staScale").value} %`;
+    $("staOpacity").value = Math.round((settings.stamina.opacity || 1) * 100); $("staOpacityV").textContent = `${$("staOpacity").value} %`;
+    $("staHide").checked = !!settings.stamina.hideFull;
+    $("staHeight").value = settings.stamina.barHeight || 4; $("staHeightV").textContent = `${$("staHeight").value} px`;
+    $("staDash").checked = !!settings.stamina.dash;
+    if (document.activeElement !== $("staDashCost")) $("staDashCost").value = settings.stamina.dashCost ?? 30000;
+    $("staDashBox").hidden = !settings.stamina.dash;
+  }
+  const editing = staEditing;
+  $("staEdit").textContent = editing ? "Terminar" : "Modificar";
+  $("staEdit").classList.toggle("on", editing);
+  $("staOpts").hidden = !editing;
+}
+$("staWin").addEventListener("change", e => saveSettings({ stamina: { enabled: e.target.checked } }));
+$("staEdit").addEventListener("click", () => {
+  const on = !staEditing;
+  if (on && !floatsRunning.stamina) saveSettings({ stamina: { enabled: true } });   // la abre si estaba cerrada
+  post("/api/stamina", { editing: on });
+});
+let staSaveTimer = null;
+for (const [input, label, field] of [["staScale", "staScaleV", "scale"], ["staOpacity", "staOpacityV", "opacity"]]) {
+  $(input).addEventListener("input", e => {
+    $(label).textContent = `${e.target.value} %`;
+    clearTimeout(staSaveTimer);
+    staSaveTimer = setTimeout(() => saveSettings({ stamina: { [field]: +e.target.value / 100 } }), 150);
+  });
+}
+$("staHide").addEventListener("change", e => saveSettings({ stamina: { hideFull: e.target.checked } }));
+$("staHeight").addEventListener("input", e => {
+  $("staHeightV").textContent = `${e.target.value} px`;
+  clearTimeout(staSaveTimer);
+  staSaveTimer = setTimeout(() => saveSettings({ stamina: { barHeight: +e.target.value } }), 150);
+});
+$("staDash").addEventListener("change", e => saveSettings({ stamina: { dash: e.target.checked } }));
+$("staDashCost").addEventListener("change", e => {
+  const v = Math.max(0, Math.round(+e.target.value || 0));
+  saveSettings({ stamina: { dashCost: v } });
+});
 
 // ---------------- Mascotas ----------------
 let pets = null;
@@ -3386,7 +3466,7 @@ if (MINI) {
   const panel = $("floatPanel"), q = c => panel.querySelector(c), kind = MINI_KIND;
   panel.innerHTML = `<h4>${MINI_DPS ? "Medidor de daño" : "Minimapa"}</h4>
     <div class="row"><span>Opacidad</span><input type="range" class="fOpacity" min="20" max="100" step="5"><span class="fOpacityV"></span></div>
-    ${MINI_DPS ? `<div class="row"><span>Tamaño</span><input type="range" class="fScale" min="70" max="200" step="10"><span class="fScaleV"></span></div>` : ""}
+    ${MINI_DPS ? `<div class="row"><span>Tamaño</span><input type="range" class="fScale" min="70" max="200" step="5"><span class="fScaleV"></span></div>` : ""}
     <label class="chk"><input type="checkbox" class="fTop">Siempre encima</label>
     ${MINI_DPS ? `<label class="chk"><input type="checkbox" class="fHeaders">Ver cabeceras de columnas</label>
     <h4>Columnas</h4>
@@ -3624,6 +3704,7 @@ function connect() {
       else if (m.type === "sets") { sets = m.state; renderSets(); }
       else if (m.type === "arcanas") { if (!$("viewArcanas").hidden) loadArcanas(); }
       else if (m.type === "buffs") { if (!$("viewBuffs").hidden) loadBuffs(); }
+      else if (m.type === "stamina") { if (!$("viewBuffs").hidden) loadStamina(); }
       else if (m.type === "tasks") {
         tasks = m.state; renderTasks();
         if (!$("viewDuty").hidden) loadDuty();
