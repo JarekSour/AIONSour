@@ -125,6 +125,7 @@ It's a portable folder: nothing gets installed, and your data is stored inside i
 - A thin bar with your stamina (what sprinting and dashing use), in its own floating window: gold, red under 25 %.
 - Optional mark at the stamina a dash needs (30,000 by default), so you can see when you have enough.
 - No background, always on top and click-through. Press **Edit** to move it and choose size, opacity and height in pixels, and whether it hides when full.
+- The overlay (stamina and buffs) only shows over the game: it hides when another window is in front or a game window (inventory, map…) is open.
 
   ![Stamina bar](capturas/estamina.png)
 

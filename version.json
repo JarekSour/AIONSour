@@ -1,4 +1,4 @@
 {
- "version": "1.0.63",
- "notes": "Overlay (antes Buffs): nueva barra de estamina flotante, con alto en píxeles, marca del dash (30 000) y opción de ocultarla llena. Cada ventana tiene su propio Modificar y no se mueve al editarla. Los interruptores de las ventanas de buffs y estamina se conservan al cerrar la app. Tamaño de 5 en 5 %."
+ "version": "1.0.64",
+ "notes": "Overlay: la barra de estamina y los buffs solo se ven con el juego delante; se esconden con otra ventana delante o con una ventana del juego abierta (inventario, mapa…), salvo mientras los modificas."
 }
